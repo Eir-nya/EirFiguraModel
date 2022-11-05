@@ -89,7 +89,7 @@ function exAnims.init()
 	animations["models.cat"].jumpKick:priority(1)
 	animations["models.cat"].punchR:priority(1)
 	animations["models.cat"].thrustR:priority(1)
-	animations["models.cat"].thrustR:speed(1.25)
+	animations["models.cat"].thrustR:speed(1.1875)
 
 	-- Register invisible keybind for attack anims
 	if host:isHost() then
