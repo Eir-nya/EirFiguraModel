@@ -20,7 +20,7 @@ modules.events.RENDER:register(camera.render)
 function camera.toggleFreeze()
 	camera.frozen = not camera.frozen
 	if camera.frozen then
-		renderer:setCameraPivot(client:getCameraPos() + (player:getLookDir() * 4))
+		renderer:setCameraPivot(client:getCameraPos() + (player:getLookDir() * 4 * (renderer:isCameraBackwards() and -1 or 1)))
 	else
 		renderer:setCameraPivot()
 		renderer:setCameraRot()
