@@ -10,6 +10,7 @@ end
 modules.events.ENTITY_INIT:register(bfp.init)
 
 function bfp.hideArms(delta, context)
+	-- TODO: what about armor in first person?
 	if context == "FIRST_PERSON" then
 		models.cat.LeftArm:setVisible(false)
 		models.cat.RightArm:setVisible(false)

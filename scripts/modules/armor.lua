@@ -18,33 +18,57 @@ local armor = {
 	bowOffset = vec(0, 0, -0.5),
 	-- Default color for leather armor
 	leatherColor = vec(160/255, 101/255, 64/255),
-	-- Ear armor UV offsets
-	earAddUVs = {
-		["minecraft:leather_helmet"] = vec(0, 0),
-		["minecraft:chainmail_helmet"] = vec(28, 0),
-		["minecraft:iron_helmet"] = vec(28, 0),
-		["minecraft:golden_helmet"] = vec(28, 29),
-		["minecraft:diamond_helmet"] = vec(0, 58),
-		["minecraft:netherite_helmet"] = vec(28, 58),
-		["minecraft:turtle_helmet"] = vec(0, 29)
+
+	helmetUVs = {
+		-- Ear armor UV offsets
+		ears = {
+			["minecraft:leather_helmet"] = vec(0, 0),
+			["minecraft:chainmail_helmet"] = vec(14, 0),
+			["minecraft:iron_helmet"] = vec(14, 0),
+			["minecraft:golden_helmet"] = vec(28, 0),
+			["minecraft:diamond_helmet"] = vec(42, 0),
+			["minecraft:netherite_helmet"] = vec(56, 0),
+			["minecraft:turtle_helmet"] = vec(70, 0)
+		},
+		-- TODO helmet
 	},
 	-- Chestplate armor UV offsets
 	chestAddUVs = {
-		["minecraft:leather_chestplate"] = vec(0, 0),
-		["minecraft:chainmail_chestplate"] = vec(28, 0),
-		["minecraft:iron_chestplate"] = vec(0, 29),
-		["minecraft:golden_chestplate"] = vec(28, 29),
-		["minecraft:diamond_chestplate"] = vec(0, 58),
-		["minecraft:netherite_chestplate"] = vec(28, 58)
+		body = {
+			["minecraft:leather_chestplate"] = vec(0, 0),
+			["minecraft:chainmail_chestplate"] = vec(24, 0),
+			["minecraft:iron_chestplate"] = vec(48, 0),
+			["minecraft:golden_chestplate"] = vec(72, 0),
+			["minecraft:diamond_chestplate"] = vec(96, 0),
+			["minecraft:netherite_chestplate"] = vec(120, 0)
+		},
+		arms = {
+			["minecraft:leather_chestplate"] = vec(0, 0),
+			["minecraft:chainmail_chestplate"] = vec(17, 0),
+			["minecraft:iron_chestplate"] = vec(34, 0),
+			["minecraft:golden_chestplate"] = vec(51, 0),
+			["minecraft:diamond_chestplate"] = vec(68, 0),
+			["minecraft:netherite_chestplate"] = vec(85, 0)
+		},
 	},
 	-- Leggings armor UV offsets
 	legsAddUVs = {
-		["minecraft:leather_leggings"] = vec(0, 0),
-		["minecraft:chainmail_leggings"] = vec(30, -29),
-		["minecraft:iron_leggings"] = vec(16, 0),
-		["minecraft:golden_leggings"] = vec(32, 0),
-		["minecraft:diamond_leggings"] = vec(0, 29),
-		["minecraft:netherite_leggings"] = vec(16, 29)
+		bodyBottom = {
+			["minecraft:leather_leggings"] = vec(0, 0),
+			["minecraft:chainmail_leggings"] = vec(24, 0),
+			["minecraft:iron_leggings"] = vec(48, 0),
+			["minecraft:golden_leggings"] = vec(72, 0),
+			["minecraft:diamond_leggings"] = vec(96, 0),
+			["minecraft:netherite_leggings"] = vec(120, 0)
+		},
+		legs = {
+			["minecraft:leather_leggings"] = vec(0, 0),
+			["minecraft:chainmail_leggings"] = vec(16, 0),
+			["minecraft:iron_leggings"] = vec(32, 0),
+			["minecraft:golden_leggings"] = vec(48, 0),
+			["minecraft:diamond_leggings"] = vec(64, 0),
+			["minecraft:netherite_leggings"] = vec(80, 0)
+		},
 	}
 }
 
@@ -91,10 +115,10 @@ function armor.showChestArmor()
 	-- Show chest armor
 	if show then
 		-- Set UVs
-		models.cat.Body.Armor:setUVPixels(armor.chestAddUVs[previous.chestplate.id])
-		models.cat.Body.BoobArmor:setUVPixels(armor.chestAddUVs[previous.chestplate.id])
-		models.cat.LeftArm.Armor:setUVPixels(armor.chestAddUVs[previous.chestplate.id])
-		models.cat.RightArm.Armor:setUVPixels(armor.chestAddUVs[previous.chestplate.id])
+		models.cat.Body.Armor:setUVPixels(armor.chestAddUVs.body[previous.chestplate.id])
+		models.cat.Body.BoobArmor:setUVPixels(armor.chestAddUVs.body[previous.chestplate.id])
+		models.cat.LeftArm.Armor:setUVPixels(armor.chestAddUVs.arms[previous.chestplate.id])
+		models.cat.RightArm.Armor:setUVPixels(armor.chestAddUVs.arms[previous.chestplate.id])
 
 		-- Colorize if leather armor
 		local color = vec(1, 1, 1)
@@ -143,9 +167,9 @@ function armor.showPantsArmor()
 	-- Show booty shorts armor
 	if show then
 		-- Set UVs
-		models.cat.Body.ArmorBottom:setUVPixels(armor.legsAddUVs[previous.leggings.id])
-		models.cat.LeftLeg.Armor:setUVPixels(armor.legsAddUVs[previous.leggings.id])
-		models.cat.RightLeg.Armor:setUVPixels(armor.legsAddUVs[previous.leggings.id])
+		models.cat.Body.ArmorBottom:setUVPixels(armor.legsAddUVs.bodyBottom[previous.leggings.id])
+		models.cat.LeftLeg.Armor:setUVPixels(armor.legsAddUVs.legs[previous.leggings.id])
+		models.cat.RightLeg.Armor:setUVPixels(armor.legsAddUVs.legs[previous.leggings.id])
 
 		-- Colorize if leather armor
 		local color = vec(1, 1, 1)
@@ -188,8 +212,8 @@ function armor.showEarArmor(helmet)
 		armor.rotateEarArmor = settings.customArmor.earArmorMovement or helmet.id == "minecraft:leather_helmet" or helmet.id == "minecraft:chainmail_helmet"
 
 		-- Set UVs
-		models.cat.Head.LeftEar.Armor:setUVPixels(armor.earAddUVs[helmet.id])
-		models.cat.Head.RightEar.Armor:setUVPixels(armor.earAddUVs[helmet.id])
+		models.cat.Head.LeftEar.Armor:setUVPixels(armor.helmetUVs.ears[helmet.id])
+		models.cat.Head.RightEar.Armor:setUVPixels(armor.helmetUVs.ears[helmet.id])
 
 		-- Colorize if leather armor
 		local color = vec(1, 1, 1)
@@ -226,7 +250,7 @@ function armor.checkShowEarArmor(helmet)
 	show = show and not previous.invisible
 	show = show and previous.pose ~= "SLEEPING"
 	show = show and not modules.sit.sitting
-	show = show and armor.earAddUVs[helmet.id] ~= nil
+	show = show and armor.helmetUVs.ears[helmet.id] ~= nil
 	show = show and helmet.id ~= "vanityslots:familiar_wig"
 	show = show and (helmet.tag == nil or helmet.tag.PhantomInk == nil)
 	return show
@@ -237,7 +261,7 @@ function armor.checkShowChestplate(chestplate)
 	show = show and not previous.invisible
 	show = show and previous.pose ~= "SLEEPING"
 	show = show and not modules.sit.sitting
-	show = show and armor.chestAddUVs[chestplate.id] ~= nil
+	show = show and armor.chestAddUVs.body[chestplate.id] ~= nil
 	show = show and chestplate.id ~= "vanityslots:familiar_shirt"
 	show = show and (chestplate.tag == nil or chestplate.tag.PhantomInk == nil)
 	return show
@@ -248,7 +272,7 @@ function armor.checkShowLeggings(leggings)
 	show = show and not previous.invisible
 	show = show and previous.pose ~= "SLEEPING"
 	show = show and not modules.sit.sitting
-	show = show and armor.legsAddUVs[leggings.id] ~= nil
+	show = show and armor.legsAddUVs.legs[leggings.id] ~= nil
 	show = show and leggings.id ~= "vanityslots:familiar_pants"
 	show = show and (leggings.tag == nil or leggings.tag.PhantomInk == nil)
 	return show
