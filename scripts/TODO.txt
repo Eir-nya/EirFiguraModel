@@ -1,0 +1,19 @@
+TODO:
+- action wheel: Third person sleep camera bullshit
+- meow keybind
+- hair
+- emotes continue until stopped if started with a right click
+- disable dynamic eye stuff while sitting
+- raycasting for sleeping and sitting
+- elytra positioning when sleeping
+- angel wings elytra + events for elytra flying
+
+- fix buggy eye display on xp glint (done)
+- fix sleep animation and armor not updating (done)
+- fix bad eye tracking while sneaking (? might've been a figura issue)
+- fix eye bg bleeding out when holding a weapon (done)
+- move scared eyes a bit, zoom in to make sure (done)
+- fix error when using spectator mode (done)
+- fix sudden change in the way eyes look when passing 30 levels, vs 29 (done)
+- fix sleep camera, first and third person
+- fix sit animation not taking off custom armor

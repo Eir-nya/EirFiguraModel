@@ -1,0 +1,8 @@
+{
+	"name": "§9Eir ▲ §e(Rewrite) §r2",
+	"authors": ["Eir"],
+	"ver": "3",
+	"color": "faaaab",
+	"background": "clouds",
+	"autoScripts": ["settings", "scripts/modules"]
+}
