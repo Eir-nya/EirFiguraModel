@@ -77,6 +77,25 @@ modules.events.TICK:register(awi.tick)
 
 
 
+-- Controls text rendering on an icon
+function awi.setText(modelPart, text)
+	-- Remove text
+	if text == nil or text == "" then
+		if modelPart:getTask("text") ~= nil then
+			modelPart:removeTask("text")
+		end
+	-- Set text
+	else
+		-- Add text
+		if modelPart:getTask("text") == nil then
+			modelPart:addText("text"):right(true):shadow(true):pos(vec(-9, -1, -5))
+		end
+
+		-- Set text
+		modelPart:getTask("text"):text(text)
+	end
+end
+
 -- Right slots: ceil(size / 2)
 -- Left slots: floor(size / 2)
 function awi.getSize(page)
