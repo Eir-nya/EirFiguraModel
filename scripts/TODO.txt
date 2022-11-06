@@ -7,13 +7,39 @@ TODO:
 - raycasting for sleeping and sitting
 - elytra positioning when sleeping
 - angel wings elytra + events for elytra flying
+- angry eyes when blocking
+- make hair wave with open sky
+- fix angry eyes not being used when model loaded while already holding weapon
+- distinction between "swords" (incl. axes) and other "weapons" (bows, shields)
+- "thrust" animation for sprint attack with a "sword"
+- "better first person"
+	- make duplicate arm models just for first person view; hide main model's in first person, show those instead
+- dynamic and glowing eyes should only appear from "RENDER" context, all other ones should use the original textured eyes
+- armor and boots replacements
+	- leather helmet: fluffy hood
+		- on equip...
+			* hide "head.3dhair.[west/east/south/up]"
+			* hide (and disable motion for) all "head.hair" wavey parts
+			* move bow forward? (or hide it?)
+			* replace ears with ear armor
+	- leather chestplate: fluffy jacket
+		- on equip...
+			* disable "body.body layer down"
+			* disable "body.3dshirt"
+			* disable "[right/left]arm.FurUp"
+	- leather leggings: fluffy shorts
+		- on equip...
+			* enable "body.armorbottom.FluffyJacket"
+			* enable "[right/left]leg.armor.FluffyJacket"
 
-- fix buggy eye display on xp glint (done)
-- fix sleep animation and armor not updating (done)
-- fix bad eye tracking while sneaking (? might've been a figura issue)
-- fix eye bg bleeding out when holding a weapon (done)
-- move scared eyes a bit, zoom in to make sure (done)
-- fix error when using spectator mode (done)
-- fix sudden change in the way eyes look when passing 30 levels, vs 29 (done)
+- fix conflicts between angry eyes and scared eyes (done)
+- make elytra follow body properly when animations are playing
 - fix sleep camera, first and third person
-- fix sit animation not taking off custom armor
+
+NOTES:
+to make ANY part parented to ANYTHING, ANYWHERE, point in a GLOBAL rotation:
+- your custom rotation...
+	- minus parent's rot
+	- minus parent's anim rot
+	- minus vanilla model's origin rot
+	- minus vanilla model's transform origin rot (?)
