@@ -31,6 +31,7 @@ TODO:
 		- on equip...
 			* enable "body.armorbottom.FluffyJacket"
 			* enable "[right/left]leg.armor.FluffyJacket"
+			* change uvs on "body.body" to alternate body w/o purple shorts
 
 - fix conflicts between angry eyes and scared eyes (done)
 - make elytra follow body properly when animations are playing
