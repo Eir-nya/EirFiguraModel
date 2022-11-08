@@ -16,22 +16,27 @@ TODO:
 	- make duplicate arm models just for first person view; hide main model's in first person, show those instead
 - dynamic and glowing eyes should only appear from "RENDER" context, all other ones should use the original textured eyes
 - armor and boots replacements
-	- leather helmet: fluffy hood
-		- on equip...
-			* hide "head.3dhair.[west/east/south/up]"
-			* hide (and disable motion for) all "head.hair" wavey parts
-			* move bow forward? (or hide it?)
-			* replace ears with ear armor
-	- leather chestplate: fluffy jacket
-		- on equip...
-			* disable "body.body layer down"
-			* disable "body.3dshirt"
-			* disable "[right/left]arm.FurUp"
-	- leather leggings: fluffy shorts
-		- on equip...
-			* enable "body.armorbottom.FluffyJacket"
-			* enable "[right/left]leg.armor.FluffyJacket"
-			* change uvs on "body.body" to alternate body w/o purple shorts
+	- leather armor
+		all: on equip...
+			* colorize [FluffyHood/FluffyJacket/FluffyLeggings/FluffyBoots].leggings using leather armor color
+		- leather helmet: fluffy hood
+			- on equip...
+				* hide "head.3dhair.[west/east/south/up]", but enable "head.3dhair.north"
+				* hide (and disable motion for) all "head.hair" wavey parts
+				* move bow forward
+				* replace ears with ear armor
+		- leather chestplate: fluffy jacket
+			- on equip...
+				* disable "body.body layer down"
+				* disable "body.3dshirt"
+				* disable "[right/left]arm.FurUp"
+		- leather leggings: fluffy shorts
+			- on equip...
+				* enable "body.armorbottom.FluffyLeggings"
+				* enable "[right/left]leg.armor.FluffyLeggings"
+				* change uvs on "body.body" to alternate body w/o purple shorts
+				* disable "body.body", enable "body.body2"
+				* disable "[right/left].[right/left] leg", enable "[right/left]leg.[right/left] leg2"
 
 - fix conflicts between angry eyes and scared eyes (done)
 - make elytra follow body properly when animations are playing
@@ -42,5 +47,19 @@ to make ANY part parented to ANYTHING, ANYWHERE, point in a GLOBAL rotation:
 - your custom rotation...
 	- minus parent's rot
 	- minus parent's anim rot
-	- minus vanilla model's origin rot
+	- minus model base's origin rot
 	- minus vanilla model's transform origin rot (?)
+plan for head sway script:
+- put group transforms with nothing parented to them that mimic the 3 directions (+x +y +z), so bottom left, bottom right, top left, behind bottom left, of the face and other body parts later if applicable
+- separate tick process that calculates shit based on the current world space location of each, does subtraction and stuff
+- find a way to figure out if a point is above or below a certain plane ie. the plane that would be if the bottom of the head extended forever
+	- get "up" vector relative to part ("top left" part minus "bottom left" part)
+- use all this shit just for "limiting" rotation; the rest is just simple code
+- different parts can have different "frictions" (just makes velocity add less at a time) and different gravities
+- (important) chains will not update if not visible
+- the amount of gravity to add is NOT just (0, -0.2, 0), it's (angle that would make part point straight down) normalized * 0.2
+- subtract last rotation from the above to get the amount to add to velocity
+- how am I going to add quick head motion/wind swaying/player movement swaying to velocity?
+- "friction" needs to increase a significant amount based on what segment in the chain we're on
+
+- idea: do a test tmrw by getting the "position matrix" of the head part and "applying" it to random model parts positioned above or below?
