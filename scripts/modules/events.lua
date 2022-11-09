@@ -190,7 +190,7 @@ events.boots.condition = function()
 	-- Fetch new boots, prioritizing vanity slot
 	local newBoots
 	if settings.armor.vanitySlots then
-		local vanityBoots = modules.util.getNbtValue("cardinal_components.trinkets:trinkets.boots.vanity")
+		local vanityBoots = modules.util.getNbtValue("cardinal_components.trinkets:trinkets.feet.vanity")
 		if vanityBoots ~= nil then
 			newBoots = vanityBoots.Items[1]
 		end

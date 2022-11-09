@@ -104,9 +104,11 @@ function armor.equipEvent(item, slot)
 		end
 	-- Show item
 	else
+		local material = armor.getItemMaterial(item)
+
 		if not armor.useCustomModel(item) then
 			-- Is helmet in recognized list of materials?
-			local isKnownMaterial = armor.getItemMaterial(item)
+			local isKnownMaterial = armor.uvMults[material] ~= nil
 
 			if isKnownMaterial then
 				armor.defaultEquip(item)
@@ -116,6 +118,12 @@ function armor.equipEvent(item, slot)
 		else
 			-- TODO: custom model displaying
 		end
+
+		-- Colorize if leather armor
+		if material == "leather" then
+			armor.colorizeLeather(item)
+		end
+		armor.setGlint(item)
 	end
 end
 
@@ -162,6 +170,12 @@ function armor.defaultEquip(item)
 	elseif slot == "leggings" then
 		models.cat.Body.Body:setVisible(false)
 		models.cat.Body.Body2:setVisible(true)
+		models.cat.LeftLeg.LeftLeg:setVisible(false)
+		models.cat.LeftLeg.LeftLeg2:setVisible(true)
+		models.cat.LeftLeg.LeftLeg3:setVisible(false)
+		models.cat.RightLeg.RightLeg:setVisible(false)
+		models.cat.RightLeg.RightLeg2:setVisible(true)
+		models.cat.RightLeg.RightLeg3:setVisible(false)
 
 		models.cat.Body.ArmorBottom.default:setVisible(true)
 		models.cat.LeftLeg.ArmorLeggings.default:setVisible(true)
@@ -172,13 +186,6 @@ function armor.defaultEquip(item)
 		models.cat.LeftLeg.ArmorLeggings.default:setUVPixels(uv)
 		models.cat.RightLeg.ArmorLeggings.default:setUVPixels(uv)
 	elseif slot == "boots" then
-		models.cat.LeftLeg.LeftLeg:setVisible(false)
-		models.cat.LeftLeg.LeftLeg2:setVisible(true)
-		models.cat.LeftLeg.LeftLeg3:setVisible(false)
-		models.cat.RightLeg.RightLeg:setVisible(false)
-		models.cat.RightLeg.RightLeg2:setVisible(true)
-		models.cat.RightLeg.RightLeg3:setVisible(false)
-
 		models.cat.LeftLeg.ArmorBoots.default:setVisible(true)
 		models.cat.RightLeg.ArmorBoots.default:setVisible(true)
 
@@ -213,13 +220,6 @@ end
 function armor.unequipLeggings()
 	models.cat.Body.Body:setVisible(true)
 	models.cat.Body.Body2:setVisible(false)
-
-	modules.util.setChildrenVisible(models.cat.Body.ArmorBottom, false)
-	modules.util.setChildrenVisible(models.cat.LeftLeg.ArmorLeggings, false)
-	modules.util.setChildrenVisible(models.cat.RightLeg.ArmorLeggings, false)
-end
-
-function armor.unequipBoots()
 	models.cat.LeftLeg.LeftLeg:setVisible(true)
 	models.cat.LeftLeg.LeftLeg2:setVisible(false)
 	models.cat.LeftLeg.LeftLeg3:setVisible(false)
@@ -227,8 +227,110 @@ function armor.unequipBoots()
 	models.cat.RightLeg.RightLeg2:setVisible(false)
 	models.cat.RightLeg.RightLeg3:setVisible(false)
 
+	modules.util.setChildrenVisible(models.cat.Body.ArmorBottom, false)
+	modules.util.setChildrenVisible(models.cat.LeftLeg.ArmorLeggings, false)
+	modules.util.setChildrenVisible(models.cat.RightLeg.ArmorLeggings, false)
+end
+
+function armor.unequipBoots()
 	modules.util.setChildrenVisible(models.cat.LeftLeg.ArmorBoots, false)
 	modules.util.setChildrenVisible(models.cat.RightLeg.ArmorBoots, false)
+end
+
+function armor.colorizeLeather(item)
+	local color = armor.leatherColor
+	if item.tag ~= nil and item.tag.display ~= nil then
+		color = vectors.intToRGB(item.tag.display.color)
+	end
+
+	local parts = armor.getPartsToEdit(item, "COLOR")
+	for _, part in pairs(parts) do
+		part:setColor(color)
+	end
+end
+
+function armor.setGlint(item)
+	local shader = modules.util.asItemStack(item):hasGlint() and "Glint" or nil
+
+	local parts = armor.getPartsToEdit(item, "GLINT")
+	for _, part in pairs(parts) do
+		part:setSecondaryRenderType(shader)
+	end
+end
+
+-- mode: COLOR or GLINT
+function armor.getPartsToEdit(item, mode)
+	local parts = {}
+
+	local slot = armor.getItemSlot(item)
+
+	-- Custom models
+	if armor.useCustomModel(item) then
+		local material = armor.getItemMaterial(item)
+
+		if material == "leather" then
+			if slot == "helmet" then
+				if settings.armor.earArmor then
+					table.insert(parts, models.cat.Head.LeftEar.Armor.FluffyHood)
+					table.insert(parts, models.cat.Head.RightEar.Armor.FluffyHood)
+				end
+				if mode == "COLOR" then
+					table.insert(parts, models.cat.Head.Armor.FluffyHood.leather)
+				else
+					table.insert(parts, models.cat.Head.Armor.FluffyHood)
+				end
+			elseif slot == "chestplate" then
+				if mode == "COLOR" then
+					table.insert(parts, models.cat.Body.Boobs.Armor.FluffyJacket.leather)
+					table.insert(parts, models.cat.Body.Armor.FluffyJacket.leather)
+					table.insert(parts, models.cat.LeftArm.Armor.FluffyJacket.leather)
+					table.insert(parts, models.cat.RightArm.Armor.FluffyJacket.leather)
+				else
+					table.insert(parts, models.cat.Body.Boobs.Armor.FluffyJacket)
+					table.insert(parts, models.cat.Body.Armor.FluffyJacket)
+					table.insert(parts, models.cat.LeftArm.Armor.FluffyJacket)
+					table.insert(parts, models.cat.RightArm.Armor.FluffyJacket)
+				end
+			elseif slot == "leggings" then
+				table.insert(parts, models.cat.Body.ArmorBottom.FluffyLeggings.leather)
+				if mode == "COLOR" then
+					table.insert(parts, models.cat.LeftLeg.ArmorLeggings.FluffyLeggings.leather)
+					table.insert(parts, models.cat.RightLeg.ArmorLeggings.FluffyLeggings.leather)
+				else
+					table.insert(parts, models.cat.LeftLeg.ArmorLeggings.FluffyLeggings)
+					table.insert(parts, models.cat.RightLeg.ArmorLeggings.FluffyLeggings)
+				end
+			elseif slot == "boots" then
+				if mode == "COLOR" then
+					table.insert(parts, models.cat.LeftLeg.ArmorBoots.FluffyBoots.leather)
+					table.insert(parts, models.cat.RightLeg.ArmorBoots.FluffyBoots.leather)
+				else
+					table.insert(parts, models.cat.LeftLeg.ArmorBoots.FluffyBoots)
+					table.insert(parts, models.cat.RightLeg.ArmorBoots.FluffyBoots)
+				end
+			end
+		end
+	else
+		if slot == "helmet" then
+			table.insert(parts, models.cat.Head.LeftEar.Armor.default)
+			table.insert(parts, models.cat.Head.RightEar.Armor.default)
+			table.insert(parts, models.cat.Head.Armor.default)
+		elseif slot == "chestplate" then
+			table.insert(parts, models.cat.Body.Boobs.Armor.default)
+			table.insert(parts, models.cat.Body.Armor.default)
+			table.insert(parts, models.cat.LeftArm.Armor.default)
+			table.insert(parts, models.cat.RightArm.Armor.default)
+		elseif slot == "leggings" then
+			table.insert(parts, models.cat.Body.ArmorBottom.default)
+			table.insert(parts, models.cat.LeftLeg.ArmorLeggings.default)
+			table.insert(parts, models.cat.RightLeg.ArmorLeggings.default)
+		elseif slot == "boots" then
+			table.insert(parts, models.cat.LeftLeg.ArmorBoots.default)
+			table.insert(parts, models.cat.RightLeg.ArmorBoots.default)
+		end
+	end
+
+	return parts
 end
 
 
