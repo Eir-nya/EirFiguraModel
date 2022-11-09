@@ -57,10 +57,25 @@ end
 modules.events.ENTITY_INIT:register(armor.init)
 
 function armor.helmetEvent()
-	print(previous.helmet)
+	armor.equipEvent(previous.helmet, "helmet")
+end
+function armor.chestplateEvent()
+	armor.equipEvent(previous.chestplate, "chestplate")
+end
+function armor.leggingsEvent()
+	armor.equipEvent(previous.leggings, "leggings")
+end
+function armor.bootsEvent()
+	armor.equipEvent(previous.boots, "boots")
 end
 modules.events.helmet:register(armor.helmetEvent)
-modules.events.invisible:register(armor.helmetEvent)
+modules.events.chestplate:register(armor.chestplateEvent)
+modules.events.leggings:register(armor.leggingsEvent)
+modules.events.boots:register(armor.bootsEvent)
+-- modules.events.invisible:register(armor.helmetEvent)
+-- modules.events.invisible:register(armor.chestplateEvent)
+-- modules.events.invisible:register(armor.leggingsEvent)
+-- modules.events.invisible:register(armor.bootsEvent)
 
 
 
@@ -75,6 +90,35 @@ end
 
 -- Armor equip helpers
 
+function armor.equipEvent(item, slot)
+	-- Is item visible?
+	if not armor.checkItemVisible(item) then
+		if slot == "helmet" then
+			armor.unequipHelmet()
+		elseif slot == "chestplate" then
+			armor.unequipChestplate()
+		elseif slot == "leggings" then
+			armor.unequipLeggings()
+		elseif slot == "boots" then
+			armor.unequipBoots()
+		end
+	-- Show item
+	else
+		if not armor.useCustomModel(item) then
+			-- Is helmet in recognized list of materials?
+			local isKnownMaterial = armor.getItemMaterial(item)
+
+			if isKnownMaterial then
+				armor.defaultEquip(item)
+			elseif slot == "helmet" then
+				-- TODO: item/block render tasks
+			end
+		else
+			-- TODO: custom model displaying
+		end
+	end
+end
+
 function armor.defaultEquip(item)
 	local material = armor.getItemMaterial(item)
 	local slot = armor.getItemSlot(item)
@@ -86,7 +130,34 @@ function armor.defaultEquip(item)
 			models.cat.Head.LeftEar.Armor.default:setVisible(true)
 			models.cat.Head.RightEar.Armor.default:setVisible(true)
 		end
+
+		models.cat.Head:getTask("headItem"):enabled(false)
+		models.cat.Head:getTask("headBlock"):enabled(false)
+
 		models.cat.Head.Armor.default:setVisible(true)
+	elseif slot == "chestplate" then
+		if settings.armor.boobArmor and armor.uvMults[material ~= nil] then
+			models.cat.Body.Boobs.Armor.default:setVisible(true)
+		end
+		models.cat.Body["3DShirt"]:setVisible(false)
+		models.cat.Body.Armor.default:setVisible(true)
+	elseif slot == "leggings" then
+		models.cat.Body.Body:setVisible(false)
+		models.cat.Body.Body2:setVisible(true)
+		models.cat.Body.ArmorBottom.default:setVisible(true)
+
+		models.cat.LeftLeg.ArmorLeggings.default:setVisible(true)
+		models.cat.RightLeg.ArmorLeggings.default:setVisible(true)
+	elseif slot == "boots" then
+		models.cat.LeftLeg.LeftLeg:setVisible(false)
+		models.cat.LeftLeg.LeftLeg2:setVisible(true)
+		models.cat.LeftLeg.LeftLeg3:setVisible(false)
+		models.cat.RightLeg.RightLeg:setVisible(false)
+		models.cat.RightLeg.RightLeg2:setVisible(true)
+		models.cat.RightLeg.RightLeg3:setVisible(false)
+
+		models.cat.LeftLeg.ArmorBoots.default:setVisible(true)
+		models.cat.RightLeg.ArmorBoots.default:setVisible(true)
 	end
 end
 
