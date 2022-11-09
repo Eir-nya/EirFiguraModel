@@ -74,6 +74,10 @@
 		},
 		"models.elytra": {
 			"visible": false
+		},
+		"models.firstPerson": {
+			"parentType": "Gui",
+			"visible": false
 		}
 	}
 }
