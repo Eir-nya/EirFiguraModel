@@ -106,19 +106,21 @@ function armor.showChestArmor()
 	local show = armor.checkShowChestplate(previous.chestplate)
 	vanilla_model.CHESTPLATE:setVisible(not show and previous.pose ~= "SLEEPING")
 
-	models.cat.Body.Armor:setVisible(show)
-	models.cat.Body.BoobArmor:setVisible(show and settings.boobArmor)
-	models.cat.Body["Body Layer"]:setVisible(not show)
-	models.cat.LeftArm.Armor:setVisible(show)
-	models.cat.RightArm.Armor:setVisible(show)
+	models.cat.Body.Armor.default:setVisible(show)
+	models.cat.Body["3DShirt"]:setVisible(not show)
+	models.cat.Body.Boobs.Armor.default:setVisible(show and settings.customArmor.boobArmor)
+	models.cat.Body["Body Layer Up"]:setVisible(not show)
+	models.cat.Body["Body Layer Down"]:setVisible(not show)
+	models.cat.LeftArm.Armor.default:setVisible(show)
+	models.cat.RightArm.Armor.default:setVisible(show)
 
 	-- Show chest armor
 	if show then
 		-- Set UVs
-		models.cat.Body.Armor:setUVPixels(armor.chestAddUVs.body[previous.chestplate.id])
-		models.cat.Body.BoobArmor:setUVPixels(armor.chestAddUVs.body[previous.chestplate.id])
-		models.cat.LeftArm.Armor:setUVPixels(armor.chestAddUVs.arms[previous.chestplate.id])
-		models.cat.RightArm.Armor:setUVPixels(armor.chestAddUVs.arms[previous.chestplate.id])
+		models.cat.Body.Armor.default:setUVPixels(armor.chestAddUVs.body[previous.chestplate.id])
+		models.cat.Body.Boobs.Armor.default:setUVPixels(armor.chestAddUVs.body[previous.chestplate.id])
+		models.cat.LeftArm.Armor.default:setUVPixels(armor.chestAddUVs.arms[previous.chestplate.id])
+		models.cat.RightArm.Armor.default:setUVPixels(armor.chestAddUVs.arms[previous.chestplate.id])
 
 		-- Colorize if leather armor
 		local color = vec(1, 1, 1)
@@ -128,23 +130,22 @@ function armor.showChestArmor()
 				color = vectors.intToRGB(previous.chestplate.tag.display.color)
 			end
 		end
-		models.cat.Body.Armor:setColor(color)
-		models.cat.Body.BoobArmor:setColor(color)
-		models.cat.LeftArm.Armor:setColor(color)
-		models.cat.RightArm.Armor:setColor(color)
+		models.cat.Body.Armor.default:setColor(color)
+		models.cat.Body.Boobs.Armor.default:setColor(color)
+		models.cat.LeftArm.Armor.default:setColor(color)
+		models.cat.RightArm.Armor.default:setColor(color)
 
 		-- Enable glint if applicable
 		local shader = modules.util.asItemStack(previous.chestplate):hasGlint() and "Glint" or nil
-		models.cat.Body.Armor:setSecondaryRenderType(shader)
-		models.cat.Body.BoobArmor:setSecondaryRenderType(shader)
-		models.cat.LeftArm.Armor:setSecondaryRenderType(shader)
-		models.cat.RightArm.Armor:setSecondaryRenderType(shader)
+		models.cat.Body.Armor.default:setSecondaryRenderType(shader)
+		models.cat.Body.Boobs.Armor.default:setSecondaryRenderType(shader)
+		models.cat.LeftArm.Armor.default:setSecondaryRenderType(shader)
+		models.cat.RightArm.Armor.default:setSecondaryRenderType(shader)
 	end
 
 	-- Show or hide boobs if applicable
 	local showBoobs = armor.checkShowBoobs(previous.chestplate)
-	models.cat.Body.Boob:setVisible(showBoobs)
-	models.cat.Body["Boob Layer"]:setVisible(showBoobs)
+	models.cat.Body.Boobs.default:setVisible(showBoobs)
 end
 modules.events.chestplate:register(armor.showChestArmor)
 modules.events.invisible:register(armor.showChestArmor)
@@ -160,16 +161,16 @@ function armor.showPantsArmor()
 	local show = armor.checkShowLeggings(previous.leggings)
 	vanilla_model.LEGGINGS:setVisible(not show and previous.pose ~= "SLEEPING")
 
-	models.cat.Body.ArmorBottom:setVisible(show)
-	models.cat.LeftLeg.Armor:setVisible(show)
-	models.cat.RightLeg.Armor:setVisible(show)
+	models.cat.Body.ArmorBottom.default:setVisible(show)
+	models.cat.LeftLeg.Armor.default:setVisible(show)
+	models.cat.RightLeg.Armor.default:setVisible(show)
 
 	-- Show booty shorts armor
 	if show then
 		-- Set UVs
-		models.cat.Body.ArmorBottom:setUVPixels(armor.legsAddUVs.bodyBottom[previous.leggings.id])
-		models.cat.LeftLeg.Armor:setUVPixels(armor.legsAddUVs.legs[previous.leggings.id])
-		models.cat.RightLeg.Armor:setUVPixels(armor.legsAddUVs.legs[previous.leggings.id])
+		models.cat.Body.ArmorBottom.default:setUVPixels(armor.legsAddUVs.bodyBottom[previous.leggings.id])
+		models.cat.LeftLeg.Armor.default:setUVPixels(armor.legsAddUVs.legs[previous.leggings.id])
+		models.cat.RightLeg.Armor.default:setUVPixels(armor.legsAddUVs.legs[previous.leggings.id])
 
 		-- Colorize if leather armor
 		local color = vec(1, 1, 1)
@@ -179,15 +180,15 @@ function armor.showPantsArmor()
 				color = vectors.intToRGB(previous.leggings.tag.display.color)
 			end
 		end
-		models.cat.Body.ArmorBottom:setColor(color)
-		models.cat.LeftLeg.Armor:setColor(color)
-		models.cat.RightLeg.Armor:setColor(color)
+		models.cat.Body.ArmorBottom.default:setColor(color)
+		models.cat.LeftLeg.Armor.default:setColor(color)
+		models.cat.RightLeg.Armor.default:setColor(color)
 
 		-- Enable glint if applicable
 		local shader = modules.util.asItemStack(previous.leggings):hasGlint() and "Glint" or nil
-		models.cat.Body.ArmorBottom:setSecondaryRenderType(shader)
-		models.cat.LeftLeg.Armor:setSecondaryRenderType(shader)
-		models.cat.RightLeg.Armor:setSecondaryRenderType(shader)
+		models.cat.Body.ArmorBottom.default:setSecondaryRenderType(shader)
+		models.cat.LeftLeg.Armor.default:setSecondaryRenderType(shader)
+		models.cat.RightLeg.Armor.default:setSecondaryRenderType(shader)
 	end
 end
 modules.events.leggings:register(armor.showPantsArmor)
@@ -201,9 +202,9 @@ function armor.showEarArmor(helmet)
 	armor.earArmorVisible = armor.checkShowEarArmor(helmet)
 
 	models.cat.Head.LeftEar.Ear:setVisible(not armor.earArmorVisible)
-	models.cat.Head.LeftEar.Armor:setVisible(armor.earArmorVisible)
+	models.cat.Head.LeftEar.Armor.default:setVisible(armor.earArmorVisible)
 	models.cat.Head.RightEar.Ear:setVisible(not armor.earArmorVisible)
-	models.cat.Head.RightEar.Armor:setVisible(armor.earArmorVisible)
+	models.cat.Head.RightEar.Armor.default:setVisible(armor.earArmorVisible)
 
 	-- Show ear armor, hide ears
 	if armor.earArmorVisible then
@@ -212,8 +213,8 @@ function armor.showEarArmor(helmet)
 		armor.rotateEarArmor = settings.customArmor.earArmorMovement or helmet.id == "minecraft:leather_helmet" or helmet.id == "minecraft:chainmail_helmet"
 
 		-- Set UVs
-		models.cat.Head.LeftEar.Armor:setUVPixels(armor.helmetUVs.ears[helmet.id])
-		models.cat.Head.RightEar.Armor:setUVPixels(armor.helmetUVs.ears[helmet.id])
+		models.cat.Head.LeftEar.Armor.default:setUVPixels(armor.helmetUVs.ears[helmet.id])
+		models.cat.Head.RightEar.Armor.default:setUVPixels(armor.helmetUVs.ears[helmet.id])
 
 		-- Colorize if leather armor
 		local color = vec(1, 1, 1)
