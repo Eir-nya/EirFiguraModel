@@ -51,8 +51,8 @@ function armor.init()
 
 	-- Set up render task to render items and blocks such as skulls
 	-- TODO: use player:getItem(6):isBlockItem()
-	models.cat.Head:addItem("headItem"):pos(0, 8, 0)
-	models.cat.Head:addBlock("headBlock"):scale(0.5, 0.5, 0.5):pos(-4, 0, -4.1)
+	models.cat.Head:addItem("headItem"):pos(0, 8, 0):enabled(false)
+	models.cat.Head:addBlock("headBlock"):scale(0.5, 0.5, 0.5):pos(-4, 0, -4.1):enabled(false)
 end
 modules.events.ENTITY_INIT:register(armor.init)
 
@@ -129,25 +129,48 @@ function armor.defaultEquip(item)
 			models.cat.Head.RightEar.Ear:setVisible(false)
 			models.cat.Head.LeftEar.Armor.default:setVisible(true)
 			models.cat.Head.RightEar.Armor.default:setVisible(true)
+
+			-- Set UVs
+			local uv = armor.getUVOffset(item, "earArmor")
+			models.cat.Head.LeftEar.Armor.default:setUVPixels(uv)
+			models.cat.Head.RightEar.Armor.default:setUVPixels(uv)
 		end
 
+		-- TODO: disable 3d hair as well
 		models.cat.Head:getTask("headItem"):enabled(false)
 		models.cat.Head:getTask("headBlock"):enabled(false)
 
 		models.cat.Head.Armor.default:setVisible(true)
+		models.cat.Head.Armor.default:setUVPixels(armor.getUVOffset(item, "helmet"))
 	elseif slot == "chestplate" then
-		if settings.armor.boobArmor and armor.uvMults[material ~= nil] then
+		local uv = armor.getUVOffset(item, "chestplate")
+
+		if settings.armor.boobArmor and armor.uvMults[material] ~= nil then
 			models.cat.Body.Boobs.Armor.default:setVisible(true)
+			models.cat.Body.Boobs.Armor.default:setUVPixels(uv)
 		end
 		models.cat.Body["3DShirt"]:setVisible(false)
 		models.cat.Body.Armor.default:setVisible(true)
+		models.cat.Body.Armor.default:setUVPixels(uv)
+
+		models.cat.LeftArm.Armor.default:setVisible(true)
+		models.cat.RightArm.Armor.default:setVisible(true)
+
+		uv = armor.getUVOffset(item, "arms")
+		models.cat.LeftArm.Armor.default:setUVPixels(uv)
+		models.cat.RightArm.Armor.default:setUVPixels(uv)
 	elseif slot == "leggings" then
 		models.cat.Body.Body:setVisible(false)
 		models.cat.Body.Body2:setVisible(true)
-		models.cat.Body.ArmorBottom.default:setVisible(true)
 
+		models.cat.Body.ArmorBottom.default:setVisible(true)
 		models.cat.LeftLeg.ArmorLeggings.default:setVisible(true)
 		models.cat.RightLeg.ArmorLeggings.default:setVisible(true)
+
+		local uv = armor.getUVOffset(item, "leggings")
+		models.cat.Body.ArmorBottom.default:setUVPixels(armor.getUVOffset(item, "chestplateBottom"))
+		models.cat.LeftLeg.ArmorLeggings.default:setUVPixels(uv)
+		models.cat.RightLeg.ArmorLeggings.default:setUVPixels(uv)
 	elseif slot == "boots" then
 		models.cat.LeftLeg.LeftLeg:setVisible(false)
 		models.cat.LeftLeg.LeftLeg2:setVisible(true)
@@ -158,45 +181,54 @@ function armor.defaultEquip(item)
 
 		models.cat.LeftLeg.ArmorBoots.default:setVisible(true)
 		models.cat.RightLeg.ArmorBoots.default:setVisible(true)
+
+		local uv = armor.getUVOffset(item, "boots")
+		models.cat.LeftLeg.ArmorBoots.default:setUVPixels(uv)
+		models.cat.RightLeg.ArmorBoots.default:setUVPixels(uv)
 	end
 end
 
 function armor.unequipHelmet()
 	models.cat.Head.LeftEar.Ear:setVisible(true)
 	models.cat.Head.RightEar.Ear:setVisible(true)
-	models.cat.Head.LeftEar.Armor:setVisible(false)
-	models.cat.Head.RightEar.Armor:setVisible(false)
-	models.cat.Head.Armor:setVisible(false)
+
+	modules.util.setChildrenVisible(models.cat.Head.LeftEar.Armor, false)
+	modules.util.setChildrenVisible(models.cat.Head.RightEar.Armor, false)
+	modules.util.setChildrenVisible(models.cat.Head.Armor, false)
 end
 
 function armor.unequipChestplate()
-	models.cat.Body["Body Layer Down"]:setVisible(false)
-	models.cat.Body["3DShirt"]:setVisible(false)
-	models.cat.Body.Armor:setVisible(false)
+	models.cat.Body["Body Layer Down"]:setVisible(true)
+	models.cat.Body["3DShirt"]:setVisible(true)
 	models.cat.Body.Boobs.Armor:setVisible(false)
 	models.cat.LeftArm.FurUp:setVisible(true)
-	models.cat.LeftArm.Armor:setVisible(false)
 	models.cat.RightArm.FurUp:setVisible(true)
-	models.cat.RightArm.Armor:setVisible(false)
+
+	modules.util.setChildrenVisible(models.cat.Body.Armor, false)
+	modules.util.setChildrenVisible(models.cat.Body.Boobs.Armor, false)
+	modules.util.setChildrenVisible(models.cat.LeftArm.Armor, false)
+	modules.util.setChildrenVisible(models.cat.RightArm.Armor, false)
 end
 
 function armor.unequipLeggings()
 	models.cat.Body.Body:setVisible(true)
 	models.cat.Body.Body2:setVisible(false)
-	models.cat.Body.ArmorBottom:setVisible(false)
-	models.cat.LeftLeg.ArmorLeggings:setVisible(false)
-	models.cat.RightLeg.ArmorLeggings:setVisible(false)
+
+	modules.util.setChildrenVisible(models.cat.Body.ArmorBottom, false)
+	modules.util.setChildrenVisible(models.cat.LeftLeg.ArmorLeggings, false)
+	modules.util.setChildrenVisible(models.cat.RightLeg.ArmorLeggings, false)
 end
 
 function armor.unequipBoots()
 	models.cat.LeftLeg.LeftLeg:setVisible(true)
 	models.cat.LeftLeg.LeftLeg2:setVisible(false)
 	models.cat.LeftLeg.LeftLeg3:setVisible(false)
-	models.cat.LeftLeg.ArmorBoots:setVisible(false)
 	models.cat.RightLeg.RightLeg:setVisible(true)
 	models.cat.RightLeg.RightLeg2:setVisible(false)
 	models.cat.RightLeg.RightLeg3:setVisible(false)
-	models.cat.RightLeg.ArmorBoots:setVisible(false)
+
+	modules.util.setChildrenVisible(models.cat.LeftLeg.ArmorBoots, false)
+	modules.util.setChildrenVisible(models.cat.RightLeg.ArmorBoots, false)
 end
 
 
@@ -211,7 +243,7 @@ function armor.getUVOffset(item, armorPiece)
 end
 
 function armor.getItemSlot(item)
-	return item.id:sub(item.id.find("_") + 1, -1)
+	return item.id:sub(item.id:find("_") + 1, -1)
 end
 
 function armor.getItemMaterial(item)

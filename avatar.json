@@ -38,11 +38,19 @@
 			"moveTo": "models.cat.LeftArm",
 			"visible": false
 		},
-		"models.armor.RightLeg.Armor": {
+		"models.armor.RightLeg.ArmorLeggings": {
 			"moveTo": "models.cat.RightLeg",
 			"visible": false
 		},
-		"models.armor.LeftLeg.Armor": {
+		"models.armor.RightLeg.ArmorBoots": {
+			"moveTo": "models.cat.RightLeg",
+			"visible": false
+		},
+		"models.armor.LeftLeg.ArmorLeggings": {
+			"moveTo": "models.cat.LeftLeg",
+			"visible": false
+		},
+		"models.armor.LeftLeg.ArmorBoots": {
 			"moveTo": "models.cat.LeftLeg",
 			"visible": false
 		},

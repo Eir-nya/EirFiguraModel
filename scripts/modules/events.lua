@@ -196,7 +196,7 @@ events.boots.condition = function()
 		end
 	end
 	if newBoots == nil or newBoots.id == "minecraft:air" then
-		newBoots = player:getItem(4)
+		newBoots = player:getItem(3)
 	end
 	previous.boots = newBoots
 

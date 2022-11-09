@@ -24,6 +24,13 @@ function util.vecLerp(vecIn, vecTarget, delta)
 	return vec(math.lerp(vecIn.x, vecTarget.x, delta), math.lerp(vecIn.y, vecTarget.y, delta), math.lerp(vecIn.z, vecTarget.z, delta))
 end
 
+function util.setChildrenVisible(part, visible)
+	for _, child in pairs(part:getChildren()) do
+		child:setVisible(nil)
+	end
+	part:setVisible(visible)
+end
+
 -- rip vectors.rainbow
 function util.rainbow(speed)
 	local t = world.getTime()
