@@ -5,14 +5,6 @@ local sleep = {
 	cameraRotation = vec(0, 0, 0),
 	-- Bool to determine if the 3rd person camera should rotate while sleeping
 	cameraRotate = true,
-	-- For each vanilla armor model piece, whether it was enabled before sleeping, to be reapplied upon getting back up
-	armorPartsEnabled = {
-		HELMET = false,
-		HELMET_ITEM = false,
-		CHESTPLATE = false,
-		LEGGINGS = false,
-		BOOTS = false
-	}
 }
 
 -- Subscribable events
@@ -55,21 +47,6 @@ function sleep.startSleeping()
 	models.cat.LeftArm:setPos(vanilla_model.LEFT_ARM:getOriginPos())
 	models.cat.RightArm:setParentType("Torso")
 	models.cat.RightArm:setPos(vanilla_model.RIGHT_ARM:getOriginPos())
-
-	-- Unfortunately, vanilla armor cannot be forced to match up with the custom rotations and positions.
-	-- Instead, it will all be disabled.
-	-- TODO: Implement if/when individual armor piece manipulation is added to Figura
-	-- previous.vanity.head = {id = "minecraft:air"}
-	-- showEarArmor("minecraft:air")
-	-- previous.elytra = settings.elytraFix and previous.elytra
-	-- previous.vanity.chest = {id = "minecraft:air"}
-	-- showChestArmor("minecraft:air")
-	-- previous.vanity.pants = {id = "minecraft:air"}
-	-- showPantsArmor("minecraft:air")
-	for k, v in pairs(sleep.armorPartsEnabled) do
-		sleep.armorPartsEnabled[k] = vanilla_model[k]:getVisible()
-		vanilla_model[k]:setVisible(false)
-	end
 
 	-- TODO!!!!!
 	-- Elytra model manip
@@ -153,11 +130,6 @@ function sleep.stopSleeping()
 	models.cat.RightArm:setRot(vec(0, 0, 0))
 	models.cat.Head:setPos(vec(0, 0, 0))
 	models.cat.Head:setRot(vec(0, 0, 0))
-
-	-- Restore vanilla armor
-	for k, v in pairs(sleep.armorPartsEnabled) do
-		vanilla_model[k]:setVisible(v)
-	end
 
 	modules.events.sleep:run()
 end

@@ -126,12 +126,11 @@ events.offItem.condition = function()
 end
 events.helmet = events:new(events.TICK)
 events.helmet.condition = function()
-	-- TODO: return false if sitting or sleeping
 	local lastHelmet = previous.helmet
 
 	-- Fetch new helmet, prioritizing vanity slot
 	local newHelmet
-	if settings.customArmor.vanitySlots.head then
+	if settings.armor.vanitySlots then
 		local vanityHead = modules.util.getNbtValue("cardinal_components.trinkets:trinkets.head.vanity")
 		if vanityHead ~= nil then
 			newHelmet = vanityHead.Items[1]
@@ -146,12 +145,11 @@ events.helmet.condition = function()
 end
 events.chestplate = events:new(events.TICK)
 events.chestplate.condition = function()
-	-- TODO: return false if sitting or sleeping
 	local lastChestplate = previous.chestplate
 
 	-- Fetch new chestplate, prioritizing vanity slot
 	local newChestplate
-	if settings.customArmor.vanitySlots.chest then
+	if settings.armor.vanitySlots then
 		local vanityChest = modules.util.getNbtValue("cardinal_components.trinkets:trinkets.chest.vanity")
 		if vanityChest ~= nil then
 			newChestplate = vanityChest.Items[1]
@@ -168,12 +166,11 @@ events.chestplate.condition = function()
 end
 events.leggings = events:new(events.TICK)
 events.leggings.condition = function()
-	-- TODO: return false if sitting or sleeping
 	local lastLeggings = previous.leggings
 
 	-- Fetch new leggings, prioritizing vanity slot
 	local newLeggings
-	if settings.customArmor.vanitySlots.legs then
+	if settings.armor.vanitySlots then
 		local vanityLegs = modules.util.getNbtValue("cardinal_components.trinkets:trinkets.legs.vanity")
 		if vanityLegs ~= nil then
 			newLeggings = vanityLegs.Items[1]
@@ -185,6 +182,25 @@ events.leggings.condition = function()
 	previous.leggings = newLeggings
 
 	return modules.util.asItemStack(newLeggings):toStackString() ~= modules.util.asItemStack(lastLeggings):toStackString()
+end
+events.boots = events:new(events.TICK)
+events.boots.condition = function()
+	local lastBoots = previous.boots
+
+	-- Fetch new boots, prioritizing vanity slot
+	local newBoots
+	if settings.armor.vanitySlots then
+		local vanityBoots = modules.util.getNbtValue("cardinal_components.trinkets:trinkets.boots.vanity")
+		if vanityBoots ~= nil then
+			newBoots = vanityBoots.Items[1]
+		end
+	end
+	if newBoots == nil or newBoots.id == "minecraft:air" then
+		newBoots = player:getItem(4)
+	end
+	previous.boots = newBoots
+
+	return modules.util.asItemStack(newBoots):toStackString() ~= modules.util.asItemStack(lastBoots):toStackString()
 end
 
 -- Invisible event

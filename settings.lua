@@ -1,18 +1,21 @@
 -- Settings for the model
 
 settings = {
-	-- Custom armor settings
-	customArmor = {
-		earArmor = true,			-- Ear armor when wearing vanilla helmets
+	-- Armor settings
+	armor = {
+		earArmor = true,			-- Ear armor replaces ears when wearing any vanilla helmet
 		earArmorMovement = false,	-- Should all ear armor allow ear movements? (Otherwise, only leather and chainmail helmets will)
-		boobArmor = true,			-- Boob armor when wearing vanilla chestplates
-		chest = true,				-- Custom armor for vanilla chestplates (crop top + gloves)
-		legs = true,				-- Custom armor for vanilla leggings (booty shorts)
-		vanitySlots = {				-- Check for armor in VanitySlots' vanity slots (https://modrinth.com/mod/vanity)
-			head = true,
-			chest = true,
-			legs = true
-		}
+		boobArmor = true,			-- Boob armor when wearing any vanilla chestplate
+		customModel = {				-- Custom armor models and textures for each type of armor
+			turtle = false,
+			leather = true,
+			chainmail = false,
+			iron = false,
+			golden = false,
+			diamond = false,
+			netherite = false,
+		},
+		vanitySlots = true,
 	},
 
 	-- Sound settings

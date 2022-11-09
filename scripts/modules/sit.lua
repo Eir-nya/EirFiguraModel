@@ -20,14 +20,6 @@ local sit = {
 	legStartR = vec(0, 0, 0),
 	armStartL = vec(0, 0, 0),
 	armStartR = vec(0, 0, 0),
-	-- For each vanilla armor model piece, whether it was enabled before sleeping, to be reapplied upon getting back up
-	armorPartsEnabled = {
-		HELMET = true,
-		HELMET_ITEM = true,
-		CHESTPLATE = false,
-		LEGGINGS = false,
-		BOOTS = true
-	}
 }
 
 -- Subscribable events
@@ -136,21 +128,6 @@ function sit.startSitting()
 	sit.rotRLeg = models.cat.RightLeg:getRot()
 	sit.lastRotRLeg = models.cat.RightLeg:getRot()
 
-	-- Unfortunately, vanilla armor cannot be forced to match up with the custom rotations and positions.
-	-- Instead, it will all be disabled.
-	-- TODO: Implement if/when individual armor piece manipulation is added to Figura
-	-- previous.vanity.head = {id = "minecraft:air"}
-	-- showEarArmor("minecraft:air")
-	-- previous.elytra = settings.elytraFix and previous.elytra
-	-- previous.vanity.chest = {id = "minecraft:air"}
-	-- showChestArmor("minecraft:air")
-	-- previous.vanity.pants = {id = "minecraft:air"}
-	-- showPantsArmor("minecraft:air")
-	for k, v in pairs(sit.armorPartsEnabled) do
-		sit.armorPartsEnabled[k] = vanilla_model[k]:getVisible()
-		vanilla_model[k]:setVisible(false)
-	end
-
 	-- Elytra model manip
 	if settings.model.elytra.enabled then
 		models.elytra.LEFT_ELYTRA:setPos(models.elytra.LEFT_ELYTRA:getPos() - vec(-2, 15 + 2, -2))
@@ -186,11 +163,6 @@ function sit.stopSitting()
 	models.cat.RightArm:setRot(vec(0, 0, 0))
 	models.cat.Head:setPos(vec(0, 0, 0))
 	models.cat.Head:setRot(vec(0, 0, 0))
-
-	-- Restore vanilla armor
-	for k, v in pairs(sit.armorPartsEnabled) do
-		vanilla_model[k]:setVisible(v)
-	end
 
 	modules.events.sit:run()
 end

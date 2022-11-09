@@ -8,8 +8,6 @@ complexity = {
 	snoot = 20,
 	skullSnoot = 20, -- only if skull is enabled
 	earArmor = 72, -- (140 (ear armor) - 104 (ears)) per ear
-	chestArmor = 64, -- 16 (torso) + 24 per arm
-	legArmor = 60, -- 20 (torso) + 20 per leg
 	elytra = 24, -- 12 per wing
 
 	-- EYES
@@ -37,12 +35,10 @@ do
 		totalComplexity = totalComplexity + complexity.rightArm + complexity.leftArm + complexity.rightLeg + complexity.leftLeg
 	end
 
-	totalComplexity = totalComplexity + (settings.skull and complexity.skull or 0)
-	totalComplexity = totalComplexity + (settings.snoot and (settings.skull and complexity.skullSnoot + complexity.snoot or complexity.snoot) or 0)
-	totalComplexity = totalComplexity + (settings.earArmor and complexity.earArmor or 0)
-	totalComplexity = totalComplexity + (settings.customChest and complexity.chestArmor or 0)
-	totalComplexity = totalComplexity + (settings.customLegs and complexity.legArmor or 0)
-	totalComplexity = totalComplexity + (settings.elytraFix and complexity.elytra or 0)
+	totalComplexity = totalComplexity + (settings.model.skull and complexity.skull or 0)
+	totalComplexity = totalComplexity + (settings.model.snoot and (settings.skull and complexity.skullSnoot + complexity.snoot or complexity.snoot) or 0)
+	totalComplexity = totalComplexity + (settings.armor.earArmor and complexity.earArmor or 0)
+	totalComplexity = totalComplexity + (settings.model.elytra.enabled and complexity.elytra or 0)
 	if settings.eyes.dynamic.enabled or settings.eyes.glow.enabled then			
 		totalComplexity = totalComplexity + complexity.eyesBack
 		totalComplexity = totalComplexity + (settings.eyes.dynamic.enabled and complexity.eyes or 0)
@@ -72,22 +68,15 @@ do
 			if not settings.eyes.dynamic.enabled then
 				totalComplexity = totalComplexity - complexity.eyesBack
 			end
-		-- Ear armor
-		elseif settings.customArmor.earArmor then
-			settings.customArmor.earArmor = false
-			totalComplexity = totalComplexity - complexity.earArmor
+		-- TODO
+		-- -- Ear armor
+		-- elseif settings.customArmor.earArmor then
+			-- settings.customArmor.earArmor = false
+			-- totalComplexity = totalComplexity - complexity.earArmor
 		-- Snoot
 		elseif settings.model.snoot then
 			settings.model.snoot = false
 			totalComplexity = totalComplexity - complexity.snoot
-		-- Chest armor
-		elseif settings.customArmor.chest then
-			settings.customArmor.chest = false
-			totalComplexity = totalComplexity - complexity.chestArmor
-		-- Leg armor
-		elseif settings.customArmor.legs then
-			settings.customArmor.legs = false
-			totalComplexity = totalComplexity - complexity.legArmor
 		-- Elytra fix
 		elseif settings.model.elytra then
 			settings.model.elytra = false

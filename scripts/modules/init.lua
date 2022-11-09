@@ -16,9 +16,7 @@ local init = function()
 	end
 
 	if disableVanitySlotsSettings then
-		for k, v in pairs(settings.customArmor.vanitySlots) do
-			settings.customArmor.vanitySlots[k] = false
-		end
+		settings.armor.vanitySlots = false
 	end
 
 	-- Disable rendering of vanilla model, because figura tries to render both it and custom models
@@ -46,11 +44,6 @@ local init = function()
 	else
 		models.skull.Skull:setVisible(false)
 	end
-
-	-- Store original positions for ears (ear armor disabled) and bow
-	modules.armor.originEarPosL = models.cat.Head.LeftEar:getPos()
-	modules.armor.originEarPosR = models.cat.Head.RightEar:getPos()
-	modules.armor.originBowPos = models.cat.Head.Bow:getPos()
 
 	-- Changes the wearer's nameplate to simply "Eir" if applicable
 	if avatar:canEditNameplate() then

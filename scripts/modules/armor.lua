@@ -1,9 +1,164 @@
 -- Armor module
 
+-- These ones are accessed by other scripts and should be kept:
+-- armor.earArmorVisible
+-- armor.rotateEarArmor
+
+-- TODO: add a render task to models.cat.Head that renders an item or block in the head slot or head vanity slot
 local armor = {
-	-- (When ear armor is enabled) Original position of the ears
-	originEarPosL = vec(0, 0, 0),
-	originEarPosR = vec(0, 0, 0),
+	-- Original rotation of ear armor
+	earArmorRot = vec(-3, 3, 3.75), -- vec(0, 5, 0)
+	-- Is ear armor visible?
+	earArmorVisible = false,
+	-- Whether ear armor should be able to rotate or not (only available on leather/chainmail, or on all helmets if settings.armor.earArmorMovement is enabled)
+	rotateEarArmor = false,
+	-- Default color for leather armor
+	leatherColor = vec(160/255, 101/255, 64/255),
+
+
+	-- Lookup tables
+
+	-- Multiply uv functions by these amounts to display the desired armor type
+	uvMults = {
+		leather = 0,
+		chainmail = 1,
+		iron = 2,
+		golden = 3,
+		diamond = 4,
+		netherite = 5,
+		turtle = 6
+	},
+	-- Widths of different texture patterns in armor.png
+	uvWidths = {
+		earArmor = 14,
+		helmet = 40,
+		chestplate = 24,
+		arms = 17,
+		chestplateBottom = 24,
+		leggings = 16,
+		boots = 20
+	},
+}
+
+-- Events
+
+function armor.init()
+	vanilla_model.HELMET:setVisible(false)
+	vanilla_model.HELMET_ITEM:setVisible(false)
+	vanilla_model.CHESTPLATE:setVisible(false)
+	vanilla_model.LEGGINGS:setVisible(false)
+	vanilla_model.BOOTS:setVisible(false)
+
+	-- Set up render task to render items and blocks such as skulls
+	-- TODO: use player:getItem(6):isBlockItem()
+	models.cat.Head:addItem("headItem"):pos(0, 8, 0)
+	models.cat.Head:addBlock("headBlock"):scale(0.5, 0.5, 0.5):pos(-4, 0, -4.1)
+end
+modules.events.ENTITY_INIT:register(armor.init)
+
+function armor.helmetEvent()
+	print(previous.helmet)
+end
+modules.events.helmet:register(armor.helmetEvent)
+modules.events.invisible:register(armor.helmetEvent)
+
+
+
+-- Custom armor model functions
+
+function armor.leatherHelmetEquip()
+	if not settings.armor.customModel.leather then
+		
+	end
+end
+
+
+-- Armor equip helpers
+
+function armor.defaultEquip(item)
+	local material = armor.getItemMaterial(item)
+	local slot = armor.getItemSlot(item)
+
+	if slot == "helmet" then
+		if settings.armor.earArmor and armor.uvMults[material] ~= nil then
+			models.cat.Head.LeftEar.Ear:setVisible(false)
+			models.cat.Head.RightEar.Ear:setVisible(false)
+			models.cat.Head.LeftEar.Armor.default:setVisible(true)
+			models.cat.Head.RightEar.Armor.default:setVisible(true)
+		end
+		models.cat.Head.Armor.default:setVisible(true)
+	end
+end
+
+function armor.unequipHelmet()
+	models.cat.Head.LeftEar.Ear:setVisible(true)
+	models.cat.Head.RightEar.Ear:setVisible(true)
+	models.cat.Head.LeftEar.Armor:setVisible(false)
+	models.cat.Head.RightEar.Armor:setVisible(false)
+	models.cat.Head.Armor:setVisible(false)
+end
+
+function armor.unequipChestplate()
+	models.cat.Body["Body Layer Down"]:setVisible(false)
+	models.cat.Body["3DShirt"]:setVisible(false)
+	models.cat.Body.Armor:setVisible(false)
+	models.cat.Body.Boobs.Armor:setVisible(false)
+	models.cat.LeftArm.FurUp:setVisible(true)
+	models.cat.LeftArm.Armor:setVisible(false)
+	models.cat.RightArm.FurUp:setVisible(true)
+	models.cat.RightArm.Armor:setVisible(false)
+end
+
+function armor.unequipLeggings()
+	models.cat.Body.Body:setVisible(true)
+	models.cat.Body.Body2:setVisible(false)
+	models.cat.Body.ArmorBottom:setVisible(false)
+	models.cat.LeftLeg.ArmorLeggings:setVisible(false)
+	models.cat.RightLeg.ArmorLeggings:setVisible(false)
+end
+
+function armor.unequipBoots()
+	models.cat.LeftLeg.LeftLeg:setVisible(true)
+	models.cat.LeftLeg.LeftLeg2:setVisible(false)
+	models.cat.LeftLeg.LeftLeg3:setVisible(false)
+	models.cat.LeftLeg.ArmorBoots:setVisible(false)
+	models.cat.RightLeg.RightLeg:setVisible(true)
+	models.cat.RightLeg.RightLeg2:setVisible(false)
+	models.cat.RightLeg.RightLeg3:setVisible(false)
+	models.cat.RightLeg.ArmorBoots:setVisible(false)
+end
+
+
+-- Utility functions
+
+function armor.useCustomModel(item)
+	return settings.armor.customModel[armor.getItemMaterial(item)]
+end
+
+function armor.getUVOffset(item, armorPiece)
+	return armor.uvMults[armor.getItemMaterial(item)] * armor.uvWidths[armorPiece]
+end
+
+function armor.getItemSlot(item)
+	return item.id:sub(item.id.find("_") + 1, -1)
+end
+
+function armor.getItemMaterial(item)
+	return item.id:sub(item.id:find(":") + 1, item.id:find("_") - 1)
+end
+
+function armor.checkItemVisible(item)
+	return item.id ~= "minecraft:air" and not modules.util.startsWith(item.id, "vanityslots:") and (item.tag == nil or item.tag.PhantomInk == nil)
+end
+
+function armor.checkSkull(helmet)
+	return modules.util.endsWith(helmet.id, "head") or modules.util.endsWith(helmet.id, "skull")
+end
+
+return armor
+
+--[[
+local armor = {
 	-- (When ear armor is enabled) How much the ears should be offset while wearing a (displayed) helmet
 	earOffset = vec(0, -0.5, 0),
 	-- Original rotation of ear armor
@@ -11,9 +166,7 @@ local armor = {
 	-- Whether or not the ear armor is currently visible
 	earArmorVisible = false,
 	-- Whether or not the ear armor should rotate to match ear rotation
-	rotateArmor = false,
-	-- Original position of the bow
-	originBowPos = vec(0, 0, 0),
+	rotateEarArmor = false,
 	-- How much the bow should be offset by while wearing a (displayed) helmet
 	bowOffset = vec(0, 0, -0.5),
 	-- Default color for leather armor
@@ -77,15 +230,16 @@ local armor = {
 function armor.helmetEvent()
 	-- Move bow forward if wearing displayed armor
 	local shouldMoveAdornments = armor.checkMoveBow(previous.helmet)
-	models.cat.Head.Bow:setPos(armor.originBowPos + (shouldMoveAdornments and armor.bowOffset or vec(0, 0, 0)))
+	models.cat.Head.Bow:setPos(shouldMoveAdornments and armor.bowOffset or nil)
 
 	-- Check if ear armor should be moved
-	if not settings.customArmor.earArmor then
+	if not settings.armor.earArmor then
 		models.cat.Head.LeftEar:setPos(armor.originEarPosL + (shouldMoveAdornments and armor.earOffset or vec(0, 0, 0)))
 		models.cat.Head.RightEar:setPos(armor.originEarPosR + (shouldMoveAdornments and armor.earOffset or vec(0, 0, 0)))
 	end
 
 	-- Check if vanilla head should be re-enabled + snoot hidden
+	-- TODO
 	local isSkull = armor.checkSkull(previous.helmet)
 	vanilla_model.HEAD:setVisible(isSkull)
 	if settings.model.snoot then
@@ -97,8 +251,6 @@ function armor.helmetEvent()
 end
 modules.events.helmet:register(armor.helmetEvent)
 modules.events.invisible:register(armor.helmetEvent)
-modules.events.sleep:register(armor.helmetEvent)
-modules.events.sit:register(armor.helmetEvent)
 
 -- Shows or hides chestplate and arm armor for a given chestplate ItemStack
 function armor.showChestArmor()
@@ -108,7 +260,7 @@ function armor.showChestArmor()
 
 	models.cat.Body.Armor.default:setVisible(show)
 	models.cat.Body["3DShirt"]:setVisible(not show)
-	models.cat.Body.Boobs.Armor.default:setVisible(show and settings.customArmor.boobArmor)
+	models.cat.Body.Boobs.Armor.default:setVisible(show and settings.armor.boobArmor)
 	models.cat.Body["Body Layer Up"]:setVisible(not show)
 	models.cat.Body["Body Layer Down"]:setVisible(not show)
 	models.cat.LeftArm.Armor.default:setVisible(show)
@@ -149,8 +301,6 @@ function armor.showChestArmor()
 end
 modules.events.chestplate:register(armor.showChestArmor)
 modules.events.invisible:register(armor.showChestArmor)
-modules.events.sleep:register(armor.showChestArmor)
-modules.events.sit:register(armor.showChestArmor)
 
 function armor.showPantsArmor()
 	if previous.invisible then
@@ -193,8 +343,6 @@ function armor.showPantsArmor()
 end
 modules.events.leggings:register(armor.showPantsArmor)
 modules.events.invisible:register(armor.showPantsArmor)
-modules.events.sleep:register(armor.showPantsArmor)
-modules.events.sit:register(armor.showPantsArmor)
 
 
 
@@ -210,7 +358,7 @@ function armor.showEarArmor(helmet)
 	if armor.earArmorVisible then
 		-- Set rotation variables (based on ear armor settings)
 		-- Ear armor should rotate
-		armor.rotateEarArmor = settings.customArmor.earArmorMovement or helmet.id == "minecraft:leather_helmet" or helmet.id == "minecraft:chainmail_helmet"
+		armor.rotateEarArmor = settings.armor.earArmorMovement or helmet.id == "minecraft:leather_helmet" or helmet.id == "minecraft:chainmail_helmet"
 
 		-- Set UVs
 		models.cat.Head.LeftEar.Armor.default:setUVPixels(armor.helmetUVs.ears[helmet.id])
@@ -247,10 +395,8 @@ function armor.checkShowBoobs(chestplate)
 end
 
 function armor.checkShowEarArmor(helmet)
-	local show = settings.customArmor.earArmor
+	local show = settings.armor.earArmor
 	show = show and not previous.invisible
-	show = show and previous.pose ~= "SLEEPING"
-	show = show and not modules.sit.sitting
 	show = show and armor.helmetUVs.ears[helmet.id] ~= nil
 	show = show and helmet.id ~= "vanityslots:familiar_wig"
 	show = show and (helmet.tag == nil or helmet.tag.PhantomInk == nil)
@@ -258,10 +404,7 @@ function armor.checkShowEarArmor(helmet)
 end
 
 function armor.checkShowChestplate(chestplate)
-	local show = settings.customArmor.chest
-	show = show and not previous.invisible
-	show = show and previous.pose ~= "SLEEPING"
-	show = show and not modules.sit.sitting
+	local show = not previous.invisible
 	show = show and armor.chestAddUVs.body[chestplate.id] ~= nil
 	show = show and chestplate.id ~= "vanityslots:familiar_shirt"
 	show = show and (chestplate.tag == nil or chestplate.tag.PhantomInk == nil)
@@ -269,10 +412,7 @@ function armor.checkShowChestplate(chestplate)
 end
 
 function armor.checkShowLeggings(leggings)
-	local show = settings.customArmor.legs
-	show = show and not previous.invisible
-	show = show and previous.pose ~= "SLEEPING"
-	show = show and not modules.sit.sitting
+	local show = not previous.invisible
 	show = show and armor.legsAddUVs.legs[leggings.id] ~= nil
 	show = show and leggings.id ~= "vanityslots:familiar_pants"
 	show = show and (leggings.tag == nil or leggings.tag.PhantomInk == nil)
@@ -280,3 +420,4 @@ function armor.checkShowLeggings(leggings)
 end
 
 return armor
+]]--

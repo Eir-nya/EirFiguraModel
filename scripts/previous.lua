@@ -18,6 +18,7 @@ previous = {
 	helmet = { id = "minecraft:bedrock" },
 	chestplate = { id = "minecraft:bedrock" },
 	leggings = { id = "minecraft:bedrock" },
+	boots = { id = "minecraft:bedrock" },
 
 	elytra = nil, -- Elytra should be displayed
 	elytraGlint = nil, -- Elytra is enchanted

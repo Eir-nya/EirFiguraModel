@@ -26,16 +26,13 @@ local ears = {
 function ears.helmetEvent()
 	if not ears.canMove() then
 		-- Force move LeftEar and RightEar rotations to the ear armor origins
-		ears.lastRotL = modules.armor.originEarArmor
+		ears.lastRotL = vec(0, 0, 0)
+		ears.lastRotR = vec(0, 0, 0)
 		ears.rotL = ears.lastRotL
-		ears.lastRotR = vec(modules.armor.originEarArmor[1], -modules.armor.originEarArmor[2], -modules.armor.originEarArmor[3])
 		ears.rotR = ears.lastRotR
 
 		models.cat.Head.LeftEar:setRot(ears.rotL)
 		models.cat.Head.RightEar:setRot(ears.rotR)
-
-		models.cat.Head.LeftEar.Armor:setRot(ears.rotL)
-		models.cat.Head.RightEar.Armor:setRot(ears.rotR)
 	end
 end
 modules.events.helmet:register(ears.helmetEvent)
