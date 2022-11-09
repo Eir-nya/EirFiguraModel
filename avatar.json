@@ -1,8 +1,71 @@
 {
 	"name": "§9Eir ▲ §e(Rewrite) §r2",
-	"authors": ["Eir"],
-	"ver": "3",
+	"version": "rc10",
+	"author": "Eir",
 	"color": "faaaab",
 	"background": "clouds",
-	"autoScripts": ["settings", "scripts/modules"]
+	"autoScripts": ["settings", "scripts/modules"],
+	"customizations": {
+		"models.armor.Head.LeftEar.Armor": {
+			"moveTo": "models.cat.Head.LeftEar",
+			"visible": false
+		},
+		"models.armor.Head.RightEar.Armor": {
+			"moveTo": "models.cat.Head.RightEar",
+			"visible": false
+		},
+		"models.armor.Head.Armor": {
+			"moveTo": "models.cat.Head",
+			"visible": false
+		},
+		"models.armor.Body.Armor": {
+			"moveTo": "models.cat.Body",
+			"visible": false
+		},
+		"models.armor.Body.Boobs.Armor": {
+			"moveTo": "models.cat.Body.Boobs",
+			"visible": false
+		},
+		"models.armor.Body.ArmorBottom": {
+			"moveTo": "models.cat.Body",
+			"visible": false
+		},
+		"models.armor.RightArm.Armor": {
+			"moveTo": "models.cat.RightArm",
+			"visible": false
+		},
+		"models.armor.LeftArm.Armor": {
+			"moveTo": "models.cat.LeftArm",
+			"visible": false
+		},
+		"models.armor.RightLeg.Armor": {
+			"moveTo": "models.cat.RightLeg",
+			"visible": false
+		},
+		"models.armor.LeftLeg.Armor": {
+			"moveTo": "models.cat.LeftLeg",
+			"visible": false
+		},
+		"models.cat.Body.Body2": {
+			"visible": false
+		},
+		"models.cat.RightArm.swipe": {
+			"visible": false
+		},
+		"models.cat.RightLeg.RightLeg2": {
+			"visible": false
+		},
+		"models.cat.RightLeg.RightLeg3": {
+			"visible": false
+		},
+		"models.cat.LeftLeg.LeftLeg2": {
+			"visible": false
+		},
+		"models.cat.LeftLeg.LeftLeg3": {
+			"visible": false
+		},
+		"models.elytra": {
+			"visible": false
+		}
+	}
 }
