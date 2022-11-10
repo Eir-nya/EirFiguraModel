@@ -81,9 +81,32 @@ modules.events.boots:register(armor.bootsEvent)
 
 -- Custom armor model functions
 
-function armor.leatherHelmetEquip()
-	if not settings.armor.customModel.leather then
-		
+armor["custom model minecraft:leather_helmet"] = function()
+	local parts = armor.getPartsToEdit({id = "minecraft:leather_helmet"}, "VISIBLE")
+	for _, part in pairs(parts) do
+		part:setVisible(true)
+	end
+end
+armor["custom model minecraft:leather_chestplate"] = function()
+	models.cat.Body["Body Layer Down"]:setVisible(false)
+	models.cat.LeftArm.FurUp:setVisible(false)
+	models.cat.RightArm.FurUp:setVisible(false)
+
+	local parts = armor.getPartsToEdit({id = "minecraft:leather_chestplate"}, "VISIBLE")
+	for _, part in pairs(parts) do
+		part:setVisible(true)
+	end
+end
+armor["custom model minecraft:leather_leggings"] = function()
+	local parts = armor.getPartsToEdit({id = "minecraft:leather_leggings"}, "VISIBLE")
+	for _, part in pairs(parts) do
+		part:setVisible(true)
+	end
+end
+armor["custom model minecraft:leather_boots"] = function()
+	local parts = armor.getPartsToEdit({id = "minecraft:leather_boots"}, "VISIBLE")
+	for _, part in pairs(parts) do
+		part:setVisible(true)
 	end
 end
 
@@ -104,7 +127,10 @@ function armor.equipEvent(item, slot)
 		end
 	-- Show item
 	else
+
 		local material = armor.getItemMaterial(item)
+
+		armor.genericEquip(item)
 
 		if not armor.useCustomModel(item) then
 			-- Is helmet in recognized list of materials?
@@ -117,6 +143,9 @@ function armor.equipEvent(item, slot)
 			end
 		else
 			-- TODO: custom model displaying
+			if armor["custom model " .. item.id] ~= nil then
+				armor["custom model " .. item.id]()
+			end
 		end
 
 		-- Colorize if leather armor
@@ -124,6 +153,33 @@ function armor.equipEvent(item, slot)
 			armor.colorizeLeather(item)
 		end
 		armor.setGlint(item)
+		if slot == "helmet" then
+			models.cat.Head.Bow:setPos(vec(0, 0, -0.5))
+		end
+	end
+end
+
+function armor.genericEquip(item)
+	local material = armor.getItemMaterial(item)
+	local slot = armor.getItemSlot(item)
+
+	if slot == "helmet" then
+		if settings.armor.earArmor and armor.uvMults[material] ~= nil then
+			models.cat.Head.LeftEar.Ear:setVisible(false)
+			models.cat.Head.RightEar.Ear:setVisible(false)
+		end
+		modules.util.setChildrenVisible(models.cat.Head["3DHair"], false)
+	elseif slot == "chestplate" then
+		models.cat.Body["3DShirt"]:setVisible(false)
+	elseif slot == "leggings" then
+		models.cat.Body.Body:setVisible(false)
+		models.cat.Body.Body2:setVisible(true)
+		models.cat.LeftLeg.LeftLeg:setVisible(false)
+		models.cat.LeftLeg.LeftLeg2:setVisible(true)
+		models.cat.LeftLeg.LeftLeg3:setVisible(false)
+		models.cat.RightLeg.RightLeg:setVisible(false)
+		models.cat.RightLeg.RightLeg2:setVisible(true)
+		models.cat.RightLeg.RightLeg3:setVisible(false)
 	end
 end
 
@@ -133,8 +189,6 @@ function armor.defaultEquip(item)
 
 	if slot == "helmet" then
 		if settings.armor.earArmor and armor.uvMults[material] ~= nil then
-			models.cat.Head.LeftEar.Ear:setVisible(false)
-			models.cat.Head.RightEar.Ear:setVisible(false)
 			models.cat.Head.LeftEar.Armor.default:setVisible(true)
 			models.cat.Head.RightEar.Armor.default:setVisible(true)
 
@@ -157,7 +211,6 @@ function armor.defaultEquip(item)
 			models.cat.Body.Boobs.Armor.default:setVisible(true)
 			models.cat.Body.Boobs.Armor.default:setUVPixels(uv)
 		end
-		models.cat.Body["3DShirt"]:setVisible(false)
 		models.cat.Body.Armor.default:setVisible(true)
 		models.cat.Body.Armor.default:setUVPixels(uv)
 
@@ -168,15 +221,6 @@ function armor.defaultEquip(item)
 		models.cat.LeftArm.Armor.default:setUVPixels(uv)
 		models.cat.RightArm.Armor.default:setUVPixels(uv)
 	elseif slot == "leggings" then
-		models.cat.Body.Body:setVisible(false)
-		models.cat.Body.Body2:setVisible(true)
-		models.cat.LeftLeg.LeftLeg:setVisible(false)
-		models.cat.LeftLeg.LeftLeg2:setVisible(true)
-		models.cat.LeftLeg.LeftLeg3:setVisible(false)
-		models.cat.RightLeg.RightLeg:setVisible(false)
-		models.cat.RightLeg.RightLeg2:setVisible(true)
-		models.cat.RightLeg.RightLeg3:setVisible(false)
-
 		models.cat.Body.ArmorBottom.default:setVisible(true)
 		models.cat.LeftLeg.ArmorLeggings.default:setVisible(true)
 		models.cat.RightLeg.ArmorLeggings.default:setVisible(true)
@@ -202,6 +246,11 @@ function armor.unequipHelmet()
 	modules.util.setChildrenVisible(models.cat.Head.LeftEar.Armor, false)
 	modules.util.setChildrenVisible(models.cat.Head.RightEar.Armor, false)
 	modules.util.setChildrenVisible(models.cat.Head.Armor, false)
+
+	-- TODO: re-enable rope physics hair if it's been hidden
+	modules.util.setChildrenVisible(models.cat.Head["3DHair"])
+	models.cat.Head.Bow:setVisible(true)
+	models.cat.Head.Bow:setPos()
 end
 
 function armor.unequipChestplate()
@@ -292,7 +341,7 @@ function armor.getPartsToEdit(item, mode)
 					table.insert(parts, models.cat.RightArm.Armor.FluffyJacket)
 				end
 			elseif slot == "leggings" then
-				table.insert(parts, models.cat.Body.ArmorBottom.FluffyLeggings.leather)
+				table.insert(parts, models.cat.Body.ArmorBottom.FluffyLeggings)
 				if mode == "COLOR" then
 					table.insert(parts, models.cat.LeftLeg.ArmorLeggings.FluffyLeggings.leather)
 					table.insert(parts, models.cat.RightLeg.ArmorLeggings.FluffyLeggings.leather)
