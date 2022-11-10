@@ -82,6 +82,9 @@ modules.events.boots:register(armor.bootsEvent)
 -- Custom armor model functions
 
 armor["custom model minecraft:leather_helmet"] = function()
+	modules.util.setChildrenVisible(models.cat.Head["3DHair"], false)
+	models.cat.Head["3DHair"].north:setVisible(true)
+
 	local parts = armor.getPartsToEdit({id = "minecraft:leather_helmet"}, "VISIBLE")
 	for _, part in pairs(parts) do
 		part:setVisible(true)
