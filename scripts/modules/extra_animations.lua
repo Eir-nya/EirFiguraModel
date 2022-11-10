@@ -322,29 +322,31 @@ if host:isHost() then
 			if type(e) == "LivingEntityAPI" then
 				if e:getHealth() == 0 then
 					exAnims.showSwipe = exAnims.itemAnims[previous.mainItem.id] ~= nil
-					pings.attackAnim("swipeD", true)
+					pings.attackAnim("swipeD", e:getDeathTime() == 0)
 					return
 				end
 			end
+
+			local entityHurting = not(type(e) == "LivingEntityAPI" and (modules.util.getNbtValue(e:getNbt(), "HurtTime") == 0) or false)
 
 			-- Standard attack
 
 			-- Sprinting jump attack: drop kick
 			if not onGround and sprinting and exAnims.canAnim("jumpKick") then
-				pings.attackAnim("jumpKick", true)
+				pings.attackAnim("jumpKick", not entityHurting)
 			-- Sprinting ground attack: sword
 			elseif onGround and sprinting and exAnims.canAnim("thrustR") then
-				pings.attackAnim("thrustR", true)
+				pings.attackAnim("thrustR", not entityHurting)
 			-- Standard sword swing
 			elseif exAnims.itemAnims[previous.mainItem.id] ~= nil then
 				exAnims.showSwipe = true
 				pings.attackAnim(modules.util.pickFrom({
 					exAnims.canAnim("swipeR") and "swipeR" or nil,
 					exAnims.canAnim("punchR") and "punchR" or nil
-				}), true)
+				}), not entityHurting)
 			-- Punch animation
 			else
-				pings.attackAnim("punchR", true)
+				pings.attackAnim("punchR", not entityHurting)
 			end
 
 			return
