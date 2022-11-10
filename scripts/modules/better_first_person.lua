@@ -12,11 +12,11 @@ modules.events.ENTITY_INIT:register(bfp.init)
 function bfp.hideArms(delta, context)
 	-- TODO: what about armor in first person?
 	if context == "FIRST_PERSON" then
-		models.cat.LeftArm:setVisible(false)
-		models.cat.RightArm:setVisible(false)
+		models.cat.LeftArm:setParentType("None")
+		models.cat.RightArm:setParentType("None")
 	else
-		models.cat.LeftArm:setVisible(true)
-		models.cat.RightArm:setVisible(true)
+		models.cat.LeftArm:setParentType("LeftArm")
+		models.cat.RightArm:setParentType("RightArm")
 	end
 end
 modules.events.RENDER:register(bfp.hideArms)
@@ -31,11 +31,25 @@ function bfp.crosshairRender(delta, context)
 	end
 	models.firstPerson.crosshair:setVisible(not player:isUsingItem() or player:getItem(1).id == "minecraft:bow" or player:getItem(1).id == "minecraft:trident")
 
-	local playerEyePos = player:getPos(delta):add(0, player:getEyeHeight(), 0)
-	playerEyePos:add(player:getLookDir() * 5)
+	-- Set position for the crosshair to go to
+	local crosshairWorldPos
+	if context == "RENDER" then
+		local e = host:getTargetedEntity()
+		local b = player:getTargetedBlock(true, 5)
+		if e ~= nil then
+			crosshairWorldPos = e:getPos() + (e:getBoundingBox()._y_ / 2)
+		elseif b ~= nil and b.id ~= "minecraft:air" then
+			crosshairWorldPos = b:getPos() + vec(0.5, 0.5, 0.5)
+		end
+	end
+	-- Default crosshair values
+	if not crosshairWorldPos then
+		crosshairWorldPos = player:getPos(delta):add(0, player:getEyeHeight(), 0)
+		crosshairWorldPos = crosshairWorldPos + (player:getLookDir() * 5)
+	end
 
 	-- Translate coords to screen space; center crosshair
-	local screenSpace = vectors.worldToScreenSpace(playerEyePos)
+	local screenSpace = vectors.worldToScreenSpace(crosshairWorldPos)
 	local coords = screenSpace.xy + vec(1, 1)
 	coords = (coords * client.getScaledWindowSize()) / -2
 	models.firstPerson.crosshair:setPos(coords.xy_)
