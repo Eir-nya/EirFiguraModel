@@ -57,15 +57,19 @@ end
 modules.events.ENTITY_INIT:register(armor.init)
 
 function armor.helmetEvent()
+	armor.unequipHelmet()
 	armor.equipEvent(previous.helmet, "helmet")
 end
 function armor.chestplateEvent()
+	armor.unequipChestplate()
 	armor.equipEvent(previous.chestplate, "chestplate")
 end
 function armor.leggingsEvent()
+	armor.unequipLeggings()
 	armor.equipEvent(previous.leggings, "leggings")
 end
 function armor.bootsEvent()
+	armor.unequipBoots()
 	armor.equipEvent(previous.boots, "boots")
 end
 modules.events.helmet:register(armor.helmetEvent)
@@ -118,19 +122,7 @@ end
 
 function armor.equipEvent(item, slot)
 	-- Is item visible?
-	if not armor.checkItemVisible(item) then
-		if slot == "helmet" then
-			armor.unequipHelmet()
-		elseif slot == "chestplate" then
-			armor.unequipChestplate()
-		elseif slot == "leggings" then
-			armor.unequipLeggings()
-		elseif slot == "boots" then
-			armor.unequipBoots()
-		end
-	-- Show item
-	else
-
+	if armor.checkItemVisible(item) then
 		local material = armor.getItemMaterial(item)
 
 		armor.genericEquip(item)
@@ -142,10 +134,11 @@ function armor.equipEvent(item, slot)
 			if isKnownMaterial then
 				armor.defaultEquip(item)
 			elseif slot == "helmet" then
-				-- TODO: item/block render tasks
+				-- item/block render tasks
+				armor.equipHelmetItem(item)
 			end
 		else
-			-- TODO: custom model displaying
+			-- Custom model displaying
 			if armor["custom model " .. item.id] ~= nil then
 				armor["custom model " .. item.id]()
 			end
@@ -242,6 +235,23 @@ function armor.defaultEquip(item)
 	end
 end
 
+function armor.equipHelmetItem(item)
+	local isBlock = modules.util.asItemStack(item):isBlockItem() and not armor.checkSkull(item)
+
+	models.cat.Head:getTask("headItem"):enabled(not isBlock)
+	models.cat.Head:getTask("headBlock"):enabled(isBlock)
+	if isBlock then
+		models.cat.Head:getTask("headBlock"):block(item.id)
+	else
+		models.cat.Head:getTask("headItem"):item(item.id)
+	end
+
+	if settings.model.snoot then
+		models.cat.Head.Snoot:setVisible(false)
+	end
+end
+
+
 function armor.unequipHelmet()
 	models.cat.Head.LeftEar.Ear:setVisible(true)
 	models.cat.Head.RightEar.Ear:setVisible(true)
@@ -250,10 +260,16 @@ function armor.unequipHelmet()
 	modules.util.setChildrenVisible(models.cat.Head.RightEar.Armor, false)
 	modules.util.setChildrenVisible(models.cat.Head.Armor, false)
 
+	models.cat.Head:getTask("headItem"):enabled(false)
+	models.cat.Head:getTask("headBlock"):enabled(false)
+
 	-- TODO: re-enable rope physics hair if it's been hidden
 	modules.util.setChildrenVisible(models.cat.Head["3DHair"])
 	models.cat.Head.Bow:setVisible(true)
 	models.cat.Head.Bow:setPos()
+	if settings.model.snoot then
+		models.cat.Head.Snoot:setVisible(true)
+	end
 end
 
 function armor.unequipChestplate()
