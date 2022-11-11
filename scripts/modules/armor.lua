@@ -128,7 +128,7 @@ function armor.equipEvent(item, slot)
 		armor.genericEquip(item)
 
 		if not armor.useCustomModel(item) then
-			-- Is helmet in recognized list of materials?
+			-- Is material recognized?
 			local isKnownMaterial = armor.uvMults[material] ~= nil
 
 			if isKnownMaterial then
@@ -413,11 +413,18 @@ function armor.getUVOffset(item, armorPiece)
 end
 
 function armor.getItemSlot(item)
-	return item.id:sub(item.id:find("_") + 1, -1)
+	local underscorePos = item.id:find("_")
+	if underscorePos then
+		return item.id:sub(underscorePos + 1, -1)
+	end
 end
 
 function armor.getItemMaterial(item)
-	return item.id:sub(item.id:find(":") + 1, item.id:find("_") - 1)
+	local colonPos = item.id:find(":")
+	local underscorePos = item.id:find("_")
+	if colonPos and underscorePos then
+		return item.id:sub(colonPos + 1, underscorePos - 1)
+	end
 end
 
 function armor.checkItemVisible(item)

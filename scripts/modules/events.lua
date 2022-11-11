@@ -161,7 +161,7 @@ events.chestplate.condition = function()
 	if newChestplate == nil or newChestplate.id == "minecraft:air" then
 		newChestplate = player:getItem(5)
 	end
-	previous.elytra = newChestplate.id == "minecraft:elytra"
+	previous.elytra = player:getItem(5).id == "minecraft:elytra"
 	previous.elytraGlint = modules.util.asItemStack(newChestplate):hasGlint()
 	previous.chestplate = newChestplate
 	previous.chestplateString = modules.util.asItemStack(newChestplate):toStackString()
