@@ -112,21 +112,23 @@ end
 -- Equipped item events
 events.mainItem = events:new(events.TICK)
 events.mainItem.condition = function()
-	local lastMainItem = previous.mainItem
+	local lastMainItemString = previous.mainItemString
 	local mainItem = player:getItem(1)
 	previous.mainItem = mainItem
-	return modules.util.asItemStack(mainItem):toStackString() ~= modules.util.asItemStack(lastMainItem):toStackString()
+	previous.mainItemString = modules.util.asItemStack(mainItem):toStackString()
+	return previous.mainItemString ~= lastMainItemString
 end
 events.offItem = events:new(events.TICK)
 events.offItem.condition = function()
-	local lastOffItem = previous.offItem
+	local lastOffItemString = previous.offItemString
 	local offItem = player:getItem(2)
 	previous.offItem = offItem
-	return modules.util.asItemStack(offItem):toStackString() ~= modules.util.asItemStack(lastOffItem):toStackString()
+	previous.offItemString = modules.util.asItemStack(offItem):toStackString()
+	return previous.offItemString ~= lastOffItemString
 end
 events.helmet = events:new(events.TICK)
 events.helmet.condition = function()
-	local lastHelmet = previous.helmet
+	local lastHelmetString = previous.helmetString
 
 	-- Fetch new helmet, prioritizing vanity slot
 	local newHelmet
@@ -140,12 +142,13 @@ events.helmet.condition = function()
 		newHelmet = player:getItem(6)
 	end
 	previous.helmet = newHelmet
+	previous.helmetString = modules.util.asItemStack(newHelmet):toStackString()
 
-	return modules.util.asItemStack(newHelmet):toStackString() ~= modules.util.asItemStack(lastHelmet):toStackString()
+	return previous.helmetString ~= lastHelmetString
 end
 events.chestplate = events:new(events.TICK)
 events.chestplate.condition = function()
-	local lastChestplate = previous.chestplate
+	local lastChestplateString = previous.chestplateString
 
 	-- Fetch new chestplate, prioritizing vanity slot
 	local newChestplate
@@ -161,12 +164,13 @@ events.chestplate.condition = function()
 	previous.elytra = newChestplate.id == "minecraft:elytra"
 	previous.elytraGlint = modules.util.asItemStack(newChestplate):hasGlint()
 	previous.chestplate = newChestplate
+	previous.chestplateString = modules.util.asItemStack(newChestplate):toStackString()
 
-	return modules.util.asItemStack(newChestplate):toStackString() ~= modules.util.asItemStack(lastChestplate):toStackString()
+	return previous.chestplateString ~= lastChestplateString
 end
 events.leggings = events:new(events.TICK)
 events.leggings.condition = function()
-	local lastLeggings = previous.leggings
+	local lastLeggingsString = previous.leggingsString
 
 	-- Fetch new leggings, prioritizing vanity slot
 	local newLeggings
@@ -180,12 +184,13 @@ events.leggings.condition = function()
 		newLeggings = player:getItem(4)
 	end
 	previous.leggings = newLeggings
+	previous.leggingsString = modules.util.asItemStack(newLeggings):toStackString()
 
-	return modules.util.asItemStack(newLeggings):toStackString() ~= modules.util.asItemStack(lastLeggings):toStackString()
+	return previous.leggingsString ~= lastLeggingsString
 end
 events.boots = events:new(events.TICK)
 events.boots.condition = function()
-	local lastBoots = previous.boots
+	local lastBootsString = previous.bootsString
 
 	-- Fetch new boots, prioritizing vanity slot
 	local newBoots
@@ -199,8 +204,9 @@ events.boots.condition = function()
 		newBoots = player:getItem(3)
 	end
 	previous.boots = newBoots
+	previous.bootsString = modules.util.asItemStack(newBoots):toStackString()
 
-	return modules.util.asItemStack(newBoots):toStackString() ~= modules.util.asItemStack(lastBoots):toStackString()
+	return previous.bootsString ~= lastBootsString
 end
 
 -- Invisible event

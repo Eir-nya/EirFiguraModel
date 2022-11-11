@@ -12,13 +12,20 @@ previous = {
 	vel = nil, -- Velocity
 	lookDir = { x = 0, y = 0, z = 1}, -- Look direction
 
-	-- Equipped items (stored as {id = string, tag = {}})
+	-- Equipped items (stored as {id = string, tag = {}} or ItemStacks)
 	mainItem = { id = "minecraft:bedrock" },
 	offItem = { id = "minecraft:bedrock" },
 	helmet = { id = "minecraft:bedrock" },
 	chestplate = { id = "minecraft:bedrock" },
 	leggings = { id = "minecraft:bedrock" },
 	boots = { id = "minecraft:bedrock" },
+	-- Equipped item stack strings (what actually gets compared)
+	mainItemString = nil,
+	offItemString = nil,
+	helmetString = nil,
+	chestplateString = nil,
+	leggingsString = nil,
+	bootsString = nil,
 
 	elytra = nil, -- Elytra should be displayed
 	elytraGlint = nil, -- Elytra is enchanted
