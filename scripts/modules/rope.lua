@@ -29,8 +29,7 @@ local segmentClass = {
 	getGravity = function(self, thisRope)
 		local grav
 		if thisRope.parentType == parentTypes.HEAD then
-			grav = -modules.util.getHeadRot()
-			grav = grav - rope.headRot.x_z
+			grav = rope.headRot.x_z
 		end
 		if self.parent ~= nil then
 			grav = grav - self.parent:getRot()
@@ -55,18 +54,19 @@ end
 local ropeClass = {
 	-- Default values
 	enabled = true, -- Setting this does nothing. Is set by setEnabled
-	gravity = 0.08,
-	friction = 0.01,
+	gravity = 0.1,
+	friction = 0.2,
 	facingDir = 0, -- TODO: have this number gradually "sway" up and down on a slow sine wave?
 	parentType = parentTypes.HEAD,
-	partInfluence = 1/6,
-	xzVelInfluence = 1/5,
-	yVelInfluence = 1/8,
+	partInfluence = 1/16,
+	xzVelInfluence = 6,
+	yVelInfluence = 1/4,
 
 	-- Methods
 	setup = function(self, segment)
 		-- Set behind-the-scenes values and states
-		self.segments = rope.getSegments(segment)
+		self.segments = rope.getSegments(segment, segment)
+		self.segments[1].parent = nil
 		self.eventName = rope.getEventName(segment)
 		self:setFriction(self.friction)
 		self:setEnabled(true)
@@ -74,7 +74,7 @@ local ropeClass = {
 	setFriction = function(self, newFric)
 		self.friction = newFric
 		for i, segment in ipairs(self.segments) do
-			segment.friction = newFric * math.pow(1.5, i)
+			segment.friction = newFric * math.pow(1.5, i - 1)
 		end
 	end,
 	setVisible = function(self, visible)
@@ -114,12 +114,14 @@ local ropeClass = {
 			local gravity = segment:getGravity(self)
 
 			-- Velocity delta
-			local velDel = vec(0, 0, 0)
+			local velDel = gravity
 			velDel.x = velDel.x - yVelInfluence -- Add vertical velocity. TODO: underwater physics?
 			velDel.x = velDel.x + partInfluence.x -- Adds part velocity (head rot, body rot?)
-			velDel = vectors.rotateAroundAxis(self.facingDir, velDel, vec(0, 1, 0))
+			velDel.z = velDel.z - partInfluence.y -- Adds part velocity (head rot, body rot?)
+			-- TODO: figure out where this goes
+			-- velDel = vectors.rotateAroundAxis(self.facingDir, velDel, vec(0, 1, 0))
 			velDel.x = velDel.x - (rope.motionAngCos * xzVelInfluence) -- Adds x/z velocity influence
-			velDel.z = velDel.z + (rope.motionAngSin * xzVelInfluence)
+			velDel.z = velDel.z - (rope.motionAngSin * xzVelInfluence)
 
 			segment.vel = (segment.vel + velDel) * (1 - segment.friction)
 			segment.rot = segment.rot + segment.vel
@@ -198,10 +200,10 @@ function rope.getSegments(part, parent)
 			table.insert(allParts, segmentClass:new(part, parent))
 		end
 
-		local grandchildren = rope.getSegments(child, part)
+		local grandchildren = rope.getSegments(child, parent)--part)
 		if #grandchildren > 0 then
 			for _, grandchild in ipairs(grandchildren) do
-				table.insert(allParts, segmentClass:new(grandchild.part, part))
+				table.insert(allParts, grandchild)
 			end
 		end
 	end
