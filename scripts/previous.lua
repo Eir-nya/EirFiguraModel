@@ -10,6 +10,7 @@ previous = {
 	firstPerson = nil, -- First person
 
 	vel = nil, -- Velocity
+	velMagXZ = nil, -- Velocity magnitude (x/z only)
 	lookDir = { x = 0, y = 0, z = 1}, -- Look direction
 
 	-- Equipped items (stored as {id = string, tag = {}} or ItemStacks)

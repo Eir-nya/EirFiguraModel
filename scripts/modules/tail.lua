@@ -110,7 +110,7 @@ function tail.velocityEvent()
 	end
 
 	tail.velY = previous.vel.y
-	tail.velMag = previous.vel.x_z:length()
+	tail.velMag = previous.velMagXZ
 
 	-- Torso is turning
 	local bodyYaw = player:getBodyYaw()

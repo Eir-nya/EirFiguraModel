@@ -168,7 +168,7 @@ function sit.stopSitting()
 end
 
 function sit.canSit()
-	return not previous.invisible and previous.vel:length() < 0.05 and player:isOnGround() and previous.pose == "STANDING"
+	return not previous.invisible and previous.velMagXZ < 0.05 and player:isOnGround() and previous.pose == "STANDING"
 end
 
 return sit

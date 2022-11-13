@@ -264,7 +264,7 @@ function emotes.update(emote)
 end
 
 function emotes.canHug()
-	return not previous.invisible and (previous.vel:length() < 0.15 or previous.vehicle) and ((player:isOnGround() or player:isFlying()) or previous.vehicle) and (previous.pose == "STANDING" or previous.pose == "CROUCHING")
+	return not previous.invisible and (previous.velMagXZ < 0.15 or previous.vehicle) and ((player:isOnGround() or player:isFlying()) or previous.vehicle) and (previous.pose == "STANDING" or previous.pose == "CROUCHING")
 end
 
 function emotes.weaponTest(item)

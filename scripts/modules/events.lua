@@ -99,6 +99,7 @@ events.velocity.condition = function()
 	local lastVel = previous.vel
 	local vel = player:getVelocity()
 	previous.vel = vel
+	previous.velMagXZ = vel.x_z:length()
 	return vel ~= lastVel
 end
 events.lookDir = events:new(events.TICK)
