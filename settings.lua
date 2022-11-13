@@ -87,7 +87,7 @@ settings = {
 	-- Misc settings
 	misc = {
 		useCustomName = true,		-- Changes nameplates to a custom name (set below)
-		customName = [[ [ "§9Eir ", {"text":"\u16B3","font":"\u0066igura:default"} ] ]]
+		customName = [[ [{"text":"Eir","color":"blue"},{"text":" \u16B3","color":"white","font":"figura:default"}] ]]
 	}
 }
 
