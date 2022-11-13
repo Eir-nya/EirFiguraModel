@@ -220,11 +220,22 @@ function rope.getHeadForward()
 end
 -- Fetches the angle in radians that represents the direction of motion relative to the head's facing direction.
 function rope.getMotionAngRelative()
-	local headForwardAng = rope.getHeadForward()
-	local vel = player:getVelocity()
-	local motionAng = math.deg(math.atan2(vel.z, vel.x))
-	return math.rad(((motionAng + headForwardAng) + 180) % 360)
+	local headForwardAng = math.rad(rope.getHeadForward())
+	local motionAng = math.atan2(previous.vel.z, previous.vel.x)
+	return motionAng - headForwardAng
 end
+
+-- Test function that visually displays rope.getMotionAngRelative()
+--[[
+function rope.test()
+	p1 = particles.smoke:spawn():pos(player:getPos()):lifetime(1):scale(5)
+	local ang = math.rad(rope.getHeadForward()) + rope.getMotionAngRelative()
+	local offset = vec(math.cos(ang), 0, math.sin(ang)) * 4
+	p2 = particles.smoke:spawn():pos(player:getPos() + offset):lifetime(1):scale(5)
+end
+modules.events.TICK:register(rope.test)
+]]--
+
 -- NOTES:
 -- math.sin(math.rad(this)) : -1 when facing +x, 1 when facing -x
 -- math.cos(math.rad(this)) : 1 when facing +z, -1 when facing -z
