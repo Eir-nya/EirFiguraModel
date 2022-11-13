@@ -6,6 +6,12 @@ local rope = {
 
 	lastMotionAng = vec(0, 0, 0),
 	motionAng = vec(0, 0, 0),
+	motionAngSin = 0,
+	motionAngCos = 0,
+	lastHeadRot = vec(0, 0, 0),
+	headRot = vec(0, 0, 0),
+	headInfluence = vec(0, 0, 0), -- headRot - lastHeadRot
+	yVelInfluence = 0, -- y velocity
 }
 
 -- Segment class
@@ -13,9 +19,27 @@ local segmentClass = {
 	lastRot = vec(0, 0, 0),
 	rot = vec(0, 0, 0),
 	vel = vec(0, 0, 0),
+	friction = 0, -- Set in ropeClass:setFriction
 	part = nil,
 	parent = nil,
+
+	-- Gets a vector to apply to this segment's rotation to gradually make it point straight down
+	getGravity = function(self, thisRope)
+		local grav
+		if thisRope.parentType == parentTypes.HEAD then
+			grav = -modules.util.getHeadRot()
+			grav = grav - rope.headRot.x_z
+		end
+		if self.parent ~= nil then
+			grav = grav - self.parent:getRot()
+		end
+
+		grav = (grav - self.rot) * thisRope.gravity
+
+		return grav
+	end
 }
+local parentTypes = { HEAD = 1, BODY = 2 }
 
 function segmentClass:new(part, parent)
 	local s = {}
@@ -29,8 +53,14 @@ end
 -- Rope class
 local ropeClass = {
 	-- Default values
+	enabled = true, -- Setting this does nothing. Is set by setEnabled
 	gravity = 0.08,
 	friction = 0.1,
+	facingDir = 0, -- TODO: have this number gradually "sway" up and down on a slow sine wave?
+	parentType = parentTypes.HEAD,
+	partInfluence = 1/6,
+	xzVelInfluence = 1/5,
+	yVelInfluence = 1/8,
 
 	-- Methods
 	setup = function(self, segment)
@@ -38,7 +68,7 @@ local ropeClass = {
 		self.segments = rope.getSegments(segment)
 		self.eventName = rope.getEventName(segment)
 		self:setFriction(self.friction)
-		self:setVisible(true)
+		self:setEnabled(true)
 
 		-- TODO: Set starting variables
 		-- TODO: set other starting variables
@@ -53,9 +83,12 @@ local ropeClass = {
 		for _, part in ipairs(self.segments) do
 			part:setVisible(visible)
 		end
-
+		self:setEnabled(visible)
+	end,
+	setEnabled = function(self, enabled)
+		self.enabled = enabled
 		-- Register and unregister events
-		if visible then
+		if enabled then
 			modules.events.TICK:register(self.TICK, self.eventName)
 			modules.events.RENDER:register(self.RENDER, self.eventName)
 		else
@@ -67,21 +100,37 @@ local ropeClass = {
 	TICK = function(self)
 		-- TODO: rope physics (lol)
 
+		-- How much will the segments be influenced by each factor?
+		local partInfluence
+		if self.parentType == parentTypes.HEAD then
+			partInfluence = rope.headInfluence * self.partInfluence
+		end
+		local xzVelInfluence = previous.velMagXZ * self.xzVelInfluence
+		local yVelInfluence = rope.yVelInfluence * self.yVelInfluence
+
 		-- For each segment...
 		for i, segment in ipairs(self.segments) do
 			segment.lastRot = segment.rot
 
 			-- Gravity to add: ((angle that would make segment point straight down) - (last Rot)) * "gravity" mult
-			local gravity = -modules.util.getHeadRot()
-			if segment.parent ~= nil then
-				gravity = gravity + segment.parent:getRot()
-			end
-			gravity = (gravity - segment.rot) * self.gravity
+			local gravity = segment:getGravity(self)
+
+			-- Velocity delta
+			local velDel = vec(0, 0, 0)
+			velDel.x = velDel.x - yVelInfluence -- Add vertical velocity. TODO: underwater physics?
+			velDel.x = velDel.x + partInfluence.x -- Adds part velocity (head rot, body rot?)
+			velDel = vectors.rotateAroundAxis(self.facingDir, velDel, vec(0, 1, 0))
+			velDel.x = velDel.x - (rope.motionAngCos * xzVelInfluence) -- Adds x/z velocity influence
+			velDel.z = velDel.z + (rope.motionAngSin * xzVelInfluence)
+
+			segment.vel = (segment.vel + velDel) * (1 - segment.friction)
+			segment.rot = segment.rot + segment.vel
+
+			-- TODO limits
 
 			-- x rot: + rotates "forward and up", - rotates "back and up"
 			-- z rot: + rotates "right", - rotates "left"
-			local force = vec(0, 0, 0)
-			force.x = gravity + (previous.vel.y / 8) -- Add vertical velocity. TODO: underwater physics?
+
 			-- TODO: add swaying/blowing in the wind
 			-- TODO: Velocity delta: gravity + vec3(
 			--    (change in head rotation / some amount) - cos(relative motion ang) + (cos(rope "forward") * abs(change in head rotation / some amount)),
@@ -92,6 +141,11 @@ local ropeClass = {
 		end
 	end,
 	RENDER = function(self, delta)
+		if self.enabled then
+			for i, segment in ipairs(self.segments) do
+				segment.part:setRot(modules.util.vecLerp(segment.lastRot, segment.rot, delta))
+			end
+		end
 	end,
 }
 
@@ -109,8 +163,14 @@ end
 
 -- Tick method - keeps track of changes in head rotation and relative motion angle per tick
 function rope.tick()
+	rope.lastHeadRot = rope.headRot
+	rope.headRot = modules.util.getHeadRotTotal()
+	rope.headInfluence = rope.headRot - rope.lastHeadRot
 	rope.lastMotionAng = rope.motionAng
-	rope.motionAng = rope.getMotionAngRelative
+	rope.motionAng = rope.getMotionAngRelative()
+	rope.motionAngSin = math.sin(rope.motionAng)
+	rope.motionAngCos = math.cos(rope.motionAng)
+	rope.yVelInfluence = previous.vel.y
 end
 modules.events.TICK:register(rope.tick)
 
@@ -150,14 +210,13 @@ function rope.getSegments(part, parent)
 	return allParts
 end
 
--- Gets angle representing lateral rotation of head.
+-- Gets degree angle representing lateral rotation of head.
 function rope.getHeadForward()
 	local lookDir = previous.lookDir.x_z:normalized()
 	local lookAngle = math.deg(math.atan2(lookDir.z, lookDir.x))
 	lookAngle = lookAngle - modules.util.getHeadRot().y
 	return lookAngle
 end
-
 -- Fetches the angle in radians that represents the direction of motion relative to the head's facing direction.
 function rope.getMotionAngRelative()
 	local headForwardAng = rope.getHeadForward()
