@@ -14,6 +14,8 @@ local rope = {
 	yVelInfluence = 0, -- y velocity
 }
 
+local parentTypes = { HEAD = 1, BODY = 2 }
+
 -- Segment class
 local segmentClass = {
 	lastRot = vec(0, 0, 0),
@@ -39,7 +41,6 @@ local segmentClass = {
 		return grav
 	end
 }
-local parentTypes = { HEAD = 1, BODY = 2 }
 
 function segmentClass:new(part, parent)
 	local s = {}
@@ -55,7 +56,7 @@ local ropeClass = {
 	-- Default values
 	enabled = true, -- Setting this does nothing. Is set by setEnabled
 	gravity = 0.08,
-	friction = 0.1,
+	friction = 0.01,
 	facingDir = 0, -- TODO: have this number gradually "sway" up and down on a slow sine wave?
 	parentType = parentTypes.HEAD,
 	partInfluence = 1/6,
@@ -69,9 +70,6 @@ local ropeClass = {
 		self.eventName = rope.getEventName(segment)
 		self:setFriction(self.friction)
 		self:setEnabled(true)
-
-		-- TODO: Set starting variables
-		-- TODO: set other starting variables
 	end,
 	setFriction = function(self, newFric)
 		self.friction = newFric
@@ -89,8 +87,8 @@ local ropeClass = {
 		self.enabled = enabled
 		-- Register and unregister events
 		if enabled then
-			modules.events.TICK:register(self.TICK, self.eventName)
-			modules.events.RENDER:register(self.RENDER, self.eventName)
+			modules.events.TICK:register(function() self:TICK() end, self.eventName)
+			modules.events.RENDER:register(function(delta) self:RENDER(delta) end, self.eventName)
 		else
 			modules.events.TICK:remove(self.eventName)
 			modules.events.RENDER:remove(self.eventName)
@@ -155,6 +153,7 @@ function rope:new(segment)
 	ropeClass.__index = ropeClass
 
 	-- Init new rope
+	r:setup(segment)
 
 	rope.ropes[segment] = r
 	return r
@@ -202,7 +201,7 @@ function rope.getSegments(part, parent)
 		local grandchildren = rope.getSegments(child, part)
 		if #grandchildren > 0 then
 			for _, grandchild in ipairs(grandchildren) do
-				table.insert(allParts, segmentClass:new(grandchild, part))
+				table.insert(allParts, segmentClass:new(grandchild.part, part))
 			end
 		end
 	end
