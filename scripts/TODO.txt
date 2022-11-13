@@ -15,6 +15,7 @@ TODO:
 - "better first person"
 	- make duplicate arm models just for first person view; hide main model's in first person, show those instead
 - dynamic and glowing eyes should only appear from "RENDER" context, all other ones should use the original textured eyes
+- make nonbinary stockings 3d
 - armor and boots replacements
 	- leather armor
 		all: on equip...
@@ -22,7 +23,7 @@ TODO:
 		- leather helmet: fluffy hood
 			- on equip...
 				* hide "head.3dhair.[west/east/south/up]", but enable "head.3dhair.north"
-				* hide (and disable motion for) all "head.hair" wavey parts
+				* hide (and disable motion for) BACK "head.hair" wavey parts. the front ones should simply be limited so they dont clip outside the hood (TODO)
 				* move bow forward
 				* replace ears with ear armor
 		- leather chestplate: fluffy jacket
@@ -57,7 +58,7 @@ plan for head sway script:
 - use all this shit just for "limiting" rotation; the rest is just simple code
 - different parts can have different "frictions" (just makes velocity add less at a time) and different gravities
 - (important) chains will not update if not visible
-- the amount of gravity to add is NOT just (0, -0.2, 0), it's (angle that would make part point straight down) normalized * 0.2
+- the amount of gravity to add is NOT just (0, -0.2, 0), it's (((angle that would make part point straight down) - lastRotAngle) normalized * 0.2)
 - subtract last rotation from the above to get the amount to add to velocity
 - how am I going to add quick head motion/wind swaying/player movement swaying to velocity?
 - "friction" needs to increase a significant amount based on what segment in the chain we're on

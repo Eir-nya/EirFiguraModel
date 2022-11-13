@@ -97,7 +97,7 @@ function util.partToWorldPos(modelPart)
 	return modelPart:partToWorldMatrix():apply(modelPart:getPos())
 end
 function util.getHeadRot()
-	return vanilla_model.HEAD:getOriginRot() + models.cat.Head:getRot() + models.cat.Head:getAnimRot()
+	return models.cat.Head:getRot() + models.cat.Head:getAnimRot()
 end
 function util.getEyePos()
 	return util.partToWorldPos(models.cat.Head.eyesBack)

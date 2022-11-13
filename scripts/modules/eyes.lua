@@ -280,7 +280,7 @@ function eyes.moveEyes(getHeadTilt)
 
 	-- Fetch player's head tilt instead of distance to target entity's eyes
 	if getHeadTilt and settings.eyes.dynamic.followHead then
-		local headRot = modules.util.getHeadRot()
+		local headRot = modules.util.getHeadRot() + vanilla_model.HEAD:getOriginRot()
 		local headRotationX = headRot.y
 		headRotationX = headRotationX / 100
 		eyes.xMove = -headRotationX

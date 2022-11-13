@@ -63,7 +63,7 @@ function bfp.render(delta, context)
 		animations["models.cat"].jump:blend(animations["models.cat"].jump:getBlend() / 3)
 
 		-- Camera rot
-		local add = (modules.util.getHeadRot() - vanilla_model.HEAD:getOriginRot())
+		local add = modules.util.getHeadRot()
 
 		-- Divide add amount based on animation
 		if modules.extra_animations.attackAnimPlaying() then
