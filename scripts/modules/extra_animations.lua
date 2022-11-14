@@ -14,6 +14,7 @@ local exAnims = {
 	lastOnGround = false,
 	lastFlying = false,
 	-- lastSprinting = false,
+	lastBlocking = false,
 
 	-- sprintMult = 0,
 	-- sprintLastMult = 0,
@@ -76,6 +77,14 @@ local exAnims = {
 
 modules.events.fall = modules.events:new()
 
+modules.events.block = modules.events:new(events.TICK)
+modules.events.block.condition = function()
+	local lastBlocking = exAnims.lastBlocking
+	local blocking = player:isUsingItem() and player:getActiveItem().id == "minecraft:shield"
+	exAnims.lastBlocking = blocking
+	return blocking ~= lastBlocking
+end
+
 -- Events
 
 function exAnims.init()
@@ -90,6 +99,11 @@ function exAnims.init()
 	animations["models.cat"].punchR:priority(1)
 	animations["models.cat"].thrustR:priority(1)
 	animations["models.cat"].thrustR:speed(1.1875)
+
+	animations["models.cat"].blockR:priority(1)
+	animations["models.cat"].blockL:priority(1)
+	animations["models.cat"].blockR:speed(1.1)
+	animations["models.cat"].blockL:speed(1.1)
 
 	-- Register invisible keybind for attack anims
 	if host:isHost() then
@@ -170,6 +184,24 @@ function exAnims.cancelSwingFunc()
 end
 modules.events.TICK:register(exAnims.cancelSwingFunc)
 
+function exAnims.blockEvent()
+	local hands = { "R", "L" }
+	local activeHand = player:getActiveHand() == "MAIN_HAND" and 1 or 2
+	if player:isLeftHanded() then
+		activeHand = 3 - activeHand
+	end
+	activeHand = hands[activeHand]
+
+	local anim = animations["models.cat"]["block" .. activeHand]
+
+	if exAnims.lastBlocking then
+		anim:play()
+	else
+		anim:stop()
+	end
+end
+modules.events.block:register(exAnims.blockEvent)
+
 function exAnims.render(tickProgress, context)
 	local velY = math.lerp(exAnims.lastVelY, exAnims.newVelY, tickProgress)
 	local mult = math.lerp(exAnims.lastMult, exAnims.mult, tickProgress)
@@ -189,7 +221,11 @@ function exAnims.render(tickProgress, context)
 	if (not modules.emotes.isEmoting() or modules.emotes.emote ~= "hug") and not modules.sit.isSitting then
 		-- Attack anims
 		if exAnims.attackAnimPlaying() then
-			if animations["models.cat"].thrustR:getPlayState() == "PLAYING" then
+			if animations["models.cat"].blockL:getPlayState() == "PLAYING" then
+				models.cat.LeftArm:setRot(-vanilla_model.LEFT_ARM:getOriginRot())
+			elseif animations["models.cat"].blockR:getPlayState() == "PLAYING" then
+				models.cat.RightArm:setRot(-vanilla_model.RIGHT_ARM:getOriginRot())
+			elseif animations["models.cat"].thrustR:getPlayState() == "PLAYING" then
 				local blend = 1 - (animations["models.cat"].jumpKick:getTime() / animations["models.cat"].thrustR:getLength())
 
 				models.cat.RightLeg:setRot(-vanilla_model.RIGHT_LEG:getOriginRot() * blend)
@@ -295,12 +331,14 @@ function exAnims.attackAnimPlaying()
 		or animations["models.cat"].punchR:getPlayState() == "PLAYING"
 		or animations["models.cat"].thrustR:getPlayState() == "PLAYING"
 		or animations["models.cat"].jumpKick:getPlayState() == "PLAYING"
+		or animations["models.cat"].blockR:getPlayState() == "PLAYING"
+		or animations["models.cat"].blockL:getPlayState() == "PLAYING"
 end
 
 -- Attack anim code
 if host:isHost() then
 	function exAnims.attackAnim()
-		if action_wheel:isEnabled() then
+		if action_wheel:isEnabled() or exAnims.lastBlocking then
 			return
 		end
 

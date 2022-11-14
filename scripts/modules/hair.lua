@@ -75,6 +75,8 @@ function hair.helmetEvent()
 				modules.util.setChildrenVisible(models.cat.Head["3DHair"], false)
 				models.cat.Head["3DHair"].north:setVisible(true)
 
+				-- TODO: hide hat layer but only if it's being used instead of 3d hair
+
 				-- TODO: set limits on Left and Right
 			end
 			-- TODO
