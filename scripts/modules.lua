@@ -14,7 +14,8 @@ modules = {
 	"ears",
 	"tail",
 	"eyes",
-	"rope", -- "hair",
+	"rope",
+	"hair",
 
 	host:isHost() and "camera" or nil,
 	host:isHost() and "action_wheel" or nil,

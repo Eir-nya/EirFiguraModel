@@ -79,7 +79,7 @@ local ropeClass = {
 	end,
 	setVisible = function(self, visible)
 		for _, part in ipairs(self.segments) do
-			part:setVisible(visible)
+			part.part:setVisible(visible)
 		end
 		self:setEnabled(visible)
 	end,
@@ -124,20 +124,13 @@ local ropeClass = {
 			velDel.z = velDel.z - (rope.motionAngSin * xzVelInfluence)
 
 			segment.vel = (segment.vel + velDel) * (1 - segment.friction)
+			-- x rot: + rotates "forward and up", - rotates "back and up"
+			-- z rot: + rotates "right", - rotates "left"
 			segment.rot = segment.rot + segment.vel
 
 			-- TODO limits
 
-			-- x rot: + rotates "forward and up", - rotates "back and up"
-			-- z rot: + rotates "right", - rotates "left"
-
 			-- TODO: add swaying/blowing in the wind
-			-- TODO: Velocity delta: gravity + vec3(
-			--    (change in head rotation / some amount) - cos(relative motion ang) + (cos(rope "forward") * abs(change in head rotation / some amount)),
-			--    0
-			--    (change in head rotation / some amount) + sin(relative motion ang) - (sin(rope "forward") * abs(change in head rotation / some amount)),
-			-- )
-			-- segment.vel = 
 		end
 	end,
 	RENDER = function(self, delta)
