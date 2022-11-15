@@ -42,6 +42,4 @@ previous = {
 	emote = nil, -- Emote (animations, like love, blush, or hug)
 	expression = nil, -- Expression (actual facial expressions)
 	holdingWeapon = nil, -- Holding weapon
-
-	openSky = nil, -- Block at head is exposed to open sky
 }

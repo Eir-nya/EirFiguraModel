@@ -3,6 +3,7 @@
 local rope = {
 	-- List of active ropes, indexed by primary segment (eg. "print(modules.rope.ropes[models.cat.Head.Hair.Left])")
 	ropes = {},
+	ropesCount = 0, -- Number of ropes
 
 	lastMotionAng = vec(0, 0, 0),
 	motionAng = vec(0, 0, 0),
@@ -12,6 +13,12 @@ local rope = {
 	headRot = vec(0, 0, 0),
 	headInfluence = vec(0, 0, 0), -- headRot - lastHeadRot
 	yVelInfluence = 0, -- y velocity
+
+	windDir = 0, -- Radian angle of wind blowing
+	windDirSin = 0,
+	windDirCos = 0,
+	windPower = 0, -- Strength of sky light at player's head determines wind strength (0-15). Also 15 if in dimension "minecraft:the_nether"
+	windPowerDiv100 = 0, -- windPower divided by 100. Used to ease up calculations
 }
 
 local parentTypes = { HEAD = 1, BODY = 2 }
@@ -54,6 +61,7 @@ end
 local ropeClass = {
 	-- Default values
 	enabled = true, -- Setting this does nothing. Is set by setEnabled
+	id = 0, -- Set to # of existing ropes on rope creation. Used to offset wind influence for realism
 	gravity = 0.1,
 	friction = 0.2,
 	facingDir = 0, -- TODO: have this number gradually "sway" up and down on a slow sine wave?
@@ -61,10 +69,12 @@ local ropeClass = {
 	partInfluence = 1/16,
 	xzVelInfluence = 6,
 	yVelInfluence = 1/4,
+	windInfluence = 1/6,
 
 	-- Methods
 	setup = function(self, segment)
 		-- Set behind-the-scenes values and states
+		self.id = rope.ropesCount
 		self.segments = rope.getSegments(segment, segment)
 		self.segments[1].parent = nil
 		self.eventName = rope.getEventName(segment)
@@ -105,6 +115,14 @@ local ropeClass = {
 		end
 		local xzVelInfluence = previous.velMagXZ * self.xzVelInfluence
 		local yVelInfluence = rope.yVelInfluence * self.yVelInfluence
+		local windInfluence = 0
+		if rope.windPower > 0 then
+			windInfluence = rope.windPower * self.windInfluence
+			local windMult = math.sin(((world.getTime() / 2) + (self.id * 2.2)) * rope.windPowerDiv100)
+			windMult = windMult + (math.cos((world.getTime() + (self.id * 1.5)) * rope.windPowerDiv100) * (rope.windPower / 20))
+			windMult = (windMult / 4) + 1
+			windInfluence = windInfluence * windMult
+		end
 
 		-- For each segment...
 		for i, segment in ipairs(self.segments) do
@@ -120,8 +138,12 @@ local ropeClass = {
 			velDel.z = velDel.z - partInfluence.y -- Adds part velocity (head rot, body rot?)
 			-- TODO: figure out where this goes
 			-- velDel = vectors.rotateAroundAxis(self.facingDir, velDel, vec(0, 1, 0))
-			velDel.x = velDel.x - (rope.motionAngCos * xzVelInfluence) -- Adds x/z velocity influence
+			-- Adds x/z velocity influence
+			velDel.x = velDel.x - (rope.motionAngCos * xzVelInfluence)
 			velDel.z = velDel.z - (rope.motionAngSin * xzVelInfluence)
+			-- Adds wind influence
+			velDel.x = velDel.x - (rope.windDirCos * windInfluence)
+			velDel.z = velDel.z - (rope.windDirSin * windInfluence)
 
 			segment.vel = (segment.vel + velDel) * (1 - segment.friction)
 			-- x rot: + rotates "forward and up", - rotates "back and up"
@@ -151,6 +173,7 @@ function rope:new(segment)
 	r:setup(segment)
 
 	rope.ropes[segment] = r
+	rope.ropesCount = rope.ropesCount + 1
 	return r
 end
 
@@ -167,6 +190,18 @@ function rope.tick()
 	rope.yVelInfluence = previous.vel.y
 end
 modules.events.TICK:register(rope.tick)
+
+-- World tick method - gets wind power level and direction based on location
+function rope.worldTick()
+	if world.exists() and not previous.invisible then
+		rope.windDir = math.rad(world.getTime() / 4)
+		rope.windDirSin = math.sin(rope.windDir)
+		rope.windDirCos = math.cos(rope.windDir)
+		rope.windPower = rope.getWindPower()
+		rope.windPowerDiv100 = rope.windPower / 100
+	end
+end
+modules.events.WORLD_TICK:register(rope.worldTick)
 
 
 -- Fetches the full path of a model part, as a string.
@@ -234,6 +269,18 @@ modules.events.TICK:register(rope.test)
 -- math.cos(math.rad(this)) : 1 when facing +z, -1 when facing -z
 function rope.getBodyRot()
 	return player:getBodyYaw() + models.cat.Body:getRot().y + models.cat.Body:getAnimRot().y
+end
+
+-- Gets the wind power at the current block.
+function rope.getWindPower()
+	local dim = player:getDimensionName()
+	if dim == "minecraft:the_nether" or dim == "minecraft:the_end" or previous.fire then
+		return 15
+	elseif previous.wet then
+		return 0
+	end
+
+	return world.getSkyLightLevel(player:getPos())
 end
 
 return rope

@@ -5,6 +5,7 @@ require("scripts/previous")
 local events = {
 	ENTITY_INIT = events.ENTITY_INIT,
 	TICK = events.TICK,
+	WORLD_TICK = events.WORLD_TICK,
 	RENDER = events.RENDER,
 	POST_RENDER = events.POST_RENDER
 }
@@ -260,14 +261,6 @@ events.effects.condition = function()
 	local effects = player:getStatusEffects()
 	previous.effects = effects
 	return modules.util.statusEffectsString(effects) ~= modules.util.statusEffectsString(lastEffects)
-end
-
--- Open air event
-events.openSky = events:new(events.TICK)
-events.openSky.condition = function()
-	local lastOpenSky = previous.openSky
-	local openSky = world.isOpenSky(modules.util.getEyePos())
-	previous.openSky = openSky
 end
 
 
