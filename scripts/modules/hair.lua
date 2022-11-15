@@ -52,6 +52,9 @@ function hair.init()
 		for property, value in pairs(properties) do
 			rope[property] = value
 		end
+		if properties.friction ~= nil then
+			rope:setFriction(properties.friction)
+		end
 		hair.ropes[name] = rope
 	end
 end
