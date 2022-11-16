@@ -165,7 +165,7 @@ function tail.movementEvent()
 		end
 
 		-- Swaying when crouching (or blushing) is boosted
-		if previous.pose == "CROUCHING" or ((modules.emotes.emote == "blush" or modules.emotes.emote == "hug") and modules.emotes.isEmoting()) then
+		if previous.pose == "CROUCHING" or ((modules.emotes.emote == "blush" or modules.emotes.emote == "hug") and modules.emotes.isEmoting()) or player:isUsingItem() then
 			swayByVel = (swayByVel + 1) * 2
 		-- Swaying when swimming is lessened with speed
 		elseif previous.pose == "SWIMMING" or previous.pose == "FALL_FLYING" then
