@@ -34,12 +34,12 @@ function bfp.crosshairRender(delta, context)
 	-- Set position for the crosshair to go to
 	local crosshairWorldPos
 	if context == "RENDER" then
-		local e = host:getTargetedEntity()
-		local b = player:getTargetedBlock(true, 5)
+		local e, ePos = player:getTargetedEntity(5)
+		local b, bPos = player:getTargetedBlock(true, 5)
 		if e ~= nil then
-			crosshairWorldPos = e:getPos() + (e:getBoundingBox()._y_ / 2)
+			crosshairWorldPos = ePos
 		elseif b ~= nil and b.id ~= "minecraft:air" then
-			crosshairWorldPos = b:getPos() + vec(0.5, 0.5, 0.5)
+			crosshairWorldPos = bPos
 		end
 	end
 	-- Default crosshair values

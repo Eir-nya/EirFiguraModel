@@ -47,6 +47,7 @@ local eyes = {
 	-- Nearby entities to be tracked by eye movement
 	nearbyEntities = {},
 	nearestEntity = nil,
+	lastEntityRaycast = nil,
 	highestPriority = 0,
 
 	-- Controls how much the dynamic eyes will move left or right. Set by other functions.
@@ -66,7 +67,8 @@ local eyes = {
 
 function eyes.trackMobs()
 	-- Get entities the player has started to look at
-	local target = host:getTargetedEntity()
+	eyes.lastEntityRaycast = { player:getTargetedEntity(20) }
+	local target = eyes.lastEntityRaycast[1]
 
 	-- Hovering over an entity.
 	if target ~= nil then
@@ -98,7 +100,7 @@ function eyes.trackMobs()
 			end
 
 			-- Check if entity is too far away
-			local maxDist = 67.5
+			local maxDist = 67.5 + 10
 			if eyes.eyePriorities[entity:getType()] ~= nil then
 				maxDist = maxDist + (eyes.eyePriorities[entity:getType()] * 30)
 			end
