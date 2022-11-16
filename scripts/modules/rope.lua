@@ -120,7 +120,7 @@ local ropeClass = {
 			windInfluence = rope.windPower * self.windInfluence
 			local windMult = math.sin(((world.getTime() / 2) + (self.id * 2.2)) * rope.windPowerDiv100)
 			windMult = windMult + (math.cos((world.getTime() + (self.id * 1.5)) * rope.windPowerDiv100) * (rope.windPower / 20))
-			windMult = (windMult / 4) + 1
+			windMult = (windMult / 3) + 0.5
 			windInfluence = windInfluence * windMult
 		end
 
@@ -142,8 +142,9 @@ local ropeClass = {
 			velDel.x = velDel.x - (rope.motionAngCos * xzVelInfluence)
 			velDel.z = velDel.z - (rope.motionAngSin * xzVelInfluence)
 			-- Adds wind influence
-			velDel.x = velDel.x - (rope.windDirCos * windInfluence)
-			velDel.z = velDel.z - (rope.windDirSin * windInfluence)
+			local windSegmentInfluence = i / #self.segments
+			velDel.x = velDel.x - (rope.windDirCos * windInfluence * windSegmentInfluence)
+			velDel.z = velDel.z - (rope.windDirSin * windInfluence * windSegmentInfluence)
 
 			segment.vel = (segment.vel + velDel) * (1 - segment.friction)
 			-- x rot: + rotates "forward and up", - rotates "back and up"
