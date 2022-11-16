@@ -48,6 +48,22 @@ function bfp.crosshairRender(delta, context)
 		crosshairWorldPos = crosshairWorldPos + (player:getLookDir() * 5)
 	end
 
+	-- Third person only: crosshair rotates back to face player
+	if context == "RENDER" then
+		local r2 = player:getRot(delta)
+		local r3 = vec(-r2.x, r2.y, 0)
+		models.firstPerson.crosshair:setRot(client.getCameraRot() - r3)
+		-- local crosshairDist = 25
+		-- if renderer:getCameraPivot() ~= nil then
+			-- crosshairDist = (crosshairWorldPos - renderer:getCameraPivot()):lengthSquared()
+			-- local scale = math.min(2, 50 / crosshairDist)
+			-- models.firstPerson.crosshair:setScale(vec(1, 1, 1) * scale)
+		-- end
+	else
+		models.firstPerson.crosshair:setRot()
+		-- models.firstPerson.crosshair:setScale()
+	end
+
 	-- Translate coords to screen space; center crosshair
 	local screenSpace = vectors.worldToScreenSpace(crosshairWorldPos)
 	local coords = screenSpace.xy + vec(1, 1)
