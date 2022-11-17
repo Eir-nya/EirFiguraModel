@@ -6,7 +6,7 @@ local rope = {
 	ropesCount = 0, -- Number of ropes
 
 	lastMotionAng = vec(0, 0, 0),
-	motionAng = vec(0, 0, 0),
+	motionAng = 0,
 	motionAngSin = 0,
 	motionAngCos = 0,
 	lastHeadRot = vec(0, 0, 0),
@@ -75,6 +75,11 @@ local ropeClass = {
 	setup = function(self, segment)
 		-- Set behind-the-scenes values and states
 		self.id = rope.ropesCount
+		if segment:isChildOf(models.cat.Head) then
+			self.parentType = parentTypes.HEAD
+		elseif segment:isChildOf(models.cat.Body) then
+			self.parentType = parentTypes.BODY
+		end
 		self.segments = rope.getSegments(segment, segment)
 		self.segments[1].parent = nil
 		self.eventName = rope.getEventName(segment)

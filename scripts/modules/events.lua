@@ -249,7 +249,7 @@ end
 events.vehicle = events:new(events.TICK)
 events.vehicle.condition = function()
 	local lastVehicle = previous.vehicle
-	local vehicle = player:getVehicle() ~=  nil
+	local vehicle = player:getVehicle() ~= nil
 	previous.vehicle = vehicle
 	return vehicle ~= lastVehicle
 end

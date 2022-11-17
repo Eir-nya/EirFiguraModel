@@ -40,12 +40,12 @@ function sleep.startSleeping()
 	animations["models.cat"].sleepPose:play()
 
 	-- Undo head parenting, undoes initial rotation when entering bed
-	models.cat.Head:setParentType("Torso")
+	models.cat.Head:setParentType("BODY")
 
 	-- Stop arm swaying
-	models.cat.LeftArm:setParentType("Torso")
+	models.cat.LeftArm:setParentType("BODY")
 	models.cat.LeftArm:setPos(vanilla_model.LEFT_ARM:getOriginPos())
-	models.cat.RightArm:setParentType("Torso")
+	models.cat.RightArm:setParentType("BODY")
 	models.cat.RightArm:setPos(vanilla_model.RIGHT_ARM:getOriginPos())
 
 	-- TODO!!!!!

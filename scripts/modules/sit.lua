@@ -40,7 +40,7 @@ function sit.update()
 		sit.lastRotRLeg = sit.rotRLeg
 		sit.rotRLeg = sit.legStartR + vec((-math.sin(sit.swayTimer * 2) * 7.5) + 7.5, (math.cos(sit.swayTimer) * 2) - 4, (math.sin(sit.swayTimer) * 2.5) - 22.5)
 		sit.lastRotHead = sit.rotHead
-		sit.rotHead = vec(22.5 + math.clamp(previous.lookDir.y * 45, -56.25, 67.5), 0, math.sin(sit.swayTimer * (2/3)) * 22.5f)
+		sit.rotHead = vec(22.5 + math.clamp(previous.lookDir.y * 45, -56.25, 67.5), 0, math.sin(sit.swayTimer * (2/3)) * 22.5)
 
 		-- Only the model wearer's client decides if they should stop posing
 		if host:isHost() then

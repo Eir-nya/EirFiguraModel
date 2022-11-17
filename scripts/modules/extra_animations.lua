@@ -365,7 +365,7 @@ if host:isHost() then
 				end
 			end
 
-			local entityHurting = not(type(e) == "LivingEntityAPI" and (modules.util.getNbtValue(e:getNbt(), "HurtTime") == 0) or false)
+			local entityHurting = not (type(e) == "LivingEntityAPI" and (modules.util.getNbtValue(e:getNbt(), "HurtTime") == 0) or false)
 
 			-- Standard attack
 
