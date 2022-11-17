@@ -7,9 +7,6 @@ local rope = {
 
 	lastMotionAng = vec(0, 0, 0),
 	motionAng = 0,
-	lastHeadRot = vec(0, 0, 0),
-	headRot = vec(0, 0, 0),
-	headInfluence = vec(0, 0, 0), -- headRot - lastHeadRot
 	yVelInfluence = 0, -- y velocity
 
 	windDir = 0, -- Radian angle of wind blowing
@@ -20,16 +17,68 @@ local rope = {
 
 	-- Data on parents (mainly head and body)
 	parentData = {
-		Head = {
-			part = models.cat.Head,
-			lastRot = vec(0, 0, 0),
-			rot = vec(0, 0, 0),
-		},
-		Body = {
-			part = models.cat.Body
-		},
+		Head = { part = models.cat.Head },
+		Body = { part = models.cat.Body },
 	},
 }
+
+-- Parent types class
+local parentClass = {
+	part = nil, --[[as @ModelPart]]
+	lastRot = vec(0, 0, 0),
+	rot = vec(0, 0, 0),
+	partInfluence = vec(0, 0, 0),
+	forwardAng = 0,
+
+	-- Gets custom rotation of parent part
+	getLocalRot = function(self)
+		return self.part:getRot() + self.part:getAnimRot()
+	end,
+	-- Gets total rotation of parent part
+	getTotalRot = function(self)
+		if self == rope.parentData.Head then
+			local r1 = player:getRot()
+			local r2 = self:getLocalRot()
+			return vec(r1.x - r2.x, r1.y - r2.y, -r2.z)
+		elseif self == rope.parentData.Body then
+			return (vec(0, 1, 0) * player:getBodyYaw(1)) - self:getLocalRot()
+		end
+	end,
+	-- Returns an angle in radians representing the direction this part is facing globally.
+	getPartForward = function(self)
+		if self == rope.parentData.Head then
+			local lookDir = previous.lookDir.x_z:normalized() --[[as @Vector3]]
+			local lookAngle = math.deg(math.atan2(lookDir.z, lookDir.x))
+			lookAngle = lookAngle - self.rot.y
+			return math.rad(lookAngle)
+		elseif self == rope.parentData.Body then
+			local bodyAng = player:getBodyYaw(1)
+			bodyAng = bodyAng - self.rot
+			return math.rad(bodyAng)
+		end
+	end,
+	-- Rotates an angle in radians by this part's facing angle.
+	-- Returns -math.cos(result), -math.sin(result)
+	rotateAng = function(self, radAng)
+		local diff = radAng - self.forwardAng
+		return -math.cos(diff), -math.sin(diff)
+	end,
+	TICK = function(self)
+		self.lastRot = self.rot
+		self.rot = self:getTotalRot(self)
+		self.partInfluence = self.rot - self.lastRot
+		self.forwardAng = self:getPartForward(self)
+	end,
+}
+
+function parentClass:new(part)
+	local p = {}
+	setmetatable(p, parentClass)
+	parentClass.__index = parentClass
+	p.part = part
+	modules.events.TICK:register(p.TICK)
+	return p
+end
 
 -- Segment class
 local segmentClass = {
@@ -42,10 +91,7 @@ local segmentClass = {
 
 	-- Gets a vector to apply to this segment's rotation to gradually make it point straight down
 	getGravity = function(self, thisRope)
-		local grav
-		if thisRope.parentType == rope.parentData.Head then
-			grav = rope.headRot.x_z
-		end
+		local grav = thisRope.parentType:getTotalRot().x_z
 		if self.parent ~= nil then
 			grav = grav - self.parent:getRot()
 		end
@@ -122,19 +168,9 @@ local ropeClass = {
 		-- TODO: rope physics (lol)
 
 		-- How much will the segments be influenced by each factor?
-		local partForwardAng
-		if self.parentType == rope.parentData.Head then
-			partForwardAng = math.rad(rope.getHeadForward())
-		end
+		local motionRelAngX, motionRelAngZ = self.parentType:rotateAng(rope.motionAng)
 
-		local motionAngRelative = rope.motionAng - partForwardAng
-		local motionAngSin = math.sin(motionAngRelative)
-		local motionAngCos = math.cos(motionAngRelative)
-
-		local partInfluence
-		if self.parentType == rope.parentData.Head then
-			partInfluence = rope.headInfluence * self.partInfluence
-		end
+		local partInfluence = self.parentType.partInfluence * self.partInfluence
 		local xzVelInfluence = previous.velMagXZ * self.xzVelInfluence
 		local yVelInfluence = rope.yVelInfluence * self.yVelInfluence
 		local windInfluence = 0
@@ -156,17 +192,18 @@ local ropeClass = {
 			-- Velocity delta
 			local velDel = gravity
 			velDel.x = velDel.x - yVelInfluence -- Add vertical velocity. TODO: underwater physics?
-			velDel.x = velDel.x + partInfluence.x -- Adds part velocity (head rot, body rot?)
-			velDel.z = velDel.z - partInfluence.y -- Adds part velocity (head rot, body rot?)
-			-- TODO: figure out where this goes
-			-- velDel = vectors.rotateAroundAxis(self.facingDir, velDel, vec(0, 1, 0))
+			velDel.x = velDel.x + partInfluence.x -- Adds part velocity (head/body rot)
+			velDel.z = velDel.z - partInfluence.y -- Adds part velocity (head/body rot)
 			-- Adds x/z velocity influence
-			velDel.x = velDel.x - (motionAngCos * xzVelInfluence)
-			velDel.z = velDel.z - (motionAngSin * xzVelInfluence)
+			velDel.x = velDel.x + (motionRelAngX * xzVelInfluence)
+			velDel.z = velDel.z + (motionRelAngZ * xzVelInfluence)
 			-- Adds wind influence
 			local windSegmentInfluence = i / #self.segments
 			velDel.x = velDel.x - (rope.windDirCos * windInfluence * windSegmentInfluence)
 			velDel.z = velDel.z - (rope.windDirSin * windInfluence * windSegmentInfluence)
+
+			-- TODO: figure out where this goes
+			-- velDel = vectors.rotateAroundAxis(self.facingDir, velDel, vec(0, 1, 0))
 
 			segment.vel = (segment.vel + velDel) * (1 - segment.friction)
 			-- x rot: + rotates "forward and up", - rotates "back and up"
@@ -203,24 +240,15 @@ end
 
 -- Tick method - keeps track of changes in head rotation and relative motion angle per tick
 function rope.tick()
-	rope.lastHeadRot = rope.headRot
-	rope.headRot = modules.util.getHeadRotTotal()
-	rope.headInfluence = rope.headRot - rope.lastHeadRot
 	rope.lastMotionAng = rope.motionAng
 	rope.motionAng = rope.getMotionAng()
 	rope.yVelInfluence = previous.vel.y
 end
 modules.events.TICK:register(rope.tick)
 
--- A tick method for each parent type
-for name, array in pairs(rope.parentData) do
-	local parentTick = function()
-		array.lastRot = array.rot
-		array.rot = rope.getTotalRot(array)
-		array.partInfluence = array.rot - array.lastRot
-		array.forwardAng = rope.getPartForward(array)
-	end
-	modules.events.TICK:register(parentTick)
+-- Register parent type tick methods here. they need to come after rope.tick
+for key, parent in pairs(rope.parents) do
+	rope.parents = parentClass:new(parent.part)
 end
 
 -- World tick method - gets wind power level and direction based on location
@@ -271,13 +299,6 @@ function rope.getSegments(part, parent)
 	return allParts
 end
 
--- Gets degree angle representing lateral rotation of head.
-function rope.getHeadForward()
-	local lookDir = previous.lookDir.x_z:normalized()
-	local lookAngle = math.deg(math.atan2(lookDir.z, lookDir.x))
-	lookAngle = lookAngle - modules.util.getHeadRot().y
-	return lookAngle
-end
 -- Fetches the angle in radians that represents the direction of motion
 -- Subtract head's facing angle from this to get relative motion ang.
 function rope.getMotionAng()
@@ -285,44 +306,11 @@ function rope.getMotionAng()
 	return motionAng
 end
 
-function rope.getLocalRot(parent)
-	return parent.part:getRot() + parent.part:getAnimRot()
-end
-
-function rope.getTotalRot(parent)
-	if parent == rope.parentData.Head then
-		local r1 = player:getRot()
-		local r2 = modules.util.getHeadRot()
-		return vec(r1.x - r2.x, r1.y - r2.y, -r2.z)
-	elseif parent == rope.parentData.Body then
-		return (vec(0, 1, 0) * player:getBodyYaw(1)) - rope.getLocalRot(parent)
-	end
-end
-
--- Returns an angle in radians representing the direction this part is facing globally.
-function rope.getPartForward(parent)
-	if parent == rope.parentData.Head then
-		local lookDir = previous.lookDir.x_z:normalized() --[[as @Vector3]]
-		local lookAngle = math.deg(math.atan2(lookDir.z, lookDir.x))
-		lookAngle = lookAngle - rope.getTotalRot(parent).y
-		return math.rad(lookAngle)
-	elseif parent == rope.parentData.Body then
-		local bodyAng = player:getBodyYaw(1)
-		bodyAng = bodyAng - rope.getTotalRot(parent).y
-		return math.rad(bodyAng)
-	end
-end
-
-function rope.rotateByParent(parent, radAng)
-	local diff = radAng - parent.forwardAng
-	return -math.cos(diff), -math.sin(diff)
-end
-
 -- Test function that visually displays rope.getMotionAngRelative()
 --[[
 function rope.test()
 	p1 = particles.smoke:spawn():pos(player:getPos()):lifetime(1):scale(5)
-	local ang = math.rad(rope.getHeadForward()) + rope.getMotionAngRelative()
+	local ang = math.rad(rope.parentData.Head.forwardAng) + rope.parentData.Head:rotateAng(rope.motionAng)
 	local offset = vec(math.cos(ang), 0, math.sin(ang)) * 4
 	p2 = particles.smoke:spawn():pos(player:getPos() + offset):lifetime(1):scale(5)
 end
