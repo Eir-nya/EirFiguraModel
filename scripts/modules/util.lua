@@ -99,11 +99,6 @@ end
 function util.getHeadRot()
 	return models.cat.Head:getRot() + models.cat.Head:getAnimRot()
 end
-function util.getHeadRotTotal()
-	local r1 = player:getRot()
-	local r2 = util.getHeadRot()
-	return vec(r1.x - r2.x, r1.y - r2.y, -r2.z)
-end
 function util.getEyePos()
 	return util.partToWorldPos(models.cat.Head.eyesBack)
 end

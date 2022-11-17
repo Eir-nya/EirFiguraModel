@@ -7,8 +7,6 @@ local rope = {
 
 	lastMotionAng = vec(0, 0, 0),
 	motionAng = 0,
-	motionAngSin = 0,
-	motionAngCos = 0,
 	lastHeadRot = vec(0, 0, 0),
 	headRot = vec(0, 0, 0),
 	headInfluence = vec(0, 0, 0), -- headRot - lastHeadRot
@@ -19,9 +17,19 @@ local rope = {
 	windDirCos = 0,
 	windPower = 0, -- Strength of sky light at player's head determines wind strength (0-15). Also 15 if in dimension "minecraft:the_nether"
 	windPowerDiv100 = 0, -- windPower divided by 100. Used to ease up calculations
-}
 
-local parentTypes = { HEAD = 1, BODY = 2 }
+	-- Data on parents (mainly head and body)
+	parentData = {
+		Head = {
+			part = models.cat.Head,
+			lastRot = vec(0, 0, 0),
+			rot = vec(0, 0, 0),
+		},
+		Body = {
+			part = models.cat.Body
+		},
+	},
+}
 
 -- Segment class
 local segmentClass = {
@@ -35,7 +43,7 @@ local segmentClass = {
 	-- Gets a vector to apply to this segment's rotation to gradually make it point straight down
 	getGravity = function(self, thisRope)
 		local grav
-		if thisRope.parentType == parentTypes.HEAD then
+		if thisRope.parentType == rope.parentData.Head then
 			grav = rope.headRot.x_z
 		end
 		if self.parent ~= nil then
@@ -65,7 +73,7 @@ local ropeClass = {
 	gravity = 0.1,
 	friction = 0.2,
 	facingDir = 0, -- TODO: have this number gradually "sway" up and down on a slow sine wave?
-	parentType = parentTypes.HEAD,
+	parentType = rope.parentData.Head,
 	partInfluence = 1/16,
 	xzVelInfluence = 6,
 	yVelInfluence = 1/4,
@@ -75,10 +83,10 @@ local ropeClass = {
 	setup = function(self, segment)
 		-- Set behind-the-scenes values and states
 		self.id = rope.ropesCount
-		if segment:isChildOf(models.cat.Head) then
-			self.parentType = parentTypes.HEAD
-		elseif segment:isChildOf(models.cat.Body) then
-			self.parentType = parentTypes.BODY
+		for name, array in pairs(rope.parentData) do
+			if segment:isChildOf(array.part) then
+				self.parentType = array
+			end
 		end
 		self.segments = rope.getSegments(segment, segment)
 		self.segments[1].parent = nil
@@ -114,8 +122,17 @@ local ropeClass = {
 		-- TODO: rope physics (lol)
 
 		-- How much will the segments be influenced by each factor?
+		local partForwardAng
+		if self.parentType == rope.parentData.Head then
+			partForwardAng = math.rad(rope.getHeadForward())
+		end
+
+		local motionAngRelative = rope.motionAng - partForwardAng
+		local motionAngSin = math.sin(motionAngRelative)
+		local motionAngCos = math.cos(motionAngRelative)
+
 		local partInfluence
-		if self.parentType == parentTypes.HEAD then
+		if self.parentType == rope.parentData.Head then
 			partInfluence = rope.headInfluence * self.partInfluence
 		end
 		local xzVelInfluence = previous.velMagXZ * self.xzVelInfluence
@@ -144,8 +161,8 @@ local ropeClass = {
 			-- TODO: figure out where this goes
 			-- velDel = vectors.rotateAroundAxis(self.facingDir, velDel, vec(0, 1, 0))
 			-- Adds x/z velocity influence
-			velDel.x = velDel.x - (rope.motionAngCos * xzVelInfluence)
-			velDel.z = velDel.z - (rope.motionAngSin * xzVelInfluence)
+			velDel.x = velDel.x - (motionAngCos * xzVelInfluence)
+			velDel.z = velDel.z - (motionAngSin * xzVelInfluence)
 			-- Adds wind influence
 			local windSegmentInfluence = i / #self.segments
 			velDel.x = velDel.x - (rope.windDirCos * windInfluence * windSegmentInfluence)
@@ -190,12 +207,21 @@ function rope.tick()
 	rope.headRot = modules.util.getHeadRotTotal()
 	rope.headInfluence = rope.headRot - rope.lastHeadRot
 	rope.lastMotionAng = rope.motionAng
-	rope.motionAng = rope.getMotionAngRelative()
-	rope.motionAngSin = math.sin(rope.motionAng)
-	rope.motionAngCos = math.cos(rope.motionAng)
+	rope.motionAng = rope.getMotionAng()
 	rope.yVelInfluence = previous.vel.y
 end
 modules.events.TICK:register(rope.tick)
+
+-- A tick method for each parent type
+for name, array in pairs(rope.parentData) do
+	local parentTick = function()
+		array.lastRot = array.rot
+		array.rot = rope.getTotalRot(array)
+		array.partInfluence = array.rot - array.lastRot
+		array.forwardAng = rope.getPartForward(array)
+	end
+	modules.events.TICK:register(parentTick)
+end
 
 -- World tick method - gets wind power level and direction based on location
 function rope.worldTick()
@@ -252,11 +278,44 @@ function rope.getHeadForward()
 	lookAngle = lookAngle - modules.util.getHeadRot().y
 	return lookAngle
 end
--- Fetches the angle in radians that represents the direction of motion relative to the head's facing direction.
-function rope.getMotionAngRelative()
-	local headForwardAng = math.rad(rope.getHeadForward())
+-- Fetches the angle in radians that represents the direction of motion
+-- Subtract head's facing angle from this to get relative motion ang.
+function rope.getMotionAng()
 	local motionAng = math.atan2(previous.vel.z, previous.vel.x)
-	return motionAng - headForwardAng
+	return motionAng
+end
+
+function rope.getLocalRot(parent)
+	return parent.part:getRot() + parent.part:getAnimRot()
+end
+
+function rope.getTotalRot(parent)
+	if parent == rope.parentData.Head then
+		local r1 = player:getRot()
+		local r2 = modules.util.getHeadRot()
+		return vec(r1.x - r2.x, r1.y - r2.y, -r2.z)
+	elseif parent == rope.parentData.Body then
+		return (vec(0, 1, 0) * player:getBodyYaw(1)) - rope.getLocalRot(parent)
+	end
+end
+
+-- Returns an angle in radians representing the direction this part is facing globally.
+function rope.getPartForward(parent)
+	if parent == rope.parentData.Head then
+		local lookDir = previous.lookDir.x_z:normalized() --[[as @Vector3]]
+		local lookAngle = math.deg(math.atan2(lookDir.z, lookDir.x))
+		lookAngle = lookAngle - rope.getTotalRot(parent).y
+		return math.rad(lookAngle)
+	elseif parent == rope.parentData.Body then
+		local bodyAng = player:getBodyYaw(1)
+		bodyAng = bodyAng - rope.getTotalRot(parent).y
+		return math.rad(bodyAng)
+	end
+end
+
+function rope.rotateByParent(parent, radAng)
+	local diff = radAng - parent.forwardAng
+	return -math.cos(diff), -math.sin(diff)
 end
 
 -- Test function that visually displays rope.getMotionAngRelative()
@@ -269,13 +328,6 @@ function rope.test()
 end
 modules.events.TICK:register(rope.test)
 ]]--
-
--- NOTES:
--- math.sin(math.rad(this)) : -1 when facing +x, 1 when facing -x
--- math.cos(math.rad(this)) : 1 when facing +z, -1 when facing -z
-function rope.getBodyRot()
-	return player:getBodyYaw() + models.cat.Body:getRot().y + models.cat.Body:getAnimRot().y
-end
 
 -- Gets the wind power at the current block.
 function rope.getWindPower()

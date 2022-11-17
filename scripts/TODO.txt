@@ -37,7 +37,6 @@ TODO:
 			- on equip...
 				* enable "body.armorbottom.FluffyLeggings"
 				* enable "[right/left]leg.armor.FluffyLeggings"
-				* change uvs on "body.body" to alternate body w/o purple shorts
 				* disable "body.body", enable "body.body2"
 				* disable "[right/left].[right/left] leg", enable "[right/left]leg.[right/left] leg2"
 
