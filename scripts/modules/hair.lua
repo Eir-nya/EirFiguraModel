@@ -6,7 +6,7 @@ local hair = {
 			gravity = 0.09,
 			friction = 0.175,
 			facingDir = 24, -- TODO: + or -?
-			partInfluence = 1/10,
+			partInfluence = 1 / 10,
 			xzVelInfluence = 10,
 			yVelInfluence = 1.6
 		},
@@ -14,7 +14,7 @@ local hair = {
 			gravity = 0.12,
 			friction = 0.225,
 			facingDir = -17,
-			partInfluence = 1/10,
+			partInfluence = 1 / 10,
 			xzVelInfluence = 10,
 			yVelInfluence = 1.3
 		},
@@ -22,7 +22,7 @@ local hair = {
 			gravity = 0.2,
 			friction = 0.3,
 			facingDir = 164,
-			partInfluence = 1/9,
+			partInfluence = 1 / 9,
 			xzVelInfluence = 18,
 			yVelInfluence = 4
 		},
@@ -30,7 +30,7 @@ local hair = {
 			gravity = 0.2,
 			friction = 0.3,
 			facingDir = -10,
-			partInfluence = 1/9,
+			partInfluence = 1 / 9,
 			xzVelInfluence = 18,
 			yVelInfluence = 5
 		},
@@ -38,7 +38,7 @@ local hair = {
 			gravity = 0.2,
 			friction = 0.3,
 			facingDir = -20,
-			partInfluence = 1/9,
+			partInfluence = 1 / 9,
 			xzVelInfluence = 18,
 			yVelInfluence = 5
 		},

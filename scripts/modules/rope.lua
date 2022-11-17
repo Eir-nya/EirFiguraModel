@@ -15,7 +15,7 @@ local rope = {
 	windPower = 0, -- Strength of sky light at player's head determines wind strength (0-15). Also 15 if in dimension "minecraft:the_nether"
 	windPowerDiv100 = 0, -- windPower divided by 100. Used to ease up calculations
 
-	-- Data on parents (mainly head and body)
+	-- parentClass instances
 	parents = {
 		Head = { part = models.cat.Head },
 		Body = { part = models.cat.Body },
@@ -84,12 +84,12 @@ local segmentClass = {
 	rot = vec(0, 0, 0),
 	vel = vec(0, 0, 0),
 	friction = 0, -- Set in ropeClass:setFriction
-	part = nil,
-	parent = nil,
+	part = nil, --[[@as ModelPart]]
+	parent = nil, --[[@as ModelPart]]
 
 	-- Gets a vector to apply to this segment's rotation to gradually make it point straight down
 	getGravity = function(self, thisRope)
-		local grav = thisRope.parentType:getTotalRot().x_z
+		local grav = thisRope.parentType.rot.x_z
 		if self.parent ~= nil then
 			grav = grav - self.parent:getRot()
 		end
@@ -114,14 +114,15 @@ local ropeClass = {
 	-- Default values
 	enabled = true, -- Setting this does nothing. Is set by setEnabled
 	id = 0, -- Set to # of existing ropes on rope creation. Used to offset wind influence for realism
+	segmentCount = 0, -- Set to # of segments on creation
 	gravity = 0.1,
 	friction = 0.2,
 	facingDir = 0, -- TODO: have this number gradually "sway" up and down on a slow sine wave?
 	parentType = rope.parents.Head,
-	partInfluence = 1/16,
+	partInfluence = 1 / 16,
 	xzVelInfluence = 6,
-	yVelInfluence = 1/4,
-	windInfluence = 1/6,
+	yVelInfluence = 1 / 4,
+	windInfluence = 1 / 6,
 
 	-- Methods
 	setup = function(self, segment)
@@ -134,6 +135,7 @@ local ropeClass = {
 		end
 		self.segments = rope.getSegments(segment, segment)
 		self.segments[1].parent = nil
+		self.segmentCount = #self.segments
 		self.eventName = rope.getEventName(segment)
 		self:setFriction(self.friction)
 		self:setEnabled(true)
@@ -172,13 +174,15 @@ local ropeClass = {
 		local xzVelInfluence = previous.velMagXZ * self.xzVelInfluence
 		local yVelInfluence = rope.yVelInfluence * self.yVelInfluence
 		local windInfluence = 0
-		if rope.windPower > 0 then
+		if rope.windPower > 0 and self.windInfluence > 0 then
 			windInfluence = rope.windPower * self.windInfluence
 			local windMult = math.sin(((world.getTime() / 2) + (self.id * 2.2)) * rope.windPowerDiv100)
 			windMult = windMult + (math.cos((world.getTime() + (self.id * 1.5)) * rope.windPowerDiv100) * (rope.windPower / 20))
 			windMult = (windMult / 3) + 0.5
 			windInfluence = windInfluence * windMult
 		end
+		local windInfluenceX = rope.windDirCos * windInfluence
+		local windInfluenceZ = rope.windDirSin * windInfluence
 
 		-- For each segment...
 		for i, segment in ipairs(self.segments) do
@@ -196,9 +200,9 @@ local ropeClass = {
 			velDel.x = velDel.x + (motionRelAngX * xzVelInfluence)
 			velDel.z = velDel.z + (motionRelAngZ * xzVelInfluence)
 			-- Adds wind influence
-			local windSegmentInfluence = i / #self.segments
-			velDel.x = velDel.x - (rope.windDirCos * windInfluence * windSegmentInfluence)
-			velDel.z = velDel.z - (rope.windDirSin * windInfluence * windSegmentInfluence)
+			local windSegmentInfluence = i / self.segmentCount
+			velDel.x = velDel.x + (windInfluenceX * windSegmentInfluence)
+			velDel.z = velDel.z + (windInfluenceZ * windSegmentInfluence)
 
 			-- TODO: figure out where this goes
 			-- velDel = vectors.rotateAroundAxis(self.facingDir, velDel, vec(0, 1, 0))
@@ -253,8 +257,8 @@ end
 function rope.worldTick()
 	if world.exists() and not previous.invisible then
 		rope.windDir = math.rad(world.getTime() / 4)
-		rope.windDirSin = math.sin(rope.windDir)
-		rope.windDirCos = math.cos(rope.windDir)
+		rope.windDirSin = -math.sin(rope.windDir)
+		rope.windDirCos = -math.cos(rope.windDir)
 		rope.windPower = rope.getWindPower()
 		rope.windPowerDiv100 = rope.windPower / 100
 	end
