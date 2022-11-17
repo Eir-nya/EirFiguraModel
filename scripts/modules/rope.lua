@@ -16,14 +16,14 @@ local rope = {
 	windPowerDiv100 = 0, -- windPower divided by 100. Used to ease up calculations
 
 	-- Data on parents (mainly head and body)
-	parentData = {
+	parents = {
 		Head = { part = models.cat.Head },
 		Body = { part = models.cat.Body },
 	},
 }
 
 -- Parent types class
-local parentClass = {
+parentClass = {
 	part = nil, --[[as @ModelPart]]
 	lastRot = vec(0, 0, 0),
 	rot = vec(0, 0, 0),
@@ -36,24 +36,24 @@ local parentClass = {
 	end,
 	-- Gets total rotation of parent part
 	getTotalRot = function(self)
-		if self == rope.parentData.Head then
+		if self == rope.parents.Head then
 			local r1 = player:getRot()
 			local r2 = self:getLocalRot()
 			return vec(r1.x - r2.x, r1.y - r2.y, -r2.z)
-		elseif self == rope.parentData.Body then
+		elseif self == rope.parents.Body then
 			return (vec(0, 1, 0) * player:getBodyYaw(1)) - self:getLocalRot()
 		end
 	end,
 	-- Returns an angle in radians representing the direction this part is facing globally.
 	getPartForward = function(self)
-		if self == rope.parentData.Head then
+		if self == rope.parents.Head then
 			local lookDir = previous.lookDir.x_z:normalized() --[[as @Vector3]]
 			local lookAngle = math.deg(math.atan2(lookDir.z, lookDir.x))
 			lookAngle = lookAngle - self.rot.y
 			return math.rad(lookAngle)
-		elseif self == rope.parentData.Body then
+		elseif self == rope.parents.Body then
 			local bodyAng = player:getBodyYaw(1)
-			bodyAng = bodyAng - self.rot
+			bodyAng = bodyAng - self.rot.y
 			return math.rad(bodyAng)
 		end
 	end,
@@ -65,19 +65,17 @@ local parentClass = {
 	end,
 	TICK = function(self)
 		self.lastRot = self.rot
-		self.rot = self:getTotalRot(self)
+		self.rot = self:getTotalRot()
 		self.partInfluence = self.rot - self.lastRot
-		self.forwardAng = self:getPartForward(self)
+		self.forwardAng = self:getPartForward()
 	end,
 }
 
-function parentClass:new(part)
-	local p = {}
-	setmetatable(p, parentClass)
+function parentClass:new(parentTable)
+	setmetatable(parentTable, parentClass)
 	parentClass.__index = parentClass
-	p.part = part
-	modules.events.TICK:register(p.TICK)
-	return p
+	modules.events.TICK:register(function() parentTable:TICK() end)
+	return parentTable
 end
 
 -- Segment class
@@ -119,7 +117,7 @@ local ropeClass = {
 	gravity = 0.1,
 	friction = 0.2,
 	facingDir = 0, -- TODO: have this number gradually "sway" up and down on a slow sine wave?
-	parentType = rope.parentData.Head,
+	parentType = rope.parents.Head,
 	partInfluence = 1/16,
 	xzVelInfluence = 6,
 	yVelInfluence = 1/4,
@@ -129,9 +127,9 @@ local ropeClass = {
 	setup = function(self, segment)
 		-- Set behind-the-scenes values and states
 		self.id = rope.ropesCount
-		for name, array in pairs(rope.parentData) do
-			if segment:isChildOf(array.part) then
-				self.parentType = array
+		for _, parent in pairs(rope.parents) do
+			if segment:isChildOf(parent.part) then
+				self.parentType = parent
 			end
 		end
 		self.segments = rope.getSegments(segment, segment)
@@ -247,8 +245,8 @@ end
 modules.events.TICK:register(rope.tick)
 
 -- Register parent type tick methods here. they need to come after rope.tick
-for key, parent in pairs(rope.parents) do
-	rope.parents = parentClass:new(parent.part)
+for parentName, parent in pairs(rope.parents) do
+	rope.parents[parentName] = parentClass:new(parent)
 end
 
 -- World tick method - gets wind power level and direction based on location
@@ -310,7 +308,7 @@ end
 --[[
 function rope.test()
 	p1 = particles.smoke:spawn():pos(player:getPos()):lifetime(1):scale(5)
-	local ang = math.rad(rope.parentData.Head.forwardAng) + rope.parentData.Head:rotateAng(rope.motionAng)
+	local ang = math.rad(rope.parents.Head.forwardAng) + rope.parents.Head:rotateAng(rope.motionAng)
 	local offset = vec(math.cos(ang), 0, math.sin(ang)) * 4
 	p2 = particles.smoke:spawn():pos(player:getPos() + offset):lifetime(1):scale(5)
 end
