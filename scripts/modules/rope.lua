@@ -15,8 +15,21 @@ local rope = {
 
 	-- parentClass instances
 	parents = {
-		Head = { part = models.cat.Head },
-		Body = { part = models.cat.Body },
+		Head = {
+			part = models.cat.Head,
+			getPartForward = function(self)
+				local lookDir = previous.lookDir.x_z:normalized() --[[as @Vector3]]
+				local lookAngle = math.deg(math.atan2(lookDir.z, lookDir.x))
+				lookAngle = lookAngle - self.localRot.y
+				return math.rad(lookAngle)
+			end,
+		},
+		Body = {
+			part = models.cat.Body,
+			getLocalRot = function(self)
+				return self.part:getRot() + self.part:getAnimRot() + vanilla_model.BODY:getOriginRot()
+			end,
+		},
 	},
 }
 
@@ -25,6 +38,7 @@ parentClass = {
 	part = nil, --[[as @ModelPart]]
 	lastRot = vec(0, 0, 0),
 	rot = vec(0, 0, 0),
+	localRot = vec(0, 0, 0),
 	partInfluence = vec(0, 0, 0),
 	forwardAng = 0,
 	xzVelAngX = 0,
@@ -40,24 +54,17 @@ parentClass = {
 	getTotalRot = function(self)
 		if self == rope.parents.Head then
 			local r1 = player:getRot()
-			local r2 = self:getLocalRot()
+			local r2 = self.localRot
 			return vec(r1.x - r2.x, r1.y - r2.y, -r2.z)
 		elseif self == rope.parents.Body then
-			return (vec(0, 1, 0) * player:getBodyYaw(1)) - self:getLocalRot()
+			return (vec(0, 1, 0) * player:getBodyYaw(1)) - self.localRot
 		end
 	end,
 	-- Returns an angle in radians representing the direction this part is facing globally.
 	getPartForward = function(self)
-		if self == rope.parents.Head then
-			local lookDir = previous.lookDir.x_z:normalized() --[[as @Vector3]]
-			local lookAngle = math.deg(math.atan2(lookDir.z, lookDir.x))
-			lookAngle = lookAngle - self.rot.y
-			return math.rad(lookAngle)
-		elseif self == rope.parents.Body then
-			local bodyAng = player:getBodyYaw(1)
-			bodyAng = bodyAng - self.rot.y
-			return math.rad(bodyAng)
-		end
+		local bodyAng = player:getBodyYaw(1)
+		bodyAng = bodyAng - self.localRot.y
+		return math.rad(bodyAng)
 	end,
 	-- Rotates an angle in radians by this part's facing angle.
 	-- Returns -math.cos(result), -math.sin(result)
@@ -66,6 +73,7 @@ parentClass = {
 		return -math.cos(diff), -math.sin(diff)
 	end,
 	TICK = function(self)
+		self.localRot = self:getLocalRot()
 		self.lastRot = self.rot
 		self.rot = self:getTotalRot()
 		self.partInfluence = self.rot - self.lastRot
@@ -311,7 +319,7 @@ end
 --[[
 function rope.test()
 	p1 = particles.smoke:spawn():pos(player:getPos()):lifetime(1):scale(5)
-	local ang = math.rad(rope.parents.Head.forwardAng) + rope.parents.Head:rotateAng(rope.motionAng)
+	local ang = rope.motionAng + rope.parents.Head.forwardAng
 	local offset = vec(math.cos(ang), 0, math.sin(ang)) * 4
 	p2 = particles.smoke:spawn():pos(player:getPos() + offset):lifetime(1):scale(5)
 end
