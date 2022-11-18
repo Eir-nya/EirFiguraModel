@@ -10,8 +10,6 @@ local rope = {
 	yVelInfluence = 0, -- y velocity
 
 	windDir = 0, -- Radian angle of wind blowing
-	windDirSin = 0,
-	windDirCos = 0,
 	windPower = 0, -- Strength of sky light at player's head determines wind strength (0-15). Also 15 if in dimension "minecraft:the_nether"
 	windPowerDiv100 = 0, -- windPower divided by 100. Used to ease up calculations
 
@@ -29,6 +27,10 @@ parentClass = {
 	rot = vec(0, 0, 0),
 	partInfluence = vec(0, 0, 0),
 	forwardAng = 0,
+	xzVelAngX = 0,
+	xzVelAngZ = 0,
+	windAngX = 0,
+	windAngZ = 0,
 
 	-- Gets custom rotation of parent part
 	getLocalRot = function(self)
@@ -68,6 +70,8 @@ parentClass = {
 		self.rot = self:getTotalRot()
 		self.partInfluence = self.rot - self.lastRot
 		self.forwardAng = self:getPartForward()
+		self.xzVelAngX, self.xzVelAngZ = self:rotateAng(rope.motionAng)
+		self.windAngX, self.windAngZ = self:rotateAng(rope.windDir)
 	end,
 }
 
@@ -169,8 +173,6 @@ local ropeClass = {
 		-- TODO: rope physics (lol)
 
 		-- How much will the segments be influenced by each factor?
-		local motionRelAngX, motionRelAngZ = self.parentType:rotateAng(rope.motionAng)
-
 		local partInfluence = self.parentType.partInfluence * self.partInfluence
 		local xzVelInfluence = previous.velMagXZ * self.xzVelInfluence
 		local yVelInfluence = rope.yVelInfluence * self.yVelInfluence
@@ -182,8 +184,6 @@ local ropeClass = {
 			windMult = (windMult / 3) + 0.5
 			windInfluence = windInfluence * windMult
 		end
-		local windInfluenceX = rope.windDirCos * windInfluence
-		local windInfluenceZ = rope.windDirSin * windInfluence
 
 		-- For each segment...
 		for i, segment in ipairs(self.segments) do
@@ -198,12 +198,12 @@ local ropeClass = {
 			velDel.x = velDel.x + partInfluence.x -- Adds part velocity (head/body rot)
 			velDel.z = velDel.z - partInfluence.y -- Adds part velocity (head/body rot)
 			-- Adds x/z velocity influence
-			velDel.x = velDel.x + (motionRelAngX * xzVelInfluence)
-			velDel.z = velDel.z + (motionRelAngZ * xzVelInfluence)
+			velDel.x = velDel.x + (self.parentType.xzVelAngX * xzVelInfluence)
+			velDel.z = velDel.z + (self.parentType.xzVelAngZ * xzVelInfluence)
 			-- Adds wind influence
-			local windSegmentInfluence = i / self.segmentCount
-			velDel.x = velDel.x + (windInfluenceX * windSegmentInfluence)
-			velDel.z = velDel.z + (windInfluenceZ * windSegmentInfluence)
+			local windSegmentInfluence = (i / self.segmentCount) * windInfluence
+			velDel.x = velDel.x + (self.parentType.windAngX * windSegmentInfluence)
+			velDel.z = velDel.z + (self.parentType.windAngZ * windSegmentInfluence)
 
 			-- TODO: figure out where this goes
 			-- velDel = vectors.rotateAroundAxis(self.facingDir, velDel, vec(0, 1, 0))
@@ -258,8 +258,6 @@ end
 function rope.worldTick()
 	if world.exists() and not previous.invisible then
 		rope.windDir = math.rad(world.getTime() / 4)
-		rope.windDirSin = -math.sin(rope.windDir)
-		rope.windDirCos = -math.cos(rope.windDir)
 		rope.windPower = rope.getWindPower()
 		rope.windPowerDiv100 = rope.windPower / 100
 	end
