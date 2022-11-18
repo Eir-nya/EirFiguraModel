@@ -1,4 +1,4 @@
--- Wavey hair module. Uses rope physics module.
+-- Module for both wavey (rope physics) hair and 3d (modeled) hair.
 local hair = {
 	-- Rope physics
 	ropes = {
@@ -77,15 +77,18 @@ function hair.helmetEvent()
 				-- 3DHair: Hide all except North
 				modules.util.setChildrenVisible(models.cat.Head["3DHair"], false)
 				models.cat.Head["3DHair"].north:setVisible(true)
+				-- Frilly: Hide
+				models.cat.Head.Frilly:setVisible(false)
 
 				-- TODO: hide hat layer but only if it's being used instead of 3d hair
 
-				-- TODO: set limits on Left and Right
+				-- TODO: set limits on Left and Right wavey hair
 			end
 			-- TODO
-		-- Default helmet model: disable Left and Back2
+		-- Default helmet model: disable Left and Back2, move down Frilly
 		elseif modules.armor.knownMaterial(modules.armor.getItemMaterial(previous.helmet)) then
 			hair.ropes.Back2:setVisible(false)
+			models.cat.Head.Frilly:setPos(vec(0, -1.5, -1))
 		-- Generic block or item: disable all
 		else
 			hair.ropes.Left:setVisible(false)
@@ -94,6 +97,7 @@ function hair.helmetEvent()
 			hair.ropes.Back2:setVisible(false)
 			hair.ropes.Back3:setVisible(false)
 
+			models.cat.Head.Frilly:setVisible(false)
 			modules.util.setChildrenVisible(models.cat.Head["3DHair"], false)
 		end
 	-- Restore all
@@ -104,6 +108,8 @@ function hair.helmetEvent()
 		hair.ropes.Back2:setVisible(true)
 		hair.ropes.Back3:setVisible(true)
 
+		models.cat.Head.Frilly:setPos()
+		models.cat.Head.Frilly:setVisible(true)
 		modules.util.setChildrenVisible(models.cat.Head["3DHair"], true)
 	end
 end
