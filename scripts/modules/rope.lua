@@ -8,6 +8,7 @@ local rope = {
 	lastMotionAng = vec(0, 0, 0),
 	motionAng = 0,
 	yVelInfluence = 0, -- y velocity
+	isUnderwater = nil,
 
 	windDir = 0, -- Radian angle of wind blowing
 	windPower = 0, -- Strength of sky light at player's head determines wind strength (0-15). Also 15 if in dimension "minecraft:the_nether"
@@ -107,6 +108,14 @@ local segmentClass = {
 			grav = grav - self.parent:getRot()
 		end
 
+		-- If we're underwater and descending, the direction of gravity should be up
+		if rope.isUnderwater then
+			print(rope.yVelInfluence)
+			if rope.yVelInfluence > 0 then
+				grav.x = grav.x + 135
+			end
+		end
+
 		grav = (grav - self.rot) * thisRope.gravity
 
 		return grav
@@ -153,6 +162,7 @@ local ropeClass = {
 		self.segmentCount = #self.segments
 		self.eventName = rope.getEventName(segment)
 		self:setFriction(self.friction)
+		self:setFacingDir(self.facingDir)
 		self:setEnabled(true)
 	end,
 	setFriction = function(self, newFric)
@@ -178,6 +188,13 @@ local ropeClass = {
 			modules.events.TICK:register(function() self:TICK() end, self.eventName)
 			modules.events.RENDER:register(function(delta) self:RENDER(delta) end, self.eventName)
 		end
+	end,
+	-- Takes an angle in degrees and stores -cos and -sin of the radian value of it
+	setFacingDir = function(self, newDir)
+		self.facingDir = newDir
+		local r = math.rad(newDir)
+		self.facingDirSin = -math.sin(r)
+		self.facingDirCos = -math.cos(r)
 	end,
 	applyLimits = function(self, segment, i)
 		local segLimits = self.limits[i]
@@ -218,10 +235,16 @@ local ropeClass = {
 		-- How much will the segments be influenced by each factor?
 		local partInfluence = self.parentType.partInfluence * self.partInfluence
 		local xzVelInfluence = previous.velMagXZ * self.xzVelInfluence
+
+		-- y vel influence is rotated based on the "facingDir" variable of the rope class
 		local yVelInfluence = rope.yVelInfluence * self.yVelInfluence
+		if rope.isUnderwater then
+			yVelInfluence = yVelInfluence * 8
+		end
+
 		local windInfluence = 0
 		-- 185 (next 7 lines)
-		if rope.windPower > 0 and self.windInfluence > 0 then
+		if rope.windPower > 0 and self.windInfluence > 0 and not rope.isUnderwater then
 			windInfluence = rope.windPower * self.windInfluence
 			local windMult = math.sin(((world.getTime() / 2) + (self.id * 2.2)) * rope.windPowerDiv100)
 			windMult = windMult + (math.cos((world.getTime() + (self.id * 1.5)) * rope.windPowerDiv100) * (rope.windPower / 20))
@@ -235,13 +258,18 @@ local ropeClass = {
 
 			-- Gravity to add: ((angle that would make segment point straight down) - (last Rot)) * "gravity" mult
 			local gravity = segment:getGravity(self)
+			if rope.isUnderwater then
+				gravity = gravity / 8
+			end
 
 			-- Velocity delta
 			local velDel = gravity
 
 			-- Add vertical velocity. TODO: underwater physics?
 			if yVelInfluence ~= 0 then
-				velDel.x = velDel.x + yVelInfluence
+				-- velDel.x = velDel.x + yVelInfluence
+				velDel.x = velDel.x + (self.facingDirCos * yVelInfluence)
+				velDel.z = velDel.z + (self.facingDirSin * yVelInfluence)
 			end
 			-- Adds part velocity (head/body rot)
 			if partInfluence.x ~= 0 or partInfluence.z ~= 0 then
@@ -302,6 +330,7 @@ function rope.tick()
 	rope.lastMotionAng = rope.motionAng
 	rope.motionAng = rope.getMotionAng()
 	rope.yVelInfluence = -previous.vel.y
+	rope.isUnderwater = player:isUnderwater()
 end
 modules.events.TICK:register(rope.tick)
 
