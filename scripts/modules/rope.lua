@@ -153,14 +153,15 @@ local ropeClass = {
 		self:setEnabled(visible)
 	end,
 	setEnabled = function(self, enabled)
-		self.enabled = enabled
 		-- Register and unregister events
+		self.enabled = enabled
+
+		modules.events.TICK:remove(self.eventName)
+		modules.events.RENDER:remove(self.eventName)
+
 		if enabled then
 			modules.events.TICK:register(function() self:TICK() end, self.eventName)
 			modules.events.RENDER:register(function(delta) self:RENDER(delta) end, self.eventName)
-		else
-			modules.events.TICK:remove(self.eventName)
-			modules.events.RENDER:remove(self.eventName)
 		end
 	end,
 
