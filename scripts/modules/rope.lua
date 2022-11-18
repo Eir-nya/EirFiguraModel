@@ -137,6 +137,8 @@ local ropeClass = {
 	yVelInfluence = 1 / 4,
 	windInfluence = 1 / 6,
 
+	limits = nil,
+
 	-- Methods
 	setup = function(self, segment)
 		-- Set behind-the-scenes values and states
@@ -177,6 +179,38 @@ local ropeClass = {
 			modules.events.RENDER:register(function(delta) self:RENDER(delta) end, self.eventName)
 		end
 	end,
+	applyLimits = function(self, segment, i)
+		local segLimits = self.limits[i]
+		if segLimits ~= nil then
+			-- X min/max
+			if segLimits.xMin ~= nil then
+				if segment.rot.x < segLimits.xMin then
+					segment.rot.x = segLimits.xMin
+					segment.vel.x = 0
+				end
+			end
+			if segLimits.xMax ~= nil then
+				if segment.rot.x > segLimits.xMax then
+					segment.rot.x = segLimits.xMax
+					segment.vel.x = 0
+				end
+			end
+
+			-- Z min/max
+			if segLimits.zMin ~= nil then
+				if segment.rot.z < segLimits.zMin then
+					segment.rot.z = segLimits.zMin
+					segment.vel.z = 0
+				end
+			end
+			if segLimits.zMax ~= nil then
+				if segment.rot.z > segLimits.zMax then
+					segment.rot.z = segLimits.zMax
+					segment.vel.z = 0
+				end
+			end
+		end
+	end,
 
 	TICK = function(self)
 		-- TODO: rope physics (lol)
@@ -207,7 +241,7 @@ local ropeClass = {
 
 			-- Add vertical velocity. TODO: underwater physics?
 			if yVelInfluence ~= 0 then
-				velDel.x = velDel.x - yVelInfluence
+				velDel.x = velDel.x + yVelInfluence
 			end
 			-- Adds part velocity (head/body rot)
 			if partInfluence.x ~= 0 or partInfluence.z ~= 0 then
@@ -234,7 +268,10 @@ local ropeClass = {
 			-- z rot: + rotates "right", - rotates "left"
 			segment.rot = segment.rot + segment.vel
 
-			-- TODO limits
+			-- Limits
+			if self.limits ~= nil then
+				self:applyLimits(segment, i)
+			end
 		end
 	end,
 	RENDER = function(self, delta)
@@ -264,7 +301,7 @@ end
 function rope.tick()
 	rope.lastMotionAng = rope.motionAng
 	rope.motionAng = rope.getMotionAng()
-	rope.yVelInfluence = previous.vel.y
+	rope.yVelInfluence = -previous.vel.y
 end
 modules.events.TICK:register(rope.tick)
 

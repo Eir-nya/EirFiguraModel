@@ -8,7 +8,11 @@ local hair = {
 			facingDir = 24, -- TODO: + or -?
 			partInfluence = 1 / 10,
 			xzVelInfluence = 10,
-			yVelInfluence = 1.6
+			yVelInfluence = 1.6,
+			limits = {
+				{ xMin = 0 },
+				{ xMin = 0 },
+			},
 		},
 		Right = {
 			gravity = 0.12,
@@ -16,7 +20,11 @@ local hair = {
 			facingDir = -17,
 			partInfluence = 1 / 10,
 			xzVelInfluence = 10,
-			yVelInfluence = 1.3
+			yVelInfluence = 1.3,
+			limits = {
+				{ xMin = 0 },
+				-- { xMin = 0 },
+			},
 		},
 		Back1 = {
 			gravity = 0.2,
@@ -24,7 +32,10 @@ local hair = {
 			facingDir = 164,
 			partInfluence = 1 / 9,
 			xzVelInfluence = 18,
-			yVelInfluence = 4
+			yVelInfluence = 4,
+			limits = {
+				{ xMax = 0 },
+			},
 		},
 		Back2 = {
 			gravity = 0.2,
@@ -32,7 +43,11 @@ local hair = {
 			facingDir = -10,
 			partInfluence = 1 / 9,
 			xzVelInfluence = 18,
-			yVelInfluence = 5
+			yVelInfluence = 5,
+			limits = {
+				{ xMax = 0 },
+				{ xMax = 0 },
+			},
 		},
 		Back3 = {
 			gravity = 0.2,
@@ -40,7 +55,10 @@ local hair = {
 			facingDir = -20,
 			partInfluence = 1 / 9,
 			xzVelInfluence = 18,
-			yVelInfluence = 5
+			yVelInfluence = 5,
+			limits = {
+				{ xMax = 67.5 },
+			},
 		},
 	},
 }
