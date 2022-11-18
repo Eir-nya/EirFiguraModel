@@ -100,6 +100,7 @@ local segmentClass = {
 	parent = nil, --[[@as ModelPart]]
 
 	-- Gets a vector to apply to this segment's rotation to gradually make it point straight down
+	-- TODO: fix sitting
 	getGravity = function(self, thisRope)
 		local grav = thisRope.parentType.rot.x_z
 		if self.parent ~= nil then
@@ -185,6 +186,7 @@ local ropeClass = {
 		local xzVelInfluence = previous.velMagXZ * self.xzVelInfluence
 		local yVelInfluence = rope.yVelInfluence * self.yVelInfluence
 		local windInfluence = 0
+		-- 185 (next 7 lines)
 		if rope.windPower > 0 and self.windInfluence > 0 then
 			windInfluence = rope.windPower * self.windInfluence
 			local windMult = math.sin(((world.getTime() / 2) + (self.id * 2.2)) * rope.windPowerDiv100)
@@ -202,16 +204,27 @@ local ropeClass = {
 
 			-- Velocity delta
 			local velDel = gravity
-			velDel.x = velDel.x - yVelInfluence -- Add vertical velocity. TODO: underwater physics?
-			velDel.x = velDel.x + partInfluence.x -- Adds part velocity (head/body rot)
-			velDel.z = velDel.z - partInfluence.y -- Adds part velocity (head/body rot)
+
+			-- Add vertical velocity. TODO: underwater physics?
+			if yVelInfluence ~= 0 then
+				velDel.x = velDel.x - yVelInfluence
+			end
+			-- Adds part velocity (head/body rot)
+			if partInfluence.x ~= 0 or partInfluence.z ~= 0 then
+				velDel.x = velDel.x + partInfluence.x
+				velDel.z = velDel.z - partInfluence.y
+			end
 			-- Adds x/z velocity influence
-			velDel.x = velDel.x + (self.parentType.xzVelAngX * xzVelInfluence)
-			velDel.z = velDel.z + (self.parentType.xzVelAngZ * xzVelInfluence)
+			if xzVelInfluence ~= 0 then
+				velDel.x = velDel.x + (self.parentType.xzVelAngX * xzVelInfluence)
+				velDel.z = velDel.z + (self.parentType.xzVelAngZ * xzVelInfluence)
+			end
 			-- Adds wind influence
-			local windSegmentInfluence = (i / self.segmentCount) * windInfluence
-			velDel.x = velDel.x + (self.parentType.windAngX * windSegmentInfluence)
-			velDel.z = velDel.z + (self.parentType.windAngZ * windSegmentInfluence)
+			if windInfluence ~= 0 then
+				local windSegmentInfluence = (i / self.segmentCount) * windInfluence
+				velDel.x = velDel.x + (self.parentType.windAngX * windSegmentInfluence)
+				velDel.z = velDel.z + (self.parentType.windAngZ * windSegmentInfluence)
+			end
 
 			-- TODO: figure out where this goes
 			-- velDel = vectors.rotateAroundAxis(self.facingDir, velDel, vec(0, 1, 0))
@@ -222,8 +235,6 @@ local ropeClass = {
 			segment.rot = segment.rot + segment.vel
 
 			-- TODO limits
-
-			-- TODO: add swaying/blowing in the wind
 		end
 	end,
 	RENDER = function(self, delta)
@@ -264,6 +275,7 @@ end
 
 -- World tick method - gets wind power level and direction based on location
 function rope.worldTick()
+	-- 210 (next 5 lines)
 	if world.exists() and not previous.invisible then
 		rope.windDir = math.rad(world.getTime() / 4)
 		rope.windPower = rope.getWindPower()
@@ -315,17 +327,6 @@ function rope.getMotionAng()
 	return motionAng
 end
 
--- Test function that visually displays rope.getMotionAngRelative()
---[[
-function rope.test()
-	p1 = particles.smoke:spawn():pos(player:getPos()):lifetime(1):scale(5)
-	local ang = rope.motionAng + rope.parents.Head.forwardAng
-	local offset = vec(math.cos(ang), 0, math.sin(ang)) * 4
-	p2 = particles.smoke:spawn():pos(player:getPos() + offset):lifetime(1):scale(5)
-end
-modules.events.TICK:register(rope.test)
-]]--
-
 -- Gets the wind power at the current block.
 function rope.getWindPower()
 	local dim = player:getDimensionName()
@@ -337,5 +338,16 @@ function rope.getWindPower()
 
 	return world.getSkyLightLevel(player:getPos())
 end
+
+-- Test function that visually displays rope.getMotionAngRelative()
+--[[
+function rope.test()
+	p1 = particles.smoke:spawn():pos(player:getPos()):lifetime(1):scale(5)
+	local ang = rope.motionAng + rope.parents.Head.forwardAng
+	local offset = vec(math.cos(ang), 0, math.sin(ang)) * 4
+	p2 = particles.smoke:spawn():pos(player:getPos() + offset):lifetime(1):scale(5)
+end
+modules.events.TICK:register(rope.test)
+]]--
 
 return rope
