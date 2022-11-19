@@ -311,15 +311,17 @@ local ropeClass = {
 	end,
 }
 
-function rope:new(segment)
-	local r = {}
+function rope:new(tableOrSegment, segment)
+	local r = type(tableOrSegment) == "table" and tableOrSegment or {}
+	local p = type(tableOrSegment) == "ModelPart" and tableOrSegment or segment
+
 	setmetatable(r, ropeClass)
 	ropeClass.__index = ropeClass
 
 	-- Init new rope
-	r:setup(segment)
+	r:setup(p)
 
-	rope.ropes[segment] = r
+	rope.ropes[p] = r
 	rope.ropesCount = rope.ropesCount + 1
 	return r
 end

@@ -66,13 +66,7 @@ local hair = {
 -- Sets up hair rope physics objects
 function hair.init()
 	for name, properties in pairs(hair.ropes) do
-		local rope = modules.rope:new(models.cat.Head.Hair[name])
-		for property, value in pairs(properties) do
-			rope[property] = value
-		end
-		if properties.friction ~= nil then
-			rope:setFriction(properties.friction)
-		end
+		local rope = modules.rope:new(properties, models.cat.Head.Hair[name])
 		hair.ropes[name] = rope
 	end
 end
