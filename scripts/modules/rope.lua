@@ -14,6 +14,9 @@ local rope = {
 	windPower = 0, -- Strength of sky light at player's head determines wind strength (0-15). Also 15 if in dimension "minecraft:the_nether"
 	windPowerDiv100 = 0, -- windPower divided by 100. Used to ease up calculations
 
+	waterMult = 0, -- Multiplier for underwater gravity (makes hair float upwards somewhat). Reset to 0 on exit, lerped toward 1 while underwater
+	waterMultLerp = 0.03125,
+
 	-- parentClass instances
 	parents = {
 		Head = {
@@ -250,6 +253,7 @@ local ropeClass = {
 			if rope.isUnderwater then
 				-- If we're underwater and descending, the direction of gravity should be up
 				local mult = 5 + (yVelInfluence * 10)
+				mult = mult * rope.waterMult
 				gravity.x = gravity.x + (self.facingDirCos * mult)
 				gravity.z = gravity.z + (self.facingDirSin * mult)
 			end
@@ -325,6 +329,11 @@ function rope.tick()
 	rope.motionAng = rope.getMotionAng()
 	rope.yVelInfluence = -previous.vel.y
 	rope.isUnderwater = player:isUnderwater()
+	if rope.isUnderwater then
+		rope.waterMult = math.lerp(rope.waterMult, 1, rope.waterMultLerp)
+	else
+		rope.waterMult = 0
+	end
 end
 modules.events.TICK:register(rope.tick)
 
