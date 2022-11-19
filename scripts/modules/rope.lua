@@ -108,14 +108,6 @@ local segmentClass = {
 			grav = grav - self.parent:getRot()
 		end
 
-		-- If we're underwater and descending, the direction of gravity should be up
-		if rope.isUnderwater then
-			print(rope.yVelInfluence)
-			if rope.yVelInfluence > 0 then
-				grav.x = grav.x + 135
-			end
-		end
-
 		grav = (grav - self.rot) * thisRope.gravity
 
 		return grav
@@ -238,9 +230,6 @@ local ropeClass = {
 
 		-- y vel influence is rotated based on the "facingDir" variable of the rope class
 		local yVelInfluence = rope.yVelInfluence * self.yVelInfluence
-		if rope.isUnderwater then
-			yVelInfluence = yVelInfluence * 8
-		end
 
 		local windInfluence = 0
 		-- 185 (next 7 lines)
@@ -259,7 +248,10 @@ local ropeClass = {
 			-- Gravity to add: ((angle that would make segment point straight down) - (last Rot)) * "gravity" mult
 			local gravity = segment:getGravity(self)
 			if rope.isUnderwater then
-				gravity = gravity / 8
+				-- If we're underwater and descending, the direction of gravity should be up
+				local mult = 5 + (yVelInfluence * 10)
+				gravity.x = gravity.x + (self.facingDirCos * mult)
+				gravity.z = gravity.z + (self.facingDirSin * mult)
 			end
 
 			-- Velocity delta
