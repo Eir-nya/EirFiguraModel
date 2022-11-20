@@ -7,6 +7,9 @@ local overrideModes = {
 	-- Overrides vanilla origin rot, but decreases in influence as the animation progresses, down to 0
 	BLEND_OUT = 3,
 }
+
+-- Shortcut tables
+-- Note: allOverride is specifically used later, so don't delete or edit it
 local allOverride = {
 	Head = overrideModes.OVERRIDE,
 	Body = overrideModes.OVERRIDE,
@@ -24,9 +27,11 @@ local allBlendOut = {
 	LeftLeg = overrideModes.BLEND_OUT,
 }
 local punchBlend = {
+	Body = overrideModes.BLEND_OUT,
 	RightArm = overrideModes.BLEND_OUT,
 	LeftArm = overrideModes.BLEND_OUT,
 }
+local hideSwipe = function() models.cat.RightArm.swipe:setVisible(false) end
 
 local anims = {
 	primaryAnim = nil,
@@ -85,10 +90,11 @@ local anims = {
 	swimIdle = {
 		primary = false,
 		overrideVanillaModes = {
-			RightArm = overrideModes.OVERRIDE_BLEND,
-			LeftArm = overrideModes.OVERRIDE_BLEND,
-			RightLeg = overrideModes.OVERRIDE_BLEND,
-			LeftLeg = overrideModes.OVERRIDE_BLEND,
+			Body = overrideModes.OVERRIDE,
+			RightArm = overrideModes.OVERRIDE,
+			LeftArm = overrideModes.OVERRIDE,
+			RightLeg = overrideModes.OVERRIDE,
+			LeftLeg = overrideModes.OVERRIDE,
 		}
 	},
 
@@ -97,13 +103,13 @@ local anims = {
 	landHardRun = { overrideVanillaModes = allBlendOut },
 
 	-- Combat animations
-	punchR = { overrideVanillaModes = punchBlend },
-	swipeR = { overrideVanillaModes = punchBlend },
-	thrustR = { overrideVanillaModes = allBlendOut },
-	swipeD = { overrideVanillaModes = allBlendOut },
-	jumpKick = { overrideModes = allBlendOut },
-	blockR = { overrideVanillaModes = { RightArm = overrideModes.OVERRIDE }, },
-	blockL = { overrideVanillaModes = { LeftArm = overrideModes.OVERRIDE }, },
+	punchR = { overrideVanillaModes = punchBlend, firstPersonBlend = 0.5, onInterrupt = hideSwipe, },
+	swipeR = { overrideVanillaModes = punchBlend, firstPersonBlend = 0.5, onInterrupt = hideSwipe, },
+	thrustR = { overrideVanillaModes = allBlendOut, firstPersonBlend = 0.5, },
+	swipeD = { overrideVanillaModes = allBlendOut, firstPersonBlend = 0.5, onInterrupt = hideSwipe, },
+	jumpKick = { overrideModes = allBlendOut, firstPersonBlend = 0.5, },
+	blockR = { overrideVanillaModes = { RightArm = overrideModes.OVERRIDE }, firstPersonBlend = 0.5, },
+	blockL = { overrideVanillaModes = { LeftArm = overrideModes.OVERRIDE }, firstPersonBlend = 0.5, },
 }
 
 local animClass = {
@@ -120,6 +126,11 @@ local animClass = {
 	needsBlendCalc = false,
 	-- Last result of blend calculation, if the above is true.
 	lastBlend = nil,
+	-- Blend in first person. See better_first_person.lua
+	firstPersonBlend = 1,
+
+	-- Overrideable method that runs when animation is interrupted by another animation replacing it
+	onInterrupt = function(self) end,
 
 	setup = function(self)
 		anims[self.anim.name] = self
@@ -132,19 +143,31 @@ local animClass = {
 			end
 		end
 	end,
-	play = function(self)
+	play = function(self, forceStart)
 		if self.primary then
-			if anims.primaryAnim ~= nil then
-				anims.primaryAnim:stop()
+			if anims.primaryAnim ~= self then
+				if anims.primaryPlaying() then
+					anims.primaryAnim:stop()
+					anims.primaryAnim:onInterrupt()
+				end
 			end
 			anims.primaryAnim = self
 		else
-			if anims.secondaryAnim ~= nil then
-				anims.secondaryAnim:stop()
+			if anims.secondaryAnim ~= self then
+				if anims.secondaryAnim ~= nil then
+					anims.secondaryAnim:stop()
+					anims.secondaryAnim:onInterrupt()
+				end
 			end
 			anims.secondaryAnim = self
 		end
+		if forceStart then
+			self.anim:stop()
+		end
 		self.anim:play()
+	end,
+	stop = function(self)
+		self.anim:stop()
 	end,
 	calcBlend = function(self)
 		self.lastBlend = 1 - (self.anim:getTime() / self.anim:getLength())
@@ -182,9 +205,9 @@ modules.events.ENTITY_INIT:register(anims.entityInit)
 function anims.render(delta, context)
 	local primaryPlaying = anims.primaryPlaying()
 	local secondaryPlaying = anims.secondaryPlaying()
-	if not primaryPlaying and not secondaryPlaying then
-		return
-	elseif context == "FIRST_PERSON" then
+
+	-- Don't animate in first person
+	if context ~= "FIRST_PERSON" and context ~= "RENDER" then
 		return
 	end
 
@@ -211,6 +234,13 @@ function anims.render(delta, context)
 			end
 		end
 	end
+
+	-- Reset parts not touched by animations
+	for index in pairs(allOverride) do
+		if not partsOverridden[index] then
+			models.cat[index]:setRot()
+		end
+	end
 end
 modules.events.RENDER:register(anims.render)
 
@@ -227,14 +257,14 @@ modules.events.RENDER:register(anims.renderNameplate)
 
 function anims.primaryPlaying()
 	if anims.primaryAnim then
-		return anims.primaryAnim:getPlayState() == "PLAYING"
+		return anims.primaryAnim.anim:getPlayState() == "PLAYING"
 	end
 	return false
 end
 
 function anims.secondaryPlaying()
 	if anims.secondaryAnim then
-		return anims.secondaryAnim:getPlayState() == "PLAYING"
+		return anims.secondaryAnim.anim:getPlayState() == "PLAYING"
 	end
 	return false
 end

@@ -93,12 +93,12 @@ function util.getEffect(effectType)
 end
 
 local partToVanillaPartTable = {
-	Head = "HEAD",
-	Body = "BODY",
-	RightArm = "RIGHT_ARM",
-	LeftArm = "LEFT_ARM",
-	RightLeg = "RIGHT_LEG",
-	LeftLeg = "LEFT_LEG"
+	Head = vanilla_model.HEAD,
+	Body = vanilla_model.BODY,
+	RightArm = vanilla_model.RIGHT_ARM,
+	LeftArm = vanilla_model.LEFT_ARM,
+	RightLeg = vanilla_model.RIGHT_LEG,
+	LeftLeg = vanilla_model.LEFT_LEG
 }
 function util.partToVanillaPart(modelPart)
 	return partToVanillaPartTable[modelPart:getParentType()]

@@ -24,7 +24,6 @@ local exAnims = {
 	oneTickDelayFunc = nil,
 	oneTickDelay = 1,
 
-	cancelSwing = false, -- Set to true when player presses attack, set back to false when player's arm is no longer swinging
 	showSwipe = false, -- Set to true before attack anim to show swipe if applicable
 
 	-- What animations are allowed for each item.
@@ -88,22 +87,14 @@ end
 -- Events
 
 function exAnims.init()
-	animations["models.cat"].fall:play()
-	animations["models.cat"].jump:play()
-	animations["models.cat"].climb:play()
+	-- animations["models.cat"].fall:play()
+	-- animations["models.cat"].jump:play()
+	-- animations["models.cat"].climb:play()
 	-- animations["models.cat"].run:play()
 
-	animations["models.cat"].swipeR:priority(1)
-	animations["models.cat"].swipeD:priority(1)
-	animations["models.cat"].jumpKick:priority(1)
-	animations["models.cat"].punchR:priority(1)
-	animations["models.cat"].thrustR:priority(1)
-	animations["models.cat"].thrustR:speed(1.1875)
-
-	animations["models.cat"].blockR:priority(1)
-	animations["models.cat"].blockL:priority(1)
-	animations["models.cat"].blockR:speed(1.1)
-	animations["models.cat"].blockL:speed(1.1)
+	modules.animations.thrustR.anim:speed(1.1875)
+	modules.animations.blockR.anim:speed(1.1)
+	modules.animations.blockL.anim:speed(1.1)
 
 	-- Register invisible keybind for attack anims
 	if host:isHost() then
@@ -151,10 +142,10 @@ function exAnims.tick()
 		if exAnims.lastVelY < exAnims.landHardThreshold then
 			-- Player wasn't sprinting
 			if not player:isSprinting() then
-				animations["models.cat"].landHard:play()
+				modules.animations.landHard:play()
 				exAnims.mult = 0
 			else
-				animations["models.cat"].landHardRun:play()
+				modules.animations.landHardRun:play()
 			end
 		end
 	end
@@ -177,13 +168,6 @@ function exAnims.tick()
 end
 modules.events.TICK:register(exAnims.tick)
 
-function exAnims.cancelSwingFunc()
-	if not player:isSwingingArm() then
-		exAnims.cancelSwing = false
-	end
-end
-modules.events.TICK:register(exAnims.cancelSwingFunc)
-
 function exAnims.blockEvent()
 	local hands = { "R", "L" }
 	local activeHand = player:getActiveHand() == "MAIN_HAND" and 1 or 2
@@ -192,7 +176,7 @@ function exAnims.blockEvent()
 	end
 	activeHand = hands[activeHand]
 
-	local anim = animations["models.cat"]["block" .. activeHand]
+	local anim = modules.animations["block" .. activeHand]
 
 	if exAnims.lastBlocking then
 		anim:play()
@@ -209,113 +193,20 @@ function exAnims.render(tickProgress, context)
 	-- TODO: smooth exit when falling into water
 	-- Only blend animations once per render event
 	if context == "FIRST_PERSON" or context == "RENDER" then
-		animations["models.cat"].fall:blend(player:isOnGround() and mult or (exAnims.newVelY <= exAnims.fallThreshold and mult or 0))
-		animations["models.cat"].jump:blend(not player:isFlying() and math.clamp(velY, 0, 1) or 0)
-		animations["models.cat"].climb:blend(player:isClimbing() and 1 or 0)
-		animations["models.cat"].climb:speed(math.clamp(math.abs(velY * 3), 0, 1))
+		if modules.animations.fall.anim:getPlayState() == "PLAYING" then
+			modules.animations.fall.anim:blend(player:isOnGround() and mult or (exAnims.newVelY <= exAnims.fallThreshold and mult or 0))
+		end
+		if modules.animations.jump.anim:getPlayState() == "PLAYING" then
+			modules.animations.jump.anim:blend(not player:isFlying() and math.clamp(velY, 0, 1) or 0)
+		end
+		if modules.animations.climb.anim:getPlayState() == "PLAYING" then
+			modules.animations.climb.anim:blend(player:isClimbing() and 1 or 0)
+			modules.animations.climb.anim:speed(math.clamp(math.abs(velY * 3), 0, 1))
+		end
 	end
 	-- animations["models.cat"].run:blend(exAnims.sprintMult
 	  -- * (1 - animations["models.cat"].jump:getBlend())
 	  -- * (1 - animations["models.cat"].fall:getBlend()))
-
-	if (not modules.emotes.isEmoting() or modules.emotes.emote ~= "hug") and not modules.sit.isSitting then
-		-- Attack anims
-		if exAnims.attackAnimPlaying() then
-			if animations["models.cat"].blockL:getPlayState() == "PLAYING" then
-				models.cat.LeftArm:setRot(-vanilla_model.LEFT_ARM:getOriginRot())
-			elseif animations["models.cat"].blockR:getPlayState() == "PLAYING" then
-				models.cat.RightArm:setRot(-vanilla_model.RIGHT_ARM:getOriginRot())
-			elseif animations["models.cat"].thrustR:getPlayState() == "PLAYING" then
-				local blend = 1 - (animations["models.cat"].jumpKick:getTime() / animations["models.cat"].thrustR:getLength())
-
-				models.cat.RightLeg:setRot(-vanilla_model.RIGHT_LEG:getOriginRot() * blend)
-				models.cat.LeftLeg:setRot(-vanilla_model.LEFT_LEG:getOriginRot() * blend)
-				-- models.cat.RightArm:setRot(-vanilla_model.RIGHT_ARM:getOriginRot() * blend)
-				-- models.cat.LeftArm:setRot(-vanilla_model.LEFT_ARM:getOriginRot() * blend)
-				models.cat.Body:setRot(-vanilla_model.BODY:getOriginRot() * blend)
-				models.cat.Head:setRot(-vanilla_model.HEAD:getOriginRot() * blend)
-			elseif animations["models.cat"].jumpKick:getPlayState() == "PLAYING" then
-				local blend = 1 - (animations["models.cat"].jumpKick:getTime() / animations["models.cat"].jumpKick:getLength())
-
-				models.cat.RightLeg:setRot(-vanilla_model.RIGHT_LEG:getOriginRot() * blend)
-				models.cat.LeftLeg:setRot(-vanilla_model.LEFT_LEG:getOriginRot() * blend)
-				-- models.cat.RightArm:setRot(-vanilla_model.RIGHT_ARM:getOriginRot() * blend)
-				-- models.cat.LeftArm:setRot(-vanilla_model.LEFT_ARM:getOriginRot() * blend)
-				models.cat.Body:setRot(-vanilla_model.BODY:getOriginRot() * blend)
-				models.cat.Head:setRot(-vanilla_model.HEAD:getOriginRot() * blend)
-			-- elseif animations["models.cat"].swipeR:getPlayState() == "PLAYING" or animations["models.cat"].punchR:getPlayState() == "PLAYING" then
-				-- models.cat.RightArm:setRot(-vanilla_model.RIGHT_ARM:getOriginRot())
-				-- models.cat.LeftArm:setRot(-vanilla_model.LEFT_ARM:getOriginRot())
-			elseif animations["models.cat"].swipeD:getPlayState() == "PLAYING" then	
-				local blend = 1 - (animations["models.cat"].swipeD:getTime() / animations["models.cat"].swipeD:getLength())
-
-				models.cat.RightLeg:setRot(-vanilla_model.RIGHT_LEG:getOriginRot() * blend)
-				models.cat.LeftLeg:setRot(-vanilla_model.LEFT_LEG:getOriginRot() * blend)
-				-- models.cat.RightArm:setRot(-vanilla_model.RIGHT_ARM:getOriginRot() * blend)
-				-- models.cat.LeftArm:setRot(-vanilla_model.LEFT_ARM:getOriginRot() * blend)
-				models.cat.Body:setRot(-vanilla_model.BODY:getOriginRot() * blend)
-				models.cat.Head:setRot(-vanilla_model.HEAD:getOriginRot() * blend)
-			end
-		-- Land hard animation
-		elseif animations["models.cat"].landHard:getPlayState() == "PLAYING" then
-			local blend = 1 - (animations["models.cat"].landHard:getTime() / animations["models.cat"].landHard:getLength())
-
-			models.cat.RightLeg:setRot(-vanilla_model.RIGHT_LEG:getOriginRot() * blend)
-			models.cat.LeftLeg:setRot(-vanilla_model.LEFT_LEG:getOriginRot() * blend)
-			models.cat.RightArm:setRot(-vanilla_model.RIGHT_ARM:getOriginRot() * blend)
-			models.cat.LeftArm:setRot(-vanilla_model.LEFT_ARM:getOriginRot() * blend)
-			models.cat.Body:setRot(-vanilla_model.BODY:getOriginRot() * blend)
-			models.cat.Head:setRot(-vanilla_model.HEAD:getOriginRot() * blend)
-		-- Land hard run animation
-		elseif animations["models.cat"].landHardRun:getPlayState() == "PLAYING" then
-			local blend = 1 - (animations["models.cat"].landHardRun:getTime() / animations["models.cat"].landHardRun:getLength())
-
-			models.cat.RightLeg:setRot(-vanilla_model.RIGHT_LEG:getOriginRot() * blend)
-			models.cat.LeftLeg:setRot(-vanilla_model.LEFT_LEG:getOriginRot() * blend)
-			models.cat.RightArm:setRot(-vanilla_model.RIGHT_ARM:getOriginRot() * blend)
-			models.cat.LeftArm:setRot(-vanilla_model.LEFT_ARM:getOriginRot() * blend)
-			models.cat.Body:setRot(-vanilla_model.BODY:getOriginRot() * blend)
-			models.cat.Head:setRot(-vanilla_model.HEAD:getOriginRot() * blend)
-		-- Falling
-		elseif previous.pose == "STANDING" and velY < 0 then
-			models.cat.RightLeg:setRot(-vanilla_model.RIGHT_LEG:getOriginRot() * animations["models.cat"].fall:getBlend())
-			models.cat.LeftLeg:setRot(-vanilla_model.LEFT_LEG:getOriginRot() * animations["models.cat"].fall:getBlend())
-			models.cat.RightArm:setRot(-vanilla_model.RIGHT_ARM:getOriginRot() * animations["models.cat"].fall:getBlend())
-			models.cat.LeftArm:setRot(-vanilla_model.LEFT_ARM:getOriginRot() * animations["models.cat"].fall:getBlend())
-		-- Flying - lean model, don't kick legs
-		elseif previous.pose == "STANDING" and player:isFlying() then
-			-- models.cat.RightLeg:setRot(-vanilla_model.RIGHT_LEG:getOriginRot())
-			-- models.cat.LeftLeg:setRot(-vanilla_model.LEFT_LEG:getOriginRot())
-			-- models.cat.RightArm:setRot(-vanilla_model.RIGHT_ARM:getOriginRot())
-			-- models.cat.LeftArm:setRot(-vanilla_model.LEFT_ARM:getOriginRot())
-			-- models.cat:setRot(vec(-modules.tail.velMag, 0, 0) * 16)
-		--[[
-		-- Sprinting
-		elseif previous.pose == "STANDING" and player:isSprinting() then
-			models.cat.RightLeg:setRot(-vanilla_model.RIGHT_LEG:getOriginRot() * animations["models.cat"].run:getBlend())
-			models.cat.LeftLeg:setRot(-vanilla_model.LEFT_LEG:getOriginRot() * animations["models.cat"].run:getBlend())
-			models.cat.RightArm:setRot(-vanilla_model.RIGHT_ARM:getOriginRot() * animations["models.cat"].run:getBlend())
-			models.cat.LeftArm:setRot(-vanilla_model.LEFT_ARM:getOriginRot() * animations["models.cat"].run:getBlend())
-			models.cat.Body:setRot(-vanilla_model.BODY:getOriginRot() * animations["models.cat"].run:getBlend())
-			models.cat.Head:setRot(-vanilla_model.HEAD:getOriginRot() * animations["models.cat"].run:getBlend())
-		]]--
-		else
-			models.cat.RightLeg:setRot()
-			models.cat.LeftLeg:setRot()
-			models.cat.RightArm:setRot()
-			models.cat.LeftArm:setRot()
-			models.cat.Body:setRot()
-			models.cat.Head:setRot()
-			-- models.cat:setRot()
-		end
-
-		-- Cancel swinging if applicable
-		if exAnims.cancelSwing then
-			models.cat.RightArm:setRot(-vanilla_model.RIGHT_ARM:getOriginRot())
-			models.cat.LeftArm:setRot(-vanilla_model.LEFT_ARM:getOriginRot())
-			models.cat.Body:setRot(-vanilla_model.BODY:getOriginRot())
-		end
-	end
 end
 modules.events.RENDER:register(exAnims.render)
 
@@ -323,16 +214,6 @@ modules.events.RENDER:register(exAnims.render)
 
 function exAnims.isFalling()
 	return exAnims.newVelY <= exAnims.fallThreshold and not player:isOnGround() and not player:isFlying() and not previous.vehicle
-end
-
-function exAnims.attackAnimPlaying()
-	return animations["models.cat"].swipeR:getPlayState() == "PLAYING"
-		or animations["models.cat"].swipeD:getPlayState() == "PLAYING"
-		or animations["models.cat"].punchR:getPlayState() == "PLAYING"
-		or animations["models.cat"].thrustR:getPlayState() == "PLAYING"
-		or animations["models.cat"].jumpKick:getPlayState() == "PLAYING"
-		or animations["models.cat"].blockR:getPlayState() == "PLAYING"
-		or animations["models.cat"].blockL:getPlayState() == "PLAYING"
 end
 
 -- Attack anim code
@@ -348,7 +229,6 @@ if host:isHost() then
 		local sw = player:isSwingingArm()
 		exAnims.oneTickDelayFunc = function()
 			exAnims.attackAnimCheck(e, g, s, sw)
-			exAnims.cancelSwing = exAnims.shouldCancelSwing()
 		end
 	end
 
@@ -399,10 +279,7 @@ if host:isHost() then
 end
 
 function pings.attackAnim(anim, forceStart)
-	if forceStart then
-		animations["models.cat"][anim]:stop()
-	end
-	animations["models.cat"][anim]:play()
+	modules.animations[anim]:play(forceStart)
 end
 
 -- Returns true if the animation should be played, based on the player's held main item.
@@ -417,10 +294,6 @@ function exAnims.canAnim(anim)
 
 	-- Item was not found in table, or animation is not defined in item's table
 	return true
-end
-
-function exAnims.shouldCancelSwing()
-	return exAnims.itemAnims[previous.mainItem.id] ~= nil and (exAnims.canAnim("swipeR") or exAnims.canAnim("punchR"))
 end
 
 return exAnims

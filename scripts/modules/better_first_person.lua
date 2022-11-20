@@ -29,7 +29,16 @@ function bfp.crosshairRender(delta, context)
 		end
 		return
 	end
-	models.firstPerson.crosshair:setVisible(not player:isUsingItem() or player:getItem(1).id == "minecraft:bow" or player:getItem(1).id == "minecraft:trident")
+	models.firstPerson.crosshair:setVisible(true)
+
+	-- Fades out slightly in first person when using items or aiming
+	if context == "FIRST_PERSON" then
+		if not player:isUsingItem() or player:getItem(1).id == "minecraft:bow" or player:getItem(1).id == "minecraft:trident" then
+			models.firstPerson.crosshair:setOpacity(1)
+		else
+			models.firstPerson.crosshair:setOpacity(0.25)
+		end
+	end
 
 	-- Set position for the crosshair to go to
 	local crosshairWorldPos
@@ -76,14 +85,16 @@ function bfp.render(delta, context)
 	if context == "FIRST_PERSON" then
 		local rot = player:getRot(delta)
 
-		animations["models.cat"].jump:blend(animations["models.cat"].jump:getBlend() / 3)
+		modules.animations.jump.anim:blend(modules.animations.jump.anim:getBlend() / 3)
 
 		-- Camera rot
 		local add = modules.util.getHeadRot()
 
 		-- Divide add amount based on animation
-		if modules.extra_animations.attackAnimPlaying() then
-			add = add / 2
+		if modules.animations.primaryPlaying() then
+			add = add * modules.animations.primaryAnim.firstPersonBlend
+		elseif modules.animations.secondaryPlaying() then
+			add = add * modules.animations.secondaryAnim.firstPersonBlend
 		end
 
 		add = add / 8
