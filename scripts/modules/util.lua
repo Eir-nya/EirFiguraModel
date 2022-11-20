@@ -101,7 +101,7 @@ local partToVanillaPartTable = {
 	LeftLeg = vanilla_model.LEFT_LEG
 }
 function util.partToVanillaPart(modelPart)
-	return partToVanillaPartTable[modelPart:getParentType()]
+	return partToVanillaPartTable[modelPart:getName()]
 end
 
 -- Note: these DO account for animations, *including* animations that are blended in and out with animation:blend

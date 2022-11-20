@@ -65,10 +65,7 @@ local anims = {
 	},
 
 	-- Secondary blends
-	jump = {
-		primary = false,
-		overrideVanillaModes = { Head = overrideModes.OVERRIDE_BLEND },
-	},
+	jump = { primary = false, },
 	fall = {
 		primary = false,
 		overrideVanillaModes = {
@@ -99,8 +96,8 @@ local anims = {
 	},
 
 	-- Landing animations
-	landHard = { overrideVanillaModes = allBlendOut },
-	landHardRun = { overrideVanillaModes = allBlendOut },
+	landHard = { overrideVanillaModes = allBlendOut, },
+	landHardRun = { overrideVanillaModes = allBlendOut, },
 
 	-- Combat animations
 	punchR = { overrideVanillaModes = punchBlend, firstPersonBlend = 0.5, onInterrupt = hideSwipe, },
@@ -229,8 +226,10 @@ function anims.render(delta, context)
 			sec:calcBlend()
 		end
 		for partName, overrideMode in pairs(sec.overrideVanillaModes) do
+			-- Secondary animation will only affect parts the primary animation has not
 			if not partsOverridden[partName] then
 				sec:applyToPart(partName, overrideMode)
+				partsOverridden[partName] = true
 			end
 		end
 	end

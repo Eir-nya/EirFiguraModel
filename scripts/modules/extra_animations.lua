@@ -12,6 +12,7 @@ local exAnims = {
 	landHardThreshold = -0.9, -- When landing with y velocity below this number, play "hard" landing animation
 
 	lastOnGround = false,
+	lastClimbing = false,
 	lastFlying = false,
 	-- lastSprinting = false,
 	lastBlocking = false,
@@ -130,14 +131,26 @@ function exAnims.tick()
 		exAnims.mult = 0
 	end
 
-	if not player:isOnGround() and not player:isFlying() and exAnims.newVelY < exAnims.fallThreshold and exAnims.lastVelY >= exAnims.fallThreshold then
+	-- Start and stop jump animation when moving up or down
+	-- TODO: make jump a tertiary animation so it doesn't override stuff like ladder climbing...?
+	if exAnims.newVelY > 0 and exAnims.lastVelY <= 0 then
+		modules.animations.jump:play()
+	elseif exAnims.newVelY > exAnims.lastVelY then
+		modules.animations.jump:stop()
+	end
+
+	if exAnims.newVelY < exAnims.fallThreshold and exAnims.lastVelY >= exAnims.fallThreshold then
+		modules.events.fall:run()
+	elseif exAnims.newVelY >= exAnims.fallThreshold and exAnims.lastVelY < exAnims.fallThreshold then
 		modules.events.fall:run()
 	end
 
 	-- Player just landed
-	if player:isOnGround() and not exAnims.lastOnGround then
+	local onGround = player:isOnGround()
+	if onGround ~= exAnims.lastOnGround then
 		modules.events.fall:run()
-
+	end
+	if onGround and not exAnims.lastOnGround then
 		-- Land hard
 		if exAnims.lastVelY < exAnims.landHardThreshold then
 			-- Player wasn't sprinting
@@ -149,13 +162,26 @@ function exAnims.tick()
 			end
 		end
 	end
-	exAnims.lastOnGround = player:isOnGround()
+	exAnims.lastOnGround = onGround
 
 	-- Player just toggled flight
 	if player:isFlying() ~= exAnims.lastFlying then
-		modules.events.fall:run()
+		-- modules.events.fall:run()
+		if modules.animations.jump.anim:getPlayState() == "PLAYING" then
+			modules.animations.jump:stop()
+		end
 	end
 	exAnims.lastFlying = player:isFlying()
+
+	-- Player just mounted or dismounted a ladder
+	if player:isClimbing() ~= exAnims.lastClimbing then
+		if not exAnims.lastClimbing then
+			modules.animations.climb:play()
+		else
+			modules.animations.climb:stop()
+		end
+	end
+	exAnims.lastClimbing = player:isClimbing()
 
 	--[[
 	-- Player just toggled sprint
@@ -167,6 +193,15 @@ function exAnims.tick()
 	]]--
 end
 modules.events.TICK:register(exAnims.tick)
+
+function exAnims.fallEvent()
+	if exAnims.isFalling() then
+		modules.animations.fall:play()
+	else
+		modules.animations.fall:stop()
+	end
+end
+modules.events.fall:register(exAnims.fallEvent)
 
 function exAnims.blockEvent()
 	local hands = { "R", "L" }
@@ -200,7 +235,6 @@ function exAnims.render(tickProgress, context)
 			modules.animations.jump.anim:blend(not player:isFlying() and math.clamp(velY, 0, 1) or 0)
 		end
 		if modules.animations.climb.anim:getPlayState() == "PLAYING" then
-			modules.animations.climb.anim:blend(player:isClimbing() and 1 or 0)
 			modules.animations.climb.anim:speed(math.clamp(math.abs(velY * 3), 0, 1))
 		end
 	end
