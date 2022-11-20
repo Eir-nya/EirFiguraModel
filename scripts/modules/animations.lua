@@ -210,6 +210,16 @@ function anims.render(delta, context)
 end
 modules.events.RENDER:register(anims.render)
 
+-- Additional render method that makes the nameplate follow the model head
+function anims.renderNameplate(delta, context)
+	if context ~= "RENDER" then
+		return
+	end
+
+	nameplate.ENTITY:setPos(vectors.rotateAroundAxis(-player:getBodyYaw(delta) + 180, models.cat.Head:getAnimPos() / 16, vec(0, 1, 0)))
+end
+modules.events.RENDER:register(anims.renderNameplate)
+
 
 function anims.primaryPlaying()
 	if anims.primaryAnim then
