@@ -5,6 +5,7 @@ modules = {
 	"events",
 
 	"init",
+	"animations",
 	"extra_animations",
 	"sit",
 	"sleep",
