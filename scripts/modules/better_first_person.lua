@@ -85,16 +85,15 @@ function bfp.render(delta, context)
 	if context == "FIRST_PERSON" then
 		local rot = player:getRot(delta)
 
-		modules.animations.jump.anim:blend(modules.animations.jump.anim:getBlend() / 3)
-
 		-- Camera rot
 		local add = modules.util.getHeadRot()
 
 		-- Divide add amount based on animation
-		if modules.animations.primaryPlaying() then
-			add = add * modules.animations.primaryAnim.firstPersonBlend
-		elseif modules.animations.secondaryPlaying() then
-			add = add * modules.animations.secondaryAnim.firstPersonBlend
+		for i = 1, 3 do
+			if modules.animations.playing(i) then
+				add = add * modules.animations[i].firstPersonBlend
+				break
+			end
 		end
 
 		add = add / 8

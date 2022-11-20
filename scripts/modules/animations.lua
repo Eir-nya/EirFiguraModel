@@ -7,6 +7,14 @@ local overrideModes = {
 	-- Overrides vanilla origin rot, but decreases in influence as the animation progresses, down to 0
 	BLEND_OUT = 3,
 }
+-- All active animations are handled in order of rank.
+-- Animations that are handled first get first pick on blend modes for body parts.
+-- Secondary animations have their blend modes ignored if primary anims already applied theirs.
+local animRanks = {
+	PRIMARY = 1,
+	SECONDARY = 2,
+	TERTIARY = 3,
+}
 
 -- Shortcut tables
 -- Note: allOverride is specifically used later, so don't delete or edit it
@@ -34,8 +42,9 @@ local punchBlend = {
 local hideSwipe = function() models.cat.RightArm.swipe:setVisible(false) end
 
 local anims = {
-	primaryAnim = nil,
-	secondaryAnim = nil,
+	[1] = nil, -- Primary animation
+	[2] = nil, -- Secondary animation
+	[3] = nil, -- Tertiary animation
 
 	-- Animation registry...
 
@@ -65,9 +74,9 @@ local anims = {
 	},
 
 	-- Secondary blends
-	jump = { primary = false, },
+	jump = { rank = animRanks.TERTIARY, firstPersonBlend = 1 / 2.5 },
 	fall = {
-		primary = false,
+		rank = animRanks.SECONDARY,
 		overrideVanillaModes = {
 			RightArm = overrideModes.OVERRIDE_BLEND,
 			LeftArm = overrideModes.OVERRIDE_BLEND,
@@ -76,7 +85,7 @@ local anims = {
 		},
 	},
 	climb = {
-		primary = false,
+		rank = animRanks.SECONDARY,
 		overrideVanillaModes = {
 			RightArm = overrideModes.OVERRIDE,
 			LeftArm = overrideModes.OVERRIDE,
@@ -85,7 +94,7 @@ local anims = {
 		},
 	},
 	swimIdle = {
-		primary = false,
+		rank = animRanks.SECONDARY,
 		overrideVanillaModes = {
 			Body = overrideModes.OVERRIDE,
 			RightArm = overrideModes.OVERRIDE,
@@ -110,11 +119,8 @@ local anims = {
 }
 
 local animClass = {
-	-- Primary animations take up an "active" slot.
-	-- They will stop the previous one if applicable when starting.
-	-- The overrideVanillaModes of primary animations takes precedence, if playing.
-	-- Otherwise, this one's settings are used.
-	primary = true,
+	-- See animRanks
+	rank = animRanks.PRIMARY,
 	-- For each body part, determine how much of the vanilla rotation should be negated.
 	overrideVanillaModes = {},
 	-- Actual figura animation component of this class.
@@ -141,23 +147,15 @@ local animClass = {
 		end
 	end,
 	play = function(self, forceStart)
-		if self.primary then
-			if anims.primaryAnim ~= self then
-				if anims.primaryPlaying() then
-					anims.primaryAnim:stop()
-					anims.primaryAnim:onInterrupt()
-				end
+		-- Rank handling
+		if anims[self.rank] ~= self then
+			if anims.playing(self.rank) then
+				anims[self.rank]:stop()
+				anims[self.rank]:onInterrupt()
 			end
-			anims.primaryAnim = self
-		else
-			if anims.secondaryAnim ~= self then
-				if anims.secondaryAnim ~= nil then
-					anims.secondaryAnim:stop()
-					anims.secondaryAnim:onInterrupt()
-				end
-			end
-			anims.secondaryAnim = self
+			anims[self.rank] = self
 		end
+
 		if forceStart then
 			self.anim:stop()
 		end
@@ -200,10 +198,7 @@ modules.events.ENTITY_INIT:register(anims.entityInit)
 
 -- Render event
 function anims.render(delta, context)
-	local primaryPlaying = anims.primaryPlaying()
-	local secondaryPlaying = anims.secondaryPlaying()
-
-	-- Don't animate in first person
+	-- Don't apply part rot needlessly on other render modes
 	if context ~= "FIRST_PERSON" and context ~= "RENDER" then
 		return
 	end
@@ -212,25 +207,10 @@ function anims.render(delta, context)
 	local sec = anims.secondaryAnim
 	local partsOverridden = {}
 
-	if primaryPlaying then
-		if prim.needsBlendCalc then
-			prim:calcBlend()
-		end
-		for partName, overrideMode in pairs(prim.overrideVanillaModes) do
-			prim:applyToPart(partName, overrideMode)
-			partsOverridden[partName] = true
-		end
-	end
-	if secondaryPlaying then
-		if sec.needsBlendCalc then
-			sec:calcBlend()
-		end
-		for partName, overrideMode in pairs(sec.overrideVanillaModes) do
-			-- Secondary animation will only affect parts the primary animation has not
-			if not partsOverridden[partName] then
-				sec:applyToPart(partName, overrideMode)
-				partsOverridden[partName] = true
-			end
+	-- Handle active animations
+	for i = 1, 3 do
+		if anims.playing(i) then
+			anims.handleAnimations(i, partsOverridden)
 		end
 	end
 
@@ -254,16 +234,22 @@ end
 modules.events.RENDER:register(anims.renderNameplate)
 
 
-function anims.primaryPlaying()
-	if anims.primaryAnim then
-		return anims.primaryAnim.anim:getPlayState() == "PLAYING"
+function anims.handleAnimations(rank, partsOverridden)
+	local anim = anims[rank]
+	if anim.needsBlendCalc then
+		anim:calcBlend()
 	end
-	return false
+	for partName, overrideMode in pairs(anim.overrideVanillaModes) do
+		if not partsOverridden[partName] then
+			anim:applyToPart(partName, overrideMode)
+			partsOverridden[partName] = true
+		end
+	end
 end
 
-function anims.secondaryPlaying()
-	if anims.secondaryAnim then
-		return anims.secondaryAnim.anim:getPlayState() == "PLAYING"
+function anims.playing(rank)
+	if anims[rank] then
+		return anims[rank].anim:getPlayState() == "PLAYING"
 	end
 	return false
 end
