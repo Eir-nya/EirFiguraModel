@@ -92,6 +92,18 @@ function util.getEffect(effectType)
 	end
 end
 
+local partToVanillaPartTable = {
+	Head = "HEAD",
+	Body = "BODY",
+	RightArm = "RIGHT_ARM",
+	LeftArm = "LEFT_ARM",
+	RightLeg = "RIGHT_LEG",
+	LeftLeg = "LEFT_LEG"
+}
+function util.partToVanillaPart(modelPart)
+	return partToVanillaPartTable[modelPart:getParentType()]
+end
+
 -- Note: these DO account for animations, *including* animations that are blended in and out with animation:blend
 function util.partToWorldPos(modelPart)
 	return modelPart:partToWorldMatrix():apply(modelPart:getPos())
