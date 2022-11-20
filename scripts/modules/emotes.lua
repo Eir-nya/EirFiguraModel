@@ -74,7 +74,10 @@ modules.events.mainItem:register(emotes.mainItemEvent)
 -- modules.events.offItem:register(emotes.offItemEvent)
 
 function emotes.hurtEvent()
-	if not previous.invisible and previous.hurtTicks > 0 then
+	if previous.hurtTicks == 0 then
+		return
+	end
+	if not previous.invisible then
 		emotes.setEmote("hurt")
 	end
 
