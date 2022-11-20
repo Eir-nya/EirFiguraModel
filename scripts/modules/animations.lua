@@ -23,12 +23,18 @@ local allBlendOut = {
 	RightLeg = overrideModes.BLEND_OUT,
 	LeftLeg = overrideModes.BLEND_OUT,
 }
+local punchBlend = {
+	RightArm = overrideModes.BLEND_OUT,
+	LeftArm = overrideModes.BLEND_OUT,
+}
 
 local anims = {
 	primaryAnim = nil,
 	secondaryAnim = nil,
 
 	-- Animation registry...
+
+	-- Simple poses
 	sleepPose = {
 		overrideVanillaModes = allOverride
 	},
@@ -38,20 +44,13 @@ local anims = {
 			LeftArm = overrideModes.OVERRIDE,
 		},
 	},
-	swipeR = {
-		overrideVanillaModes = {
-			RightArm = overrideModes.BLEND_OUT,
-			LeftArm = overrideModes.BLEND_OUT,
-		},
+	sitPose1 = {
+		Body = overrideModes.OVERRIDE,
+		RightArm = overrideModes.OVERRIDE,
+		LeftArm = overrideModes.OVERRIDE,
+		RightLeg = overrideModes.OVERRIDE,
+		LeftLeg = overrideModes.OVERRIDE,
 	},
-	climb = {
-		primary = false,
-		overrideVanillaModes = {
-			RightArm = overrideModes.OVERRIDE,
-			LeftArm = overrideModes.OVERRIDE,
-		},
-	},
-	swipeD = { overrideVanillaModes = allBlendOut },
 	sitPose2 = {
 		Body = overrideModes.OVERRIDE,
 		RightArm = overrideModes.OVERRIDE,
@@ -59,14 +58,11 @@ local anims = {
 		RightLeg = overrideModes.OVERRIDE,
 		LeftLeg = overrideModes.OVERRIDE,
 	},
-	landHard = { overrideVanillaModes = allBlendOut },
-	thrustR = { overrideVanillaModes = allBlendOut },
-	sitPose1 = {
-		Body = overrideModes.OVERRIDE,
-		RightArm = overrideModes.OVERRIDE,
-		LeftArm = overrideModes.OVERRIDE,
-		RightLeg = overrideModes.OVERRIDE,
-		LeftLeg = overrideModes.OVERRIDE,
+
+	-- Secondary blends
+	jump = {
+		primary = false,
+		overrideVanillaModes = { Head = overrideModes.OVERRIDE_BLEND },
 	},
 	fall = {
 		primary = false,
@@ -77,19 +73,15 @@ local anims = {
 			LeftLeg = overrideModes.OVERRIDE_BLEND,
 		},
 	},
-	landHardRun = { overrideVanillaModes = allBlendOut },
-	punchR = {
+	climb = {
+		primary = false,
 		overrideVanillaModes = {
-			RightArm = overrideModes.BLEND_OUT,
-			LeftArm = overrideModes.BLEND_OUT,
+			RightArm = overrideModes.OVERRIDE,
+			LeftArm = overrideModes.OVERRIDE,
+			RightLeg = overrideModes.OVERRIDE,
+			LeftLeg = overrideModes.OVERRIDE,
 		},
 	},
-	jump = {
-		primary = false,
-		overrideVanillaModes = { Head = overrideModes.OVERRIDE_BLEND },
-	},
-	blockR = { overrideVanillaModes = { RightArm = overrideModes.OVERRIDE }, },
-	blockL = { overrideVanillaModes = { LeftArm = overrideModes.OVERRIDE }, },
 	swimIdle = {
 		primary = false,
 		overrideVanillaModes = {
@@ -99,7 +91,19 @@ local anims = {
 			LeftLeg = overrideModes.OVERRIDE_BLEND,
 		}
 	},
-	jumpKick = { overrideModes = allBlendOut }
+
+	-- Landing animations
+	landHard = { overrideVanillaModes = allBlendOut },
+	landHardRun = { overrideVanillaModes = allBlendOut },
+
+	-- Combat animations
+	punchR = { overrideVanillaModes = punchBlend },
+	swipeR = { overrideVanillaModes = punchBlend },
+	thrustR = { overrideVanillaModes = allBlendOut },
+	swipeD = { overrideVanillaModes = allBlendOut },
+	jumpKick = { overrideModes = allBlendOut },
+	blockR = { overrideVanillaModes = { RightArm = overrideModes.OVERRIDE }, },
+	blockL = { overrideVanillaModes = { LeftArm = overrideModes.OVERRIDE }, },
 }
 
 local animClass = {
