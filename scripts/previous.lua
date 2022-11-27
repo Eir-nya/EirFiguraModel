@@ -33,6 +33,7 @@ previous = {
 
 	invisible = nil, -- Invisible from potion effect or spectator mode
 	wet = nil, -- Wet (in water, bubble column, or rain)
+	underwater = nil, -- Underwater
 	fire = nil, -- On fire
 	pose = nil, -- Pose
 	vehicle = nil, -- Riding vehicle

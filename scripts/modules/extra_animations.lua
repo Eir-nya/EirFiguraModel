@@ -221,6 +221,17 @@ function exAnims.blockEvent()
 end
 modules.events.block:register(exAnims.blockEvent)
 
+function exAnims.underwaterEvent()
+	if previous.underwater and not player:isOnGround() and (previous.pose == "STANDING" or previous.pose == "CROUCHING") then
+		modules.animations.swimIdle:play()
+	else
+		modules.animations.swimIdle:stop()
+	end
+end
+modules.events.underwater:register(exAnims.underwaterEvent)
+modules.events.fall:register(exAnims.underwaterEvent)
+modules.events.pose:register(exAnims.underwaterEvent)
+
 function exAnims.render(tickProgress, context)
 	local velY = math.lerp(exAnims.lastVelY, exAnims.newVelY, tickProgress)
 	local mult = math.lerp(exAnims.lastMult, exAnims.mult, tickProgress)

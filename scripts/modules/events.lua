@@ -228,6 +228,13 @@ events.wet.condition = function()
 	previous.wet = wet
 	return wet ~= lastWet
 end
+events.underwater = events:new(events.TICK)
+events.underwater.condition = function()
+	local lastUnderwater = previous.underwater
+	local underwater = player:isUnderwater()
+	previous.underwater = underwater
+	return underwater ~= lastUnderwater
+end
 events.fire = events:new(events.TICK)
 events.fire.condition = function()
 	local lastFire = previous.fire
