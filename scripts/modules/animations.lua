@@ -1,4 +1,6 @@
 -- Global animations handling module
+
+-- Enum defining the ways that animations will override vanilla part rotation.
 local overrideModes = {
 	-- Completely overrides vanilla origin rot
 	OVERRIDE = 1,
@@ -14,6 +16,12 @@ local animRanks = {
 	PRIMARY = 1,
 	SECONDARY = 2,
 	TERTIARY = 3,
+}
+-- Controls the way that animations in higher ranks will be prioritized over lesser ranked ones.
+local blendWeightModes = {
+	-- Lesser animations are blended by what's left of higher-rank blend weight,
+	-- but this amount decreases as the animation progresses. Similar to overrideModes.BLEND_OUT.
+	BLEND_OUT = 1,
 }
 
 -- Shortcut tables
@@ -50,13 +58,15 @@ local anims = {
 
 	-- Simple poses
 	sleepPose = {
-		overrideVanillaModes = allOverride
+		overrideVanillaModes = allOverride,
+		blendWeight = 1,
 	},
 	hug = {
 		overrideVanillaModes = {
 			RightArm = overrideModes.OVERRIDE,
 			LeftArm = overrideModes.OVERRIDE,
 		},
+		blendWeight = 0.75,
 	},
 	sitPose1 = {
 		Body = overrideModes.OVERRIDE,
@@ -105,17 +115,53 @@ local anims = {
 	},
 
 	-- Landing animations
-	landHard = { overrideVanillaModes = allBlendOut, },
-	landHardRun = { overrideVanillaModes = allBlendOut, },
+	landHard = { overrideVanillaModes = allBlendOut, blendWeight = 1, blendWeightMode = blendWeightModes.BLEND_OUT, },
+	landHardRun = { overrideVanillaModes = allBlendOut, blendWeight = 1, blendWeightMode = blendWeightModes.BLEND_OUT, },
 
 	-- Combat animations
-	punchR = { overrideVanillaModes = punchBlend, firstPersonBlend = 0.5, onInterrupt = hideSwipe, },
-	swipeR = { overrideVanillaModes = punchBlend, firstPersonBlend = 0.5, onInterrupt = hideSwipe, },
-	thrustR = { overrideVanillaModes = allBlendOut, firstPersonBlend = 0.5, },
-	swipeD = { overrideVanillaModes = allBlendOut, firstPersonBlend = 0.5, onInterrupt = hideSwipe, },
-	jumpKick = { overrideModes = allBlendOut, firstPersonBlend = 0.5, },
-	blockR = { overrideVanillaModes = { RightArm = overrideModes.OVERRIDE }, firstPersonBlend = 0.5, },
-	blockL = { overrideVanillaModes = { LeftArm = overrideModes.OVERRIDE }, firstPersonBlend = 0.5, },
+	punchR = {
+		overrideVanillaModes = punchBlend,
+		firstPersonBlend = 0.5,
+		blendWeight = 1,
+		blendWeightMode = blendWeightModes.BLEND_OUT,
+		onInterrupt = hideSwipe,
+	},
+	swipeR = {
+		overrideVanillaModes = punchBlend,
+		firstPersonBlend = 0.5,
+		blendWeight = 1,
+		blendWeightMode = blendWeightModes.BLEND_OUT,
+		onInterrupt = hideSwipe,
+	},
+	thrustR = {
+		overrideVanillaModes = allBlendOut,
+		firstPersonBlend = 0.5,
+		blendWeight = 0.7,
+		blendWeightMode = blendWeightModes.BLEND_OUT,
+	},
+	swipeD = {
+		overrideVanillaModes = allBlendOut,
+		firstPersonBlend = 0.5,
+		blendWeight = 1,
+		blendWeightMode = blendWeightModes.BLEND_OUT,
+		onInterrupt = hideSwipe,
+	},
+	jumpKick = {
+		overrideModes = allBlendOut,
+		firstPersonBlend = 0.5,
+		blendWeight = 0.875,
+		blendWeightMode = blendWeightModes.BLEND_OUT,
+	},
+	blockR = {
+		overrideVanillaModes = { RightArm = overrideModes.OVERRIDE },
+		firstPersonBlend = 0.5,
+		blendWeight = 0.625,
+	},
+	blockL = {
+		overrideVanillaModes = { LeftArm = overrideModes.OVERRIDE },
+		firstPersonBlend = 0.5,
+		blendWeight = 0.625,
+	},
 }
 
 local animClass = {
@@ -127,10 +173,17 @@ local animClass = {
 	anim = nil, -- [[@as Animation]]
 	-- Has any overrideVanillaModes that are overrideModes.BLEND_OUT?
 	needsBlendCalc = false,
-	-- Last result of blend calculation, if the above is true.
-	lastBlend = nil,
-	-- Blend in first person. See better_first_person.lua
+	-- Last result of inverse anim progress calculation, if the above is true.
+	lastInvProgress = nil,
+	-- Blend in first person. See better_first_person.lua. Unrelated to other blend vars.
 	firstPersonBlend = 1,
+	-- Lesser-ranked animations than this one will have their effective blend reduced by this much.
+	blendWeight = 0,
+	-- Defines how this animation's blendWeight value will be applied to lesser-ranked animations.
+	-- If nil, blendWeight is simply subtracted from lesser-ranked animations' effective blend amounts.
+	blendWeightMode = nil,
+	-- Base "blend" amount. Set in :blend. used when blending multiple ranks of anims at once.
+	baseBlend = 1,
 
 	-- Overrideable method that runs when animation is interrupted by another animation replacing it
 	onInterrupt = function(self) end,
@@ -144,6 +197,10 @@ local animClass = {
 				self.needsBlendCalc = true
 				break
 			end
+		end
+		-- If blendWeightMode is blendWeightModes.BLEND_OUT, same bool should also be set
+		if self.blendWeightMode == blendWeightModes.BLEND_OUT then
+			self.needsBlendCalc = true
 		end
 	end,
 	play = function(self, forceStart)
@@ -164,8 +221,14 @@ local animClass = {
 	stop = function(self)
 		self.anim:stop()
 	end,
-	calcBlend = function(self)
-		self.lastBlend = 1 - (self.anim:getTime() / self.anim:getLength())
+	-- Calculates progress of animation, with 1 being the start and 0 being the end of the animation
+	getInverseProgress = function(self)
+		self.lastInvProgress = 1 - (self.anim:getTime() / self.anim:getLength())
+	end,
+	-- Sets base animation blend value that will be referred to while blending w/ other ranks of animations
+	blend = function(self, value)
+		self.baseBlend = value
+		-- self.anim:blend(value)
 	end,
 	applyToPart = function(self, index, overrideMode)
 		local part = models.cat[index]
@@ -174,7 +237,7 @@ local animClass = {
 		elseif overrideMode == overrideModes.OVERRIDE_BLEND then
 			part:setRot(-modules.util.partToVanillaPart(part):getOriginRot() * self.anim:getBlend())
 		elseif overrideMode == overrideModes.BLEND_OUT then
-			part:setRot(-modules.util.partToVanillaPart(part):getOriginRot() * self.lastBlend)
+			part:setRot(-modules.util.partToVanillaPart(part):getOriginRot() * self.lastInvProgress)
 		end
 	end,
 }
@@ -203,14 +266,13 @@ function anims.render(delta, context)
 		return
 	end
 
-	local prim = anims.primaryAnim
-	local sec = anims.secondaryAnim
 	local partsOverridden = {}
+	local blendWeightRemaining = 1
 
 	-- Handle active animations
 	for i = 1, 3 do
 		if anims.playing(i) then
-			anims.handleAnimations(i, partsOverridden)
+			blendWeightRemaining = anims.handleAnimations(i, partsOverridden, blendWeightRemaining)
 		end
 	end
 
@@ -234,17 +296,28 @@ end
 modules.events.RENDER:register(anims.renderNameplate)
 
 
-function anims.handleAnimations(rank, partsOverridden)
+function anims.handleAnimations(rank, partsOverridden, blendWeightRemaining)
 	local anim = anims[rank]
 	if anim.needsBlendCalc then
-		anim:calcBlend()
+		anim:getInverseProgress()
 	end
+	anim:blend(anim.baseBlend)
 	for partName, overrideMode in pairs(anim.overrideVanillaModes) do
 		if not partsOverridden[partName] then
-			anim:applyToPart(partName, overrideMode)
+			anim:applyToPart(partName, overrideMode, blendWeightRemaining)
 			partsOverridden[partName] = true
 		end
 	end
+
+	anim.anim:blend(anim.baseBlend * blendWeightRemaining)
+
+	if anim.blendWeightMode == blendWeightModes.BLEND_OUT then
+		blendWeightRemaining = blendWeightRemaining - (anim.blendWeight * anim.lastInvProgress)
+	else
+		blendWeightRemaining = blendWeightRemaining - anim.blendWeight
+	end
+
+	return blendWeightRemaining
 end
 
 function anims.playing(rank)

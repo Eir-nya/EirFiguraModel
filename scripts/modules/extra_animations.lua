@@ -229,10 +229,10 @@ function exAnims.render(tickProgress, context)
 	-- Only blend animations once per render event
 	if context == "FIRST_PERSON" or context == "RENDER" then
 		if modules.animations.fall.anim:getPlayState() == "PLAYING" then
-			modules.animations.fall.anim:blend(player:isOnGround() and mult or (exAnims.newVelY <= exAnims.fallThreshold and mult or 0))
+			modules.animations.fall:blend(player:isOnGround() and mult or (exAnims.newVelY <= exAnims.fallThreshold and mult or 0))
 		end
 		if modules.animations.jump.anim:getPlayState() == "PLAYING" then
-			modules.animations.jump.anim:blend(not player:isFlying() and math.clamp(velY, 0, 1) or 0)
+			modules.animations.jump:blend(not player:isFlying() and math.clamp(velY, 0, 1) or 0)
 		end
 		if modules.animations.climb.anim:getPlayState() == "PLAYING" then
 			modules.animations.climb.anim:speed(math.clamp(math.abs(velY * 3), 0, 1))
