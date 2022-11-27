@@ -23,6 +23,17 @@ local blendWeightModes = {
 	-- but this amount decreases as the animation progresses. Similar to overrideModes.BLEND_OUT.
 	BLEND_OUT = 1,
 }
+-- Fade modes. Used for fading in and out animations gradually.
+local fadeModes = {
+	-- Fades in at a fixed linear rate.
+	FADE_IN_FIXED = 1,
+	-- Fades in at a smooth rate using lerp.
+	FADE_IN_SMOOTH = 2,
+	-- Fades out at a fixed linear rate.
+	FADE_OUT_FIXED = 3,
+	-- Fades out at a smooth rate using lerp.
+	FADE_OUT_SMOOTH = 4,
+}
 
 -- Shortcut tables
 -- Note: allOverride is specifically used later, so don't delete or edit it
@@ -53,6 +64,8 @@ local anims = {
 	[1] = nil, -- Primary animation
 	[2] = nil, -- Secondary animation
 	[3] = nil, -- Tertiary animation
+
+	fadeModes = fadeModes,
 
 	-- Animation registry...
 
@@ -185,6 +198,18 @@ local animClass = {
 	-- Base "blend" amount. Set in :blend. used when blending multiple ranks of anims at once.
 	baseBlend = 1,
 
+	-- Current fade in/out operation. See fadeModes.
+	-- If nil, no fading is occuring.
+	fadeMode = nil,
+	-- Progress for fade operation if fading presently.
+	fadeProgress = 0,
+	-- Previous value of fadeProgress, used for render.
+	lastFadeProgress = 0,
+	-- For linear fade operations, add this amount per tick.
+	fadeLinearRate = nil,
+	-- Lerp rate used for fade operations that use smooth lerping.
+	fadeSmoothLerpRate = nil,
+
 	-- Overrideable method that runs when animation is interrupted by another animation replacing it
 	onInterrupt = function(self) end,
 
@@ -217,9 +242,25 @@ local animClass = {
 			self.anim:stop()
 		end
 		self.anim:play()
+
+		-- Reset fade
+		self.fadeMode = nil
 	end,
 	stop = function(self)
 		self.anim:stop()
+	end,
+	fade = function(self, fadeMode, rate)
+		self.fadeMode = fadeMode
+		self.fadeProgress = 0
+		self.lastFadeProgress = 0
+		if fadeMode == anims.fadeModes.FADE_IN_FIXED or fadeMode == anims.fadeModes.FADE_OUT_FIXED then
+			self.fadeLinearRate = rate
+		else
+			self.fadeSmoothLerpRate = rate
+		end
+	end,
+	isFading = function(self)
+		return self.fadeMode ~= nil
 	end,
 	-- Calculates progress of animation, with 1 being the start and 0 being the end of the animation
 	getInverseProgress = function(self)
@@ -259,6 +300,39 @@ function anims.entityInit()
 end
 modules.events.ENTITY_INIT:register(anims.entityInit)
 
+-- Tick event
+function anims.fadeInOut()
+	-- Fades in and out animations that are set to do so.
+	for i = 1, 3 do
+		if anims.playing(i) then
+			local anim = anims[i]
+			if anim:isFading() then
+				anim.lastFadeProgress = anim.fadeProgress
+
+				if anim.fadeMode == anims.fadeModes.FADE_IN_FIXED or anim.fadeMode == anims.fadeModes.FADE_OUT_FIXED then
+					anim.fadeProgress = anim.fadeProgress + anim.fadeLinearRate
+					anim.fadeProgress = math.min(anim.fadeProgress, 1)
+				else
+					anim.fadeProgress = math.lerp(anim.fadeProgress, 1, anim.fadeSmoothLerpRate)
+					if anim.fadeProgress > 0.9875 then
+						anim.fadeProgress = 1
+					end
+				end
+
+				-- End fade
+				if anim.fadeProgress >= 1 then
+					-- Fading out: run stop() when done
+					if anim.fadeMode == anims.fadeModes.FADE_OUT_FIXED or anim.fadeMode == anims.fadeModes.FADE_OUT_SMOOTH then
+						anim:stop()
+					end
+					anim.fadeMode = nil
+				end
+			end
+		end
+	end
+end
+modules.events.TICK:register(anims.fadeInOut)
+
 -- Render event
 function anims.render(delta, context)
 	-- Don't apply part rot needlessly on other render modes
@@ -272,7 +346,7 @@ function anims.render(delta, context)
 	-- Handle active animations
 	for i = 1, 3 do
 		if anims.playing(i) then
-			blendWeightRemaining = anims.handleAnimations(i, partsOverridden, blendWeightRemaining)
+			blendWeightRemaining = anims.handleAnimations(i, partsOverridden, blendWeightRemaining, delta)
 		end
 	end
 
@@ -296,12 +370,12 @@ end
 modules.events.RENDER:register(anims.renderNameplate)
 
 
-function anims.handleAnimations(rank, partsOverridden, blendWeightRemaining)
+function anims.handleAnimations(rank, partsOverridden, blendWeightRemaining, delta)
 	local anim = anims[rank]
 	if anim.needsBlendCalc then
 		anim:getInverseProgress()
 	end
-	anim:blend(anim.baseBlend)
+
 	for partName, overrideMode in pairs(anim.overrideVanillaModes) do
 		if not partsOverridden[partName] then
 			anim:applyToPart(partName, overrideMode, blendWeightRemaining)
@@ -309,7 +383,17 @@ function anims.handleAnimations(rank, partsOverridden, blendWeightRemaining)
 		end
 	end
 
-	anim.anim:blend(anim.baseBlend * blendWeightRemaining)
+	-- Blend animation - also accounts for fade operations
+	if anim:isFading() then
+		if anim.fadeMode == anims.fadeModes.FADE_IN_FIXED or anim.fadeMode == anims.fadeModes.FADE_IN_SMOOTH then
+			anim.anim:blend((anim.baseBlend * math.lerp(anim.lastFadeProgress, anim.fadeProgress, delta)) * blendWeightRemaining)
+		else
+			-- print(1 - math.lerp(anim.lastFadeProgress, anim.fadeProgress, delta))
+			anim.anim:blend((anim.baseBlend * (1 - math.lerp(anim.lastFadeProgress, anim.fadeProgress, delta))) * blendWeightRemaining)
+		end
+	else
+		anim.anim:blend(anim.baseBlend * blendWeightRemaining)
+	end
 
 	if anim.blendWeightMode == blendWeightModes.BLEND_OUT then
 		blendWeightRemaining = blendWeightRemaining - (anim.blendWeight * anim.lastInvProgress)

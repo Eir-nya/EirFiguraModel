@@ -4,10 +4,6 @@ local exAnims = {
 	newVelY = 0, -- do not use
 	lastVelY = 0,
 
-	mult = 0,
-	lastMult = 0,
-	multLerpRate = 0.2,
-
 	fallThreshold = -0.4, -- When y velocity is below this number, start fall animation
 	landHardThreshold = -0.9, -- When landing with y velocity below this number, play "hard" landing animation
 
@@ -123,18 +119,11 @@ function exAnims.tick()
 	exAnims.lastVelY = exAnims.newVelY
 	exAnims.newVelY = player:getVelocity().y
 
-	-- Control multiplier for jump/fall animations
-	exAnims.lastMult = exAnims.mult
-	exAnims.mult = math.lerp(exAnims.mult, player:isOnGround() and 0 or 1, exAnims.multLerpRate)
-
-	if (exAnims.newVelY > exAnims.fallThreshold and exAnims.newVelY <= 0) and not player:isOnGround() then
-		exAnims.mult = 0
-	end
-
 	-- Start and stop jump animation when moving up or down
 	-- TODO: make jump a tertiary animation so it doesn't override stuff like ladder climbing...?
 	if exAnims.newVelY > 0 and exAnims.lastVelY <= 0 then
 		modules.animations.jump:play()
+		modules.animations.jump:fade(modules.animations.fadeModes.FADE_IN_FIXED, 0.75)
 	elseif exAnims.newVelY > exAnims.lastVelY then
 		modules.animations.jump:stop()
 	end
@@ -156,7 +145,6 @@ function exAnims.tick()
 			-- Player wasn't sprinting
 			if not player:isSprinting() then
 				modules.animations.landHard:play()
-				exAnims.mult = 0
 			else
 				modules.animations.landHardRun:play()
 			end
@@ -197,8 +185,12 @@ modules.events.TICK:register(exAnims.tick)
 function exAnims.fallEvent()
 	if exAnims.isFalling() then
 		modules.animations.fall:play()
+		modules.animations.fall:fade(modules.animations.fadeModes.FADE_IN_SMOOTH, 0.4)
 	else
-		modules.animations.fall:stop()
+		-- modules.animations.fall:stop()
+		if modules.animations.fall.fadeMode ~= modules.animations.fadeModes.FADE_OUT_SMOOTH then
+			modules.animations.fall:fade(modules.animations.fadeModes.FADE_OUT_SMOOTH, 0.3)
+		end
 	end
 end
 modules.events.fall:register(exAnims.fallEvent)
@@ -234,14 +226,10 @@ modules.events.pose:register(exAnims.underwaterEvent)
 
 function exAnims.render(tickProgress, context)
 	local velY = math.lerp(exAnims.lastVelY, exAnims.newVelY, tickProgress)
-	local mult = math.lerp(exAnims.lastMult, exAnims.mult, tickProgress)
 
 	-- TODO: smooth exit when falling into water
 	-- Only blend animations once per render event
 	if context == "FIRST_PERSON" or context == "RENDER" then
-		if modules.animations.fall.anim:getPlayState() == "PLAYING" then
-			modules.animations.fall:blend(player:isOnGround() and mult or (exAnims.newVelY <= exAnims.fallThreshold and mult or 0))
-		end
 		if modules.animations.jump.anim:getPlayState() == "PLAYING" then
 			modules.animations.jump:blend(not player:isFlying() and math.clamp(velY, 0, 1) or 0)
 		end
