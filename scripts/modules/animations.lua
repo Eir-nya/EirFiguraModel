@@ -168,12 +168,12 @@ local anims = {
 	blockR = {
 		overrideVanillaModes = { RightArm = overrideModes.OVERRIDE },
 		firstPersonBlend = 0.5,
-		blendWeight = 0.625,
+		blendWeight = 0.8,
 	},
 	blockL = {
 		overrideVanillaModes = { LeftArm = overrideModes.OVERRIDE },
 		firstPersonBlend = 0.5,
-		blendWeight = 0.625,
+		blendWeight = 0.8,
 	},
 }
 
@@ -297,6 +297,8 @@ function anims.entityInit()
 		t.anim = anim
 		animClass:new(t)
 	end
+	anims.breatheIdle = nil
+	animations["models.cat"].breatheIdle:play()
 end
 modules.events.ENTITY_INIT:register(anims.entityInit)
 
