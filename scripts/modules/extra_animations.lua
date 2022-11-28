@@ -119,10 +119,14 @@ function exAnims.tick()
 
 	-- Start and stop jump animation when moving up or down
 	if exAnims.newVelY > 0 and exAnims.lastVelY <= 0 then
-		modules.animations.jump:play()
-		modules.animations.jump:fade(modules.animations.fadeModes.FADE_IN_FIXED, 0.75)
+		if not exAnims.lastFlying then
+			modules.animations.jump:play()
+			modules.animations.jump:fade(modules.animations.fadeModes.FADE_IN_FIXED, 0.75)
+		end
 	elseif exAnims.newVelY > exAnims.lastVelY then
-		modules.animations.jump:stop()
+		if not modules.animations.jump:isFading() then
+			modules.animations.jump:fade(modules.animations.fadeModes.FADE_OUT_FIXED, 0.4)
+		end
 	end
 
 	if exAnims.newVelY < exAnims.fallThreshold and exAnims.lastVelY >= exAnims.fallThreshold then
@@ -153,7 +157,7 @@ function exAnims.tick()
 	if player:isFlying() ~= exAnims.lastFlying then
 		-- modules.events.fall:run()
 		if modules.animations.jump.anim:getPlayState() == "PLAYING" then
-			modules.animations.jump:stop()
+			modules.animations.jump:fade(modules.animations.fadeModes.FADE_OUT_FIXED, 0.4)
 		end
 	end
 	exAnims.lastFlying = player:isFlying()
@@ -236,7 +240,7 @@ function exAnims.render(tickProgress, context)
 	-- Only blend animations once per render event
 	if context == "FIRST_PERSON" or context == "RENDER" then
 		if modules.animations.jump.anim:getPlayState() == "PLAYING" then
-			modules.animations.jump:blend(not player:isFlying() and math.clamp(velY, 0, 1) or 0)
+			modules.animations.jump:blend(math.clamp(velY, 0, 1))
 		end
 
 		-- Climb animation blend
