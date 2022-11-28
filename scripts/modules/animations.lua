@@ -262,6 +262,13 @@ local animClass = {
 	isFading = function(self)
 		return self.fadeMode ~= nil
 	end,
+	getFadeBlend = function(self, delta)
+		if anims.isFadeIn(self.fadeMode) then
+			return math.lerp(self.lastFadeProgress, self.fadeProgress, delta)
+		else
+			return 1 - math.lerp(self.lastFadeProgress, self.fadeProgress, delta)
+		end
+	end,
 	-- Calculates progress of animation, with 1 being the start and 0 being the end of the animation
 	getInverseProgress = function(self)
 		self.lastInvProgress = 1 - (self.anim:getTime() / self.anim:getLength())
@@ -324,7 +331,7 @@ function anims.fadeInOut()
 				-- End fade
 				if anim.fadeProgress >= 1 then
 					-- Fading out: run stop() when done
-					if anim.fadeMode == anims.fadeModes.FADE_OUT_FIXED or anim.fadeMode == anims.fadeModes.FADE_OUT_SMOOTH then
+					if not anims.isFadeIn(anim.fadeMode) then
 						anim:stop()
 					end
 					anim.fadeMode = nil
@@ -387,12 +394,7 @@ function anims.handleAnimations(rank, partsOverridden, blendWeightRemaining, del
 
 	-- Blend animation - also accounts for fade operations
 	if anim:isFading() then
-		if anim.fadeMode == anims.fadeModes.FADE_IN_FIXED or anim.fadeMode == anims.fadeModes.FADE_IN_SMOOTH then
-			anim.anim:blend((anim.baseBlend * math.lerp(anim.lastFadeProgress, anim.fadeProgress, delta)) * blendWeightRemaining)
-		else
-			-- print(1 - math.lerp(anim.lastFadeProgress, anim.fadeProgress, delta))
-			anim.anim:blend((anim.baseBlend * (1 - math.lerp(anim.lastFadeProgress, anim.fadeProgress, delta))) * blendWeightRemaining)
-		end
+		anim.anim:blend(anim.baseBlend * anim:getFadeBlend(delta) * blendWeightRemaining)
 	else
 		anim.anim:blend(anim.baseBlend * blendWeightRemaining)
 	end
@@ -411,6 +413,11 @@ function anims.playing(rank)
 		return anims[rank].anim:getPlayState() == "PLAYING"
 	end
 	return false
+end
+
+-- Returns if a given fade mode is fading in or fading out
+function anims.isFadeIn(fadeMode)
+	return fadeMode == anims.fadeModes.FADE_IN_FIXED or fadeMode == anims.fadeModes.FADE_IN_SMOOTH
 end
 
 return anims

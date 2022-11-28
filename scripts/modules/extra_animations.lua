@@ -250,11 +250,7 @@ function exAnims.render(tickProgress, context)
 			if exAnims.climbingFaceDir then
 				local animFade = 1
 				if modules.animations.climb:isFading() then
-					if exAnims.lastClimbing then
-						animFade = math.lerp(modules.animations.climb.lastFadeProgress, modules.animations.climb.fadeProgress, tickProgress)
-					else
-						animFade = 1 - math.lerp(modules.animations.climb.lastFadeProgress, modules.animations.climb.fadeProgress, tickProgress)
-					end
+					animFade = modules.animations.climb:getFadeBlend(tickProgress)
 				end
 
 				local shortAngle = math.shortAngle(player:getBodyYaw(tickProgress), exAnims.climbingFaceDir)
