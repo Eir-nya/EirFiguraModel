@@ -134,7 +134,7 @@ function ears.canFlickTimer()
 end
 
 function ears.canMove()
-	return not modules.armor.earArmorVisible or modules.armor.rotateEarArmor
+	return not modules.armor.earArmorVisible or modules.armor.canRotateEars
 end
 
 return ears

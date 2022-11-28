@@ -1,17 +1,19 @@
 -- Armor module
 
--- These ones are accessed by other scripts and should be kept:
--- armor.earArmorVisible
--- armor.rotateEarArmor
+-- Enum defining which states a helmet may be in to allow ear rotation while worn.
+local allowEarRotationEnum = {
+	ALWAYS = 1,
+	ONLY_DEFAULT = 2,
+	ONLY_CUSTOM = 3
+}
 
--- TODO: add a render task to models.cat.Head that renders an item or block in the head slot or head vanity slot
 local armor = {
 	-- Original rotation of ear armor
 	earArmorRot = vec(-3, 3, 3.75), -- vec(0, 5, 0)
 	-- Is ear armor visible?
 	earArmorVisible = false,
-	-- Whether ear armor should be able to rotate or not (only available on leather/chainmail, or on all helmets if settings.armor.earArmorMovement is enabled)
-	rotateEarArmor = false,
+	-- Whether ears may be rotate or not (only available on leather/chainmail/turtle, or on all helmets if settings.armor.earArmorMovement is enabled)
+	canRotateEars = false,
 	-- Default color for leather armor
 	leatherColor = vec(160/255, 101/255, 64/255),
 
@@ -37,6 +39,12 @@ local armor = {
 		chestplateBottom = 24,
 		leggings = 16,
 		boots = 20
+	},
+	-- Which helmets allow ear rotation while worn?
+	earRotationHelmets = {
+		["minecraft:leather_helmet"] = allowEarRotationEnum.ALWAYS,
+		["minecraft:chainmail_helmet"] = allowEarRotationEnum.ONLY_DEFAULT,
+		["minecraft:turtle_helmet"] = allowEarRotationEnum.ONLY_CUSTOM,
 	},
 }
 
@@ -83,7 +91,7 @@ modules.events.boots:register(armor.bootsEvent)
 
 
 -- Custom armor model functions
-
+-- TODO: make these not suck
 armor["custom model minecraft:leather_helmet"] = function()
 	local parts = armor.getPartsToEdit({id = "minecraft:leather_helmet"}, "VISIBLE")
 	for _, part in pairs(parts) do
@@ -181,6 +189,9 @@ function armor.defaultEquip(item)
 			models.cat.Head.LeftEar.Armor.default:setVisible(true)
 			models.cat.Head.RightEar.Armor.default:setVisible(true)
 
+			armor.earArmorVisible = true
+			armor.canRotateEars = armor.checkCanRotateEars(item)
+
 			-- Set UVs
 			local uv = armor.getUVOffset(item, "earArmor")
 			models.cat.Head.LeftEar.Armor.default:setUVPixels(uv)
@@ -250,6 +261,10 @@ function armor.unequipHelmet()
 
 	modules.util.setChildrenVisible(models.cat.Head.LeftEar.Armor, false)
 	modules.util.setChildrenVisible(models.cat.Head.RightEar.Armor, false)
+
+	armor.earArmorVisible = false
+	armor.canRotateEars = false
+
 	modules.util.setChildrenVisible(models.cat.Head.Armor, false)
 
 	models.cat.Head:getTask("headItem"):enabled(false)
@@ -427,6 +442,19 @@ end
 
 function armor.checkSkull(helmet)
 	return modules.util.endsWith(helmet.id, "head") or modules.util.endsWith(helmet.id, "skull")
+end
+
+function armor.checkCanRotateEars(item)
+	local canRotateEarSettings = armor.earRotationHelmets[item.id]
+
+	if canRotateEarSettings == allowEarRotationEnum.ALWAYS then
+		return true
+	elseif canRotateEarSettings == allowEarRotationEnum.ONLY_CUSTOM then
+		return armor.useCustomModel(item)
+	elseif canRotateEarSettings == allowEarRotationEnum.ONLY_DEFAULT then
+		return not armor.useCustomModel(item)
+	end
+	return false
 end
 
 return armor
