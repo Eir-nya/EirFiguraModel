@@ -227,7 +227,7 @@ function exAnims.underwaterEvent()
 		modules.animations.swimIdle:play()
 		modules.animations.swimIdle:fade(modules.animations.fadeModes.FADE_IN_SMOOTH, 0.1)
 	else
-		modules.animations.swimIdle:fade(modules.animations.fadeModes.FADE_OUT_SMOOTH, 0.1)
+		modules.animations.swimIdle:fade(modules.animations.fadeModes.FADE_OUT_SMOOTH, 0.4)
 	end
 end
 modules.events.underwater:register(exAnims.underwaterEvent)

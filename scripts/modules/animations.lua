@@ -278,14 +278,20 @@ local animClass = {
 		self.baseBlend = value
 		-- self.anim:blend(value)
 	end,
-	applyToPart = function(self, index, overrideMode)
+	applyToPart = function(self, index, overrideMode, delta)
 		local part = models.cat[index]
+		local fadeMult = 1
+
+		if self:isFading() then
+			fadeMult = self:getFadeBlend(delta)
+		end
+
 		if overrideMode == overrideModes.OVERRIDE then
-			part:setRot(-modules.util.partToVanillaPart(part):getOriginRot())
+			part:setRot(-modules.util.partToVanillaPart(part):getOriginRot() * fadeMult)
 		elseif overrideMode == overrideModes.OVERRIDE_BLEND then
-			part:setRot(-modules.util.partToVanillaPart(part):getOriginRot() * self.anim:getBlend())
+			part:setRot(-modules.util.partToVanillaPart(part):getOriginRot() * fadeMult * self.anim:getBlend())
 		elseif overrideMode == overrideModes.BLEND_OUT then
-			part:setRot(-modules.util.partToVanillaPart(part):getOriginRot() * self.lastInvProgress)
+			part:setRot(-modules.util.partToVanillaPart(part):getOriginRot() * fadeMult * self.lastInvProgress)
 		end
 	end,
 }
@@ -387,7 +393,7 @@ function anims.handleAnimations(rank, partsOverridden, blendWeightRemaining, del
 
 	for partName, overrideMode in pairs(anim.overrideVanillaModes) do
 		if not partsOverridden[partName] then
-			anim:applyToPart(partName, overrideMode, blendWeightRemaining)
+			anim:applyToPart(partName, overrideMode, blendWeightRemaining, delta)
 			partsOverridden[partName] = true
 		end
 	end
