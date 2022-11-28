@@ -120,7 +120,6 @@ function exAnims.tick()
 	exAnims.newVelY = player:getVelocity().y
 
 	-- Start and stop jump animation when moving up or down
-	-- TODO: make jump a tertiary animation so it doesn't override stuff like ladder climbing...?
 	if exAnims.newVelY > 0 and exAnims.lastVelY <= 0 then
 		modules.animations.jump:play()
 		modules.animations.jump:fade(modules.animations.fadeModes.FADE_IN_FIXED, 0.75)
@@ -195,6 +194,7 @@ function exAnims.fallEvent()
 end
 modules.events.fall:register(exAnims.fallEvent)
 
+-- Runs when blocking with a shield
 function exAnims.blockEvent()
 	local hands = { "R", "L" }
 	local activeHand = player:getActiveHand() == "MAIN_HAND" and 1 or 2
@@ -213,11 +213,13 @@ function exAnims.blockEvent()
 end
 modules.events.block:register(exAnims.blockEvent)
 
+-- Controls swim idle animation
 function exAnims.underwaterEvent()
 	if previous.underwater and not player:isOnGround() and (previous.pose == "STANDING" or previous.pose == "CROUCHING") then
 		modules.animations.swimIdle:play()
+		modules.animations.swimIdle:fade(modules.animations.fadeModes.FADE_IN_SMOOTH, 0.1)
 	else
-		modules.animations.swimIdle:stop()
+		modules.animations.swimIdle:fade(modules.animations.fadeModes.FADE_OUT_SMOOTH, 0.1)
 	end
 end
 modules.events.underwater:register(exAnims.underwaterEvent)

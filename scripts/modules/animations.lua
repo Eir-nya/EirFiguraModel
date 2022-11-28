@@ -99,7 +99,7 @@ local anims = {
 	-- Secondary blends
 	jump = { rank = animRanks.TERTIARY, firstPersonBlend = 1 / 2.5 },
 	fall = {
-		rank = animRanks.SECONDARY,
+		rank = animRanks.TERTIARY,
 		overrideVanillaModes = {
 			RightArm = overrideModes.OVERRIDE_BLEND,
 			LeftArm = overrideModes.OVERRIDE_BLEND,
