@@ -9,6 +9,7 @@ local exAnims = {
 
 	lastOnGround = false,
 	lastClimbing = false,
+	climbingFaceDir = nil,
 	lastFlying = false,
 	-- lastSprinting = false,
 	lastBlocking = false,
@@ -84,9 +85,6 @@ end
 -- Events
 
 function exAnims.init()
-	-- animations["models.cat"].fall:play()
-	-- animations["models.cat"].jump:play()
-	-- animations["models.cat"].climb:play()
 	-- animations["models.cat"].run:play()
 
 	modules.animations.thrustR.anim:speed(1.1875)
@@ -164,8 +162,14 @@ function exAnims.tick()
 	if player:isClimbing() ~= exAnims.lastClimbing then
 		if not exAnims.lastClimbing then
 			modules.animations.climb:play()
+			modules.animations.climb:fade(modules.animations.fadeModes.FADE_IN_SMOOTH, 0.4)
+
+			-- Get ladder/vine state, attempt to find facing direction
+			local ladderState = world.getBlockState(player:getPos())
+			exAnims.climbingFaceDir = exAnims.pickClimbDirection(ladderState)
 		else
-			modules.animations.climb:stop()
+			-- modules.animations.climb:stop()
+			modules.animations.climb:fade(modules.animations.fadeModes.FADE_OUT_SMOOTH, 0.6)
 		end
 	end
 	exAnims.lastClimbing = player:isClimbing()
@@ -229,14 +233,36 @@ modules.events.pose:register(exAnims.underwaterEvent)
 function exAnims.render(tickProgress, context)
 	local velY = math.lerp(exAnims.lastVelY, exAnims.newVelY, tickProgress)
 
-	-- TODO: smooth exit when falling into water
 	-- Only blend animations once per render event
 	if context == "FIRST_PERSON" or context == "RENDER" then
 		if modules.animations.jump.anim:getPlayState() == "PLAYING" then
 			modules.animations.jump:blend(not player:isFlying() and math.clamp(velY, 0, 1) or 0)
 		end
+
+		-- Climb animation blend
 		if modules.animations.climb.anim:getPlayState() == "PLAYING" then
-			modules.animations.climb.anim:speed(math.clamp(math.abs(velY * 3), 0, 1))
+			-- Set climbing anim speed based on vertical movement
+			if exAnims.lastClimbing then
+				modules.animations.climb.anim:speed(math.clamp(math.abs(velY * 3), 0, 1))
+			end
+
+			-- Rotate to face direction, if set
+			if exAnims.climbingFaceDir then
+				local animFade = 1
+				if modules.animations.climb:isFading() then
+					if exAnims.lastClimbing then
+						animFade = math.lerp(modules.animations.climb.lastFadeProgress, modules.animations.climb.fadeProgress, tickProgress)
+					else
+						animFade = 1 - math.lerp(modules.animations.climb.lastFadeProgress, modules.animations.climb.fadeProgress, tickProgress)
+					end
+				end
+
+				local shortAngle = math.shortAngle(player:getBodyYaw(tickProgress), exAnims.climbingFaceDir)
+				shortAngle = shortAngle * -math.sign(player:getBodyYaw(tickProgress) - exAnims.climbingFaceDir)
+				models.cat:setRot(vec(0, shortAngle * animFade, 0))
+			end
+		else
+			models.cat:setRot()
 		end
 	end
 	-- animations["models.cat"].run:blend(exAnims.sprintMult
@@ -329,6 +355,46 @@ function exAnims.canAnim(anim)
 
 	-- Item was not found in table, or animation is not defined in item's table
 	return true
+end
+
+-- Table that converts cardinal directions to vec3s.
+local cardinalToVec = {
+	north = vec(0, 0, -1),
+	east = vec(1, 0, 0),
+	south = vec(0, 0, 1),
+	west = vec(-1, 0, 0)
+}
+
+-- Picks a direction to face when beginning to climb a ladder or vine
+function exAnims.pickClimbDirection(blockState)
+	local ladderProps = (blockState ~= nil and blockState.properties ~= nil) and blockState.properties or nil
+	local resultantVec
+	if ladderProps ~= nil then
+		-- "facing" exists: this is a ladder. face opposite of its "facing" direction
+		if ladderProps.facing ~= nil then
+			resultantVec = -cardinalToVec[ladderProps.facing]
+		-- "south"/"west"/"east"/"north" exists: this is a vine. try to find the "middle" or pick one.
+		elseif ladderProps.north and ladderProps.south then
+			-- Combine opposite vectors from all enabled sides
+			local result = vec(0, 0, 0)
+
+			for dirName, enabled in pairs(ladderProps) do
+				if dirName ~= "up" then
+					if enabled == "true" then
+						result = result + cardinalToVec[dirName]
+					end
+				end
+			end
+
+			-- If resulting vector is 0, just return nil
+			resultantVec = result ~= vec(0, 0, 0) and result or nil
+		end
+	end
+
+	-- Convert to degree measure
+	if resultantVec then
+		return math.deg(math.atan2(resultantVec.z, resultantVec.x)) - 90
+	end
 end
 
 return exAnims
