@@ -258,8 +258,8 @@ function exAnims.render(tickProgress, context)
 				end
 
 				local shortAngle = math.shortAngle(player:getBodyYaw(tickProgress), exAnims.climbingFaceDir)
-				shortAngle = shortAngle * -math.sign(player:getBodyYaw(tickProgress) - exAnims.climbingFaceDir)
-				models.cat:setRot(vec(0, shortAngle * animFade, 0))
+				local diff = exAnims.climbingFaceDir - (player:getBodyYaw(tickProgress) % 360)
+				models.cat:setRot(vec(0, -shortAngle * animFade, 0))
 			end
 		else
 			models.cat:setRot()
