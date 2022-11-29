@@ -9,17 +9,17 @@ function bfp.init()
 end
 modules.events.ENTITY_INIT:register(bfp.init)
 
-function bfp.hideArms(delta, context)
-	-- TODO: what about armor in first person?
+function bfp.updateArms(delta, context)
 	if context == "FIRST_PERSON" then
-		models.cat.LeftArm:setParentType("None")
-		models.cat.RightArm:setParentType("None")
-	else
-		models.cat.LeftArm:setParentType("LeftArm")
-		models.cat.RightArm:setParentType("RightArm")
+		models.cat:setRot()
+
+		models.cat.LeftArm:setRot(-models.cat.LeftArm:getAnimRot() / 1.375)
+		models.cat.LeftArm:setPos(-models.cat.LeftArm:getAnimPos() / 1.25)
+		models.cat.RightArm:setRot(-models.cat.RightArm:getAnimRot() / 1.375)
+		models.cat.RightArm:setPos(-models.cat.RightArm:getAnimPos() / 1.25)
 	end
 end
-modules.events.RENDER:register(bfp.hideArms)
+modules.events.RENDER:register(bfp.updateArms)
 
 function bfp.crosshairRender(delta, context)
 	-- Allow viewing in third person with camera frozen

@@ -13,7 +13,6 @@ TODO:
 	- make duplicate arm models just for first person view; hide main model's in first person, show those instead
 - dynamic and glowing eyes should only appear from "RENDER" context, all other ones should use the original textured eyes
 - make nonbinary stockings 3d
-- fix arms going down when using swipeR animation while holding two items
 - armor and boots replacements
 	- leather armor
 		- leather helmet: fluffy hood
