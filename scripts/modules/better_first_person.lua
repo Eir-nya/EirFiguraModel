@@ -101,7 +101,7 @@ function bfp.crosshairRender(delta, context)
 			-- models.firstPerson.crosshair:setScale(vec(1, 1, 1) * scale)
 		-- end
 	else
-		models.firstPerson.crosshair:setRot()
+		models.firstPerson.crosshair:setRot(-renderer:getCameraOffsetRot().__z)
 		-- models.firstPerson.crosshair:setScale()
 	end
 
