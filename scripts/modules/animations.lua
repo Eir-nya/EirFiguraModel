@@ -380,9 +380,9 @@ function anims.renderNameplate(delta, context)
 		return
 	end
 
-	nameplate.ENTITY:setPos(vectors.rotateAroundAxis(-player:getBodyYaw(delta) + 180, models.cat.Head:getAnimPos() / 16, vec(0, 1, 0)))
+	nameplate.ENTITY:setPos(modules.util.partToWorldPos(models.cat.Head.NAMEPLATE_PIVOT) - player:getPos(delta) - vec(0, 1.916, 0))
 end
-modules.events.RENDER:register(anims.renderNameplate)
+modules.events.POST_RENDER:register(anims.renderNameplate)
 
 
 function anims.handleAnimations(rank, partsOverridden, blendWeightRemaining, delta)
