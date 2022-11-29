@@ -44,7 +44,7 @@ function util.asItemStack(item)
 	if type(item) == "ItemStack" then
 		return item
 	else
-		local newItem = world.newItem(item.id)
+		local newItem = world.newItem(item.id .. "{}") -- Allows setting values in new item tags
 
 		-- This is only needed once. Done because I can't directly set newItem.tag = item.tag
 		if item.tag ~= nil then

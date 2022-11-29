@@ -58,8 +58,14 @@ function armor.init()
 	vanilla_model.BOOTS:setVisible(false)
 
 	-- Set up render task to render items and blocks such as skulls
-	models.cat.Head:addItem("headItem"):pos(0, 8, 0):enabled(false)
-	models.cat.Head:addBlock("headBlock"):scale(0.5625, 0.5625, 0.5625):pos(-4.5, -0.5, -4.5):enabled(false)
+	models.cat.Head:addItem("headItem")
+		:scale(1.1, 1.1, 1.1)
+		:pos(-0.05, 7.95, -0.05)
+		:enabled(false)
+	models.cat.Head:addBlock("headBlock")
+		:scale(0.5625, 0.5625, 0.5625)
+		:pos(-4.5, -0.5, -4.5)
+		:enabled(false)
 end
 modules.events.ENTITY_INIT:register(armor.init)
 
@@ -241,12 +247,23 @@ end
 function armor.equipHelmetItem(item)
 	local isBlock = modules.util.asItemStack(item):isBlockItem() and not armor.checkSkull(item)
 
+	-- If a player head is being worn in the vanity head slot, it *must* be created using world.newItem with the SkullOwner tag.
+	if type(item) == "table" then
+		if item.id == "minecraft:player_head" then
+			if item.tag and item.tag.SkullOwner then
+				item = world.newItem("minecraft:player_head{SkullOwner:'" .. item.tag.SkullOwner.Name .. "'}")
+			end
+		else
+			item = modules.util.asItemStack(item)
+		end
+	end
+
 	models.cat.Head:getTask("headItem"):enabled(not isBlock)
 	models.cat.Head:getTask("headBlock"):enabled(isBlock)
 	if isBlock then
 		models.cat.Head:getTask("headBlock"):block(item.id)
 	else
-		models.cat.Head:getTask("headItem"):item(item.id)
+		models.cat.Head:getTask("headItem"):item(item)
 	end
 
 	if settings.model.snoot then
