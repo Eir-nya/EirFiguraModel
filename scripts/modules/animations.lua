@@ -184,6 +184,8 @@ local animClass = {
 	overrideVanillaModes = {},
 	-- Actual figura animation component of this class.
 	anim = nil, -- [[@as Animation]]
+	-- If set, this will automatically be ran through anim.anim:length(length) on setup.
+	length = nil,
 	-- Has any overrideVanillaModes that are overrideModes.BLEND_OUT?
 	needsBlendCalc = false,
 	-- Last result of inverse anim progress calculation, if the above is true.
@@ -215,6 +217,10 @@ local animClass = {
 
 	setup = function(self)
 		anims[self.anim.name] = self
+
+		if self.length then
+			self.anim:length(self.length)
+		end
 
 		-- If there are any overrideVanillaModes with overrideModes.BLEND_OUT, set a bool
 		for _, overrideMode in pairs(self.overrideVanillaModes) do
@@ -286,12 +292,13 @@ local animClass = {
 			fadeMult = self:getFadeBlend(delta)
 		end
 
+		local vanillaPart = modules.util.partToVanillaPart(part)
 		if overrideMode == overrideModes.OVERRIDE then
-			part:setRot(-modules.util.partToVanillaPart(part):getOriginRot() * fadeMult)
+			part:setRot(-vanillaPart:getOriginRot() * fadeMult)
 		elseif overrideMode == overrideModes.OVERRIDE_BLEND then
-			part:setRot(-modules.util.partToVanillaPart(part):getOriginRot() * fadeMult * self.anim:getBlend())
+			part:setRot(-vanillaPart:getOriginRot() * fadeMult * self.anim:getBlend())
 		elseif overrideMode == overrideModes.BLEND_OUT then
-			part:setRot(-modules.util.partToVanillaPart(part):getOriginRot() * fadeMult * self.lastInvProgress)
+			part:setRot(-vanillaPart:getOriginRot() * fadeMult * self.lastInvProgress)
 		end
 	end,
 }
