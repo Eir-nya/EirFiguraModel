@@ -1,4 +1,9 @@
-local bfp = {}
+local bfp = {
+	lastLeftArmRot = nil,
+	lastLeftArmPos = nil,
+	lastRightArmRot = nil,
+	lastRightArmPos = nil,
+}
 
 function bfp.init()
 	-- TODO: if custom crosshair/better first person view is disabled, just hide custom croshair
@@ -10,13 +15,24 @@ end
 modules.events.ENTITY_INIT:register(bfp.init)
 
 function bfp.updateArms(delta, context)
+	-- FIRST_PERSON render context always comes first.
 	if context == "FIRST_PERSON" then
 		models.cat:setRot()
+
+		bfp.lastLeftArmRot = models.cat.LeftArm:getRot()
+		bfp.lastLeftArmPos = models.cat.LeftArm:getPos()
+		bfp.lastRightArmRot = models.cat.RightArm:getRot()
+		bfp.lastRightArmPos = models.cat.RightArm:getPos()
 
 		models.cat.LeftArm:setRot(-models.cat.LeftArm:getAnimRot() / 1.375)
 		models.cat.LeftArm:setPos(-models.cat.LeftArm:getAnimPos() / 1.25)
 		models.cat.RightArm:setRot(-models.cat.RightArm:getAnimRot() / 1.375)
 		models.cat.RightArm:setPos(-models.cat.RightArm:getAnimPos() / 1.25)
+	elseif renderer:isFirstPerson() then
+		models.cat.LeftArm:setRot(bfp.lastLeftArmRot)
+		models.cat.LeftArm:setPos(bfp.lastLeftArmPos)
+		models.cat.RightArm:setRot(bfp.lastRightArmRot)
+		models.cat.RightArm:setPos(bfp.lastRightArmPos)
 	end
 end
 modules.events.RENDER:register(bfp.updateArms)
