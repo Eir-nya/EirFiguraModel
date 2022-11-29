@@ -3,23 +3,6 @@
 local sit = {
 	-- Is sitting?
 	isSitting = false,
-	-- Cycling timer used for sin and cos operations in sit animation
-	swayTimer = 0,
-	-- Displayed rotations for the legs
-	rotLLeg = vec(0, 0, 0),
-	rotRLeg = vec(0, 0, 0),
-	-- Last displayed rotations for the legs
-	lastRotLLeg = vec(0, 0, 0),
-	lastRotRLeg = vec(0, 0, 0),
-	-- Display rotation for the head
-	rotHead = vec(0, 0, 0),
-	-- Last displayed rotation for the head
-	lastRotHead = vec(0, 0, 0),
-	-- Starting rotations for limbs
-	legStartL = vec(0, 0, 0),
-	legStartR = vec(0, 0, 0),
-	armStartL = vec(0, 0, 0),
-	armStartR = vec(0, 0, 0),
 }
 
 -- Subscribable events
@@ -30,54 +13,38 @@ modules.events.sit = modules.events:new()
 
 function sit.update()
 	if sit.isSitting then
-		sit.swayTimer = (sit.swayTimer + 0.15625) % 18.90625
 		if modules.emotes.isEmoting() and modules.emotes.emote == "blush" then
-			sit.swayTimer = sit.swayTimer + 0.05
+			modules.animations.sit1.anim:speed(1)
+		else
+			modules.animations.sit1.anim:speed(0.75)
 		end
-
-		sit.lastRotLLeg = sit.rotLLeg
-		sit.rotLLeg = sit.legStartL + vec((math.sin(sit.swayTimer * 2) * 7.5) + 7.5, (math.cos(sit.swayTimer) * 2) + 2, (math.sin(sit.swayTimer) * 2.5) + 20)
-		sit.lastRotRLeg = sit.rotRLeg
-		sit.rotRLeg = sit.legStartR + vec((-math.sin(sit.swayTimer * 2) * 7.5) + 7.5, (math.cos(sit.swayTimer) * 2) - 4, (math.sin(sit.swayTimer) * 2.5) - 22.5)
-		sit.lastRotHead = sit.rotHead
-		sit.rotHead = vec(22.5 + math.clamp(previous.lookDir.y * 45, -56.25, 67.5), 0, math.sin(sit.swayTimer * (2/3)) * 22.5)
 
 		-- Only the model wearer's client decides if they should stop posing
 		if host:isHost() then
 			if not sit.canSit() then
-				pings.sitPose(false)
+				pings.sitPose(false, true)
 			end
 		end
 	end
 end
 modules.events.TICK:register(sit.update)
 
-function sit.render(tickProgress)
-	-- Sit animation interpolation and head facing
-	if sit.isSitting then
-		models.cat.LeftLeg:setRot(modules.util.vecLerp(sit.lastRotLLeg, sit.rotLLeg, tickProgress))
-		models.cat.RightLeg:setRot(modules.util.vecLerp(sit.lastRotRLeg, sit.rotRLeg, tickProgress))
-		models.cat.Head:setRot(modules.util.vecLerp(sit.lastRotHead, sit.rotHead, tickProgress))
-	end
-end
-modules.events.RENDER:register(sit.render)
 
 
-
-function sit.sitPose(newSit)
+function sit.sitPose(newSit, animFast)
 	sit.isSitting = newSit
 	
 	if newSit then
-		sit.startSitting()
+		sit.startSitting(animFast)
 	else
-		sit.stopSitting()
+		sit.stopSitting(animFast)
 	end
 end
 pings.sitPose = sit.sitPose
 
-function sit.startSitting()
-	sit.swayTimer = 0
-	animations["models.cat"].sitPose1:play()
+function sit.startSitting(animFast)
+	modules.animations.sit1:play()
+	modules.animations.sit1:fade(modules.animations.fadeModes.FADE_IN_SMOOTH, animFast and 0.6 or 0.4)
 
 	-- TODO
 	--[[
@@ -110,24 +77,6 @@ function sit.startSitting()
 	end
 	]]--
 
-	-- Unparent custom parts
-	models.cat.RightLeg:setParentType("None")
-	models.cat.LeftLeg:setParentType("None")
-	models.cat.Body:setParentType("None")
-	models.cat.RightArm:setParentType("None")
-	models.cat.LeftArm:setParentType("None")
-	models.cat.Head:setParentType("None")
-
-	-- Set starting angles
-	sit.armStartL = models.cat.LeftArm:getRot()
-	sit.armStartR = models.cat.RightArm:getRot()
-	sit.legStartL = models.cat.LeftLeg:getRot()
-	sit.rotLLeg = models.cat.LeftLeg:getRot()
-	sit.lastRotLLeg = models.cat.LeftLeg:getRot()
-	sit.legStartR = models.cat.RightLeg:getRot()
-	sit.rotRLeg = models.cat.RightLeg:getRot()
-	sit.lastRotRLeg = models.cat.RightLeg:getRot()
-
 	-- Elytra model manip
 	if settings.model.elytra.enabled then
 		models.elytra.LEFT_ELYTRA:setPos(models.elytra.LEFT_ELYTRA:getPos() - vec(-2, 15 + 2, -2))
@@ -139,30 +88,8 @@ function sit.startSitting()
 	modules.events.sit:run()
 end
 
-function sit.stopSitting()
-	animations["models.cat"].sitPose1:stop()
-
-	-- Reparent custom parts
-	models.cat.LeftLeg:setParentType("LeftLeg")
-	models.cat.RightLeg:setParentType("RightLeg")
-	models.cat.Body:setParentType("Body")
-	models.cat.LeftArm:setParentType("LeftArm")
-	models.cat.RightArm:setParentType("RightArm")
-	models.cat.Head:setParentType("Head")
-
-	-- Undo part rotations and offsets
-	models.cat.LeftLeg:setPos(vec(0, 0, 0))
-	models.cat.LeftLeg:setRot(vec(0, 0, 0))
-	models.cat.RightLeg:setPos(vec(0, 0, 0))
-	models.cat.RightLeg:setRot(vec(0, 0, 0))
-	models.cat.Body:setPos(vec(0, 0, 0))
-	models.cat.Body:setRot(vec(0, 0, 0))
-	models.cat.LeftArm:setPos(vec(0, 0, 0))
-	models.cat.LeftArm:setRot(vec(0, 0, 0))
-	models.cat.RightArm:setPos(vec(0, 0, 0))
-	models.cat.RightArm:setRot(vec(0, 0, 0))
-	models.cat.Head:setPos(vec(0, 0, 0))
-	models.cat.Head:setRot(vec(0, 0, 0))
+function sit.stopSitting(animFast)
+	modules.animations.sit1:fade(modules.animations.fadeModes.FADE_OUT_SMOOTH, animFast and 0.6 or 0.2)
 
 	modules.events.sit:run()
 end

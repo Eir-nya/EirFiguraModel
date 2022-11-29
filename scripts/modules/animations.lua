@@ -59,6 +59,7 @@ local punchBlend = {
 	LeftArm = overrideModes.BLEND_OUT,
 }
 local hideSwipe = function() models.cat.RightArm.swipe:setVisible(false) end
+local stopSit = function() modules.sit.stopSitting(true) end
 
 local anims = {
 	[1] = nil, -- Primary animation
@@ -81,19 +82,26 @@ local anims = {
 		},
 		blendWeight = 0.75,
 	},
-	sitPose1 = {
-		Body = overrideModes.OVERRIDE,
-		RightArm = overrideModes.OVERRIDE,
-		LeftArm = overrideModes.OVERRIDE,
-		RightLeg = overrideModes.OVERRIDE,
-		LeftLeg = overrideModes.OVERRIDE,
+	sit1 = {
+		length = 2.2,
+		overrideVanillaModes = {
+			Body = overrideModes.OVERRIDE,
+			RightArm = overrideModes.OVERRIDE,
+			LeftArm = overrideModes.OVERRIDE,
+			RightLeg = overrideModes.OVERRIDE,
+			LeftLeg = overrideModes.OVERRIDE,
+		},
+		onInterrupt = stopSit,
 	},
 	sitPose2 = {
-		Body = overrideModes.OVERRIDE,
-		RightArm = overrideModes.OVERRIDE,
-		LeftArm = overrideModes.OVERRIDE,
-		RightLeg = overrideModes.OVERRIDE,
-		LeftLeg = overrideModes.OVERRIDE,
+		overrideVanillaModes = {
+			Body = overrideModes.OVERRIDE,
+			RightArm = overrideModes.OVERRIDE,
+			LeftArm = overrideModes.OVERRIDE,
+			RightLeg = overrideModes.OVERRIDE,
+			LeftLeg = overrideModes.OVERRIDE,
+		},
+		onInterrupt = stopSit,
 	},
 
 	-- Secondary blends
