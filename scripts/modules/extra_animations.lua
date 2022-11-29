@@ -314,7 +314,7 @@ if host:isHost() then
 			if not onGround and sprinting and exAnims.canAnim("jumpKick") then
 				pings.attackAnim("jumpKick", not entityHurting)
 			-- Sprinting ground attack: sword
-			elseif onGround and sprinting and exAnims.canAnim("thrustR") then
+			elseif onGround and sprinting and exAnims.canAnim("thrustR") and exAnims.itemAnims[previous.mainItem.id] ~= nil then
 				pings.attackAnim("thrustR", not entityHurting)
 			-- Standard sword swing
 			elseif exAnims.itemAnims[previous.mainItem.id] ~= nil then
