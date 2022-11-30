@@ -87,7 +87,13 @@ settings = {
 	-- Misc settings
 	misc = {
 		useCustomName = true,		-- Changes nameplates to a custom name (set below)
-		customName = [[ [{"text":"Eir","color":"blue"},{"text":" \u16B3","color":"white","font":"figura:default"}] ]]
+		customNameEntity = [[ [
+				{"text":":moon:","font":"figura:emojis","bold":"true"},
+				{"text":"⭐","font":"minecraft:default","bold":"false","color":"gold"},
+				{"text":":zzz:","font":"figura:emojis","bold":"true"},
+				{"text":"\nEir","color":"blue","font":"minecraft:default","bold":"false"}
+			] ]],
+		customNameChat = [[ [{"text":"Eir","color":"blue"}] ]]
 	}
 }
 

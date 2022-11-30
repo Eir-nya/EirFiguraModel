@@ -93,7 +93,7 @@ function exAnims.init()
 
 	-- Register invisible keybind for attack anims
 	if host:isHost() then
-		keybind:create("Attack", keybind:getVanillaKey("key.attack")).onPress = exAnims.attackAnim
+		keybinds:newKeybind("Attack", keybinds:getVanillaKey("key.attack")).onPress = exAnims.attackAnim
 	end
 
 	models.cat.RightArm.swipe:setVisible(false)

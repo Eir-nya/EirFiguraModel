@@ -58,11 +58,11 @@ function armor.init()
 	vanilla_model.BOOTS:setVisible(false)
 
 	-- Set up render task to render items and blocks such as skulls
-	models.cat.Head:addItem("headItem")
+	models.cat.Head:newItem("headItem")
 		:scale(1.1, 1.1, 1.1)
 		:pos(-0.05, 7.95, -0.05)
 		:enabled(false)
-	models.cat.Head:addBlock("headBlock")
+	models.cat.Head:newBlock("headBlock")
 		:scale(0.5625, 0.5625, 0.5625)
 		:pos(-4.5, -0.5, -4.5)
 		:enabled(false)

@@ -309,7 +309,11 @@ modules.events.ENTITY_INIT:register(function() emotes.weaponTest(player:getItem(
 function emotes.randomHeartParticle()
 	local pos = modules.util.getEyePos()
 	pos = pos + vec((math.random() - 0.5) / 1.5, math.random() + 0.125, (math.random() - 0.5) / 1.5)
-	particles.heart:spawn():pos(pos):gravity(0.25):lifetime(12):scale((math.random() / 3) + 0.5)
+	particles.heart:spawn()
+		:pos(pos)
+		:gravity(0.25)
+		:lifetime(12)
+		:scale((math.random() / 3) + 0.5)
 end
 
 return emotes
