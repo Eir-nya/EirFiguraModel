@@ -395,7 +395,14 @@ function anims.renderNameplate(delta, context)
 		return
 	end
 
-	nameplate.ENTITY:setPos(modules.util.partToWorldPos(models.cat.Head.NAMEPLATE_PIVOT) - player:getPos(delta) - vec(0, 1.916, 0))
+	local nameplatePos = modules.util.partToWorldPos(models.cat.Head.NAMEPLATE_PIVOT)
+	nameplatePos = nameplatePos - player:getPos(delta)
+	if previous.pose == "SWIMMING" or previous.pose == "FALL_FLYING" then
+		nameplatePos = nameplatePos - vec(0, 0.75, 0)
+	else
+		nameplatePos = nameplatePos - vec(0, 1.916, 0)
+	end
+	nameplate.ENTITY:setPos(nameplatePos)
 end
 modules.events.POST_RENDER:register(anims.renderNameplate)
 
