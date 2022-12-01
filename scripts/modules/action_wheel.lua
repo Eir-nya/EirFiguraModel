@@ -30,8 +30,8 @@ end
 -- Action 2: Blush
 local blushAction = actionsPage:newAction()
 	:title("Blush")
-	:color(0.8, 0.1, 0.1)
-	:hoverColor(0.8, 0.2, 0.2)
+	:color(0.8, 0.2, 0.2)
+	:hoverColor(0.8, 0.3, 0.3)
 	:texture(textures["models.firstPerson.models.ui"], 23, 0, 8, 8, 2)
 blushAction.leftClick = function()
 	playClickSound()
@@ -42,7 +42,22 @@ blushAction.leftClick = function()
 	end
 end
 
--- Action 3: Hug
+-- Action 3: Rage
+local rageAction = actionsPage:newAction()
+	:title("Rage")
+	:color(0.6, 0.1, 0.1)
+	:hoverColor(0.7, 0.2, 0.1)
+	:texture(textures["models.firstPerson.models.ui"], 61, 22, 8, 8, 2)
+rageAction.leftClick = function()
+	playClickSound()
+	if modules.emotes.isEmoting() and modules.emotes.emote == "rage" then
+		pings.stopEmote(true)
+	elseif not previous.invisible then
+		pings.setEmote("rage")
+	end
+end
+
+-- Action 4: Hug
 if avatar:canEditVanillaModel() then
 	local hugAction = actionsPage:newAction()
 		:title("Hug")
@@ -63,7 +78,7 @@ if avatar:canEditVanillaModel() then
 	end
 end
 
--- Action 4: Sit and kick legs
+-- Action 5: Sit and kick legs
 if avatar:canEditVanillaModel() then
 	local sitAction = actionsPage:newAction()
 		:title("Sit")
@@ -84,7 +99,7 @@ if avatar:canEditVanillaModel() then
 	end
 end
 
--- Action 5: Camera
+-- Action 6: Camera
 local cameraAction = actionsPage:newAction()
 	:title("Camera")
 	:color(32/255, 32/255, 32/255)

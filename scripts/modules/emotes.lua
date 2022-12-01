@@ -25,7 +25,9 @@ local emotes = {
 		blush = "blush",
 		sleep = "sleep",
 		angry = "angry",
-		angryHole = "angryHole"
+		angryHole = "angryHole",
+		rage = "angry", -- uses angry
+		rageHole = "angryHole",
 	},
 	-- Current emote type
 	emote = "normal",
@@ -42,7 +44,8 @@ local emotes = {
 		love = 60,
 		hug = math.huge,
 		blush = 100,
-		sleep = math.huge
+		sleep = math.huge,
+		rage = 50,
 	},
 
 	-- Substrings that, when present at the start or end of an item name, indicate it is a weapon and the "angry" expression should be switched to
@@ -162,6 +165,12 @@ function emotes.setEmote(animation, infinite)
 			settings.sound.emotes[animation].purr and "minecraft:entity.cat.purr" or nil,
 			settings.sound.emotes[animation].purreow and "minecraft:entity.cat.purreow" or nil
 		}))
+	elseif animation == "rage" then
+		modules.util.soundAtPlayer(modules.util.pickFrom({settings.sound.emotes[animation].hiss and "minecraft:entity.cat.hiss" or nil}))
+		-- Also spawn specific amount of particles here
+		for i = 1, math.random(6, 9) do
+			emotes.randomRageParticle()
+		end
 	end
 
 	-- Hugging
@@ -313,6 +322,16 @@ function emotes.randomHeartParticle()
 		:pos(pos)
 		:gravity(0.25)
 		:lifetime(12)
+		:scale((math.random() / 3) + 0.5)
+end
+
+function emotes.randomRageParticle()
+	local pos = modules.util.getEyePos()
+	pos = pos + vec(math.random() - 0.5, (math.random() + 0.125) * 1.25, math.random() - 0.5)
+	particles.angry_villager:spawn()
+		:pos(pos)
+		:gravity(0.0625)
+		:lifetime(40)
 		:scale((math.random() / 3) + 0.5)
 end
 

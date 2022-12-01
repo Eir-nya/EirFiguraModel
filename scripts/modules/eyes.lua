@@ -5,7 +5,7 @@ local eyes = {
 	-- For use when settings.eyes.glow is enabled, but settings.eyes.dynamic isn't
 	eyePositions = {
 		normalHole = { r = vec(0, 0), l = vec(0, 0), },
-		angryHole = { r = vec(0, -0.5), l = vec(0, -0.5), }
+		angryHole = { r = vec(0, -0.5), l = vec(0, -0.5), },
 	},
 	eyeBoundaries = {
 		normalHole = {
@@ -62,6 +62,9 @@ local eyes = {
 	-- UV offset for eyes when scared
 	scaredUVOffset = vec(3, 0)
 }
+-- Aliases
+eyes.eyePositions.rageHole = eyes.eyePositions.angryHole
+eyes.eyeBoundaries.rageHole = eyes.eyeBoundaries.angryHole
 
 -- Events
 

@@ -41,6 +41,9 @@ settings = {
 				purr = true,		-- Use minecraft:entity.cat.purr
 				purreow = true		-- Use minecraft:entity.cat.purreow
 			},
+			rage = {
+				hiss = true,		-- Use minecraft:entity.cat.hiss
+			},
 		},
 		sleep = {
 			purr = true,			-- Use minecraft:entity.cat.purr
