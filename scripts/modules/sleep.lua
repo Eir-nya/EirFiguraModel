@@ -48,15 +48,6 @@ function sleep.startSleeping()
 	models.cat.RightArm:setParentType("BODY")
 	models.cat.RightArm:setPos(vanilla_model.RIGHT_ARM:getOriginPos())
 
-	-- TODO!!!!!
-	-- Elytra model manip
-	if settings.model.elytra.enabled then
-		models.elytra.LEFT_ELYTRA:setPos(models.elytra.LEFT_ELYTRA:getPos() - vec(-6, 3, -1))
-		models.elytra.LEFT_ELYTRA:setRot(models.elytra.LEFT_ELYTRA:getRot() + vec(8, 180 + 12, -60))
-		models.elytra.RIGHT_ELYTRA:setPos(models.elytra.RIGHT_ELYTRA:getPos() - vec(11, 2, -3))
-		models.elytra.RIGHT_ELYTRA:setRot(models.elytra.RIGHT_ELYTRA:getRot() + vec(-12, 180 + 12, 50))
-	end
-
 	-- Set tail position and rotation
 	modules.tail.intendedRotations = {
 		vec(82, -22, -22), vec(-20, -22, 6), vec(-20, -22, 6),

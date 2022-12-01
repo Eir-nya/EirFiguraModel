@@ -77,14 +77,6 @@ function sit.startSitting(animFast)
 	end
 	]]--
 
-	-- Elytra model manip
-	if settings.model.elytra.enabled then
-		models.elytra.LEFT_ELYTRA:setPos(models.elytra.LEFT_ELYTRA:getPos() - vec(-2, 15 + 2, -2))
-		models.elytra.LEFT_ELYTRA:setRot(models.elytra.LEFT_ELYTRA:getRot() - vec(22.5, 45, 0))
-		models.elytra.RIGHT_ELYTRA:setPos(models.elytra.RIGHT_ELYTRA:getPos() - vec(2, 15 + 2, -2))
-		models.elytra.RIGHT_ELYTRA:setRot(models.elytra.RIGHT_ELYTRA:getRot() - vec(22.5, -45, 0))
-	end
-
 	modules.events.sit:run()
 end
 

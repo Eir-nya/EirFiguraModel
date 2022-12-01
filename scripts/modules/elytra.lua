@@ -1,28 +1,62 @@
 -- Elytra replacement module
 
-local elytra = {}
+local elytra = {
+	-- Extra rotation applied to prevent overlap with tail
+	extraRotL = vec(-12.25, -12.25, 0),
+	extraRotR = vec(-12.25, 12.25, 0),
+	-- Extra rotation applied while crouching
+	extraRotCrouch = vec(math.deg(0.5), 0, 0),
+}
 
 -- Events
 
 function elytra.initEvent()
 	if not settings.model.elytra.enabled then
-		models.elytra:setVisible(false)
+		models.cat.Body.Elytra:setVisible(false)
 		return
 	end
 
 	vanilla_model.ELYTRA:setVisible(false)
 
 	elytra.reset()
-	models.elytra:setPrimaryTexture("ELYTRA")
+	models.cat.Body.Elytra.left.default:setPrimaryTexture("ELYTRA")
+	models.cat.Body.Elytra.right.default:setPrimaryTexture("ELYTRA")
 end
 modules.events.ENTITY_INIT:register(elytra.initEvent)
 
 -- Show or hide elytra model if it's equipped
 function elytra.displayEvent()
-	models.elytra:setVisible(previous.elytra)
-	models.elytra:setSecondaryRenderType(previous.elytraGlint and "GLINT" or nil)
+	models.cat.Body.Elytra:setVisible(previous.elytra)
+	if previous.elytra then
+		models.cat.Body.Elytra:setSecondaryRenderType(previous.elytraGlint and "GLINT" or nil)
+	end
 end
-modules.events.chestplate:register(elytra.displayEvent)
+modules.events.TICK:register(elytra.displayEvent)
+
+function elytra.render(delta)
+	if previous.elytra then
+		local addToBoth = vec(0, 0, 0)
+		if previous.pose == "CROUCHING" then
+			addToBoth = addToBoth + elytra.extraRotCrouch
+		end
+		addToBoth = addToBoth + (models.cat.Body:getAnimRot() / -1.75)
+		local yVel = math.min(math.lerp(previous.vel.y, player:getVelocity().y, delta), 0)
+		addToBoth = addToBoth + vec(yVel * 20, 0, 0)
+
+		local rotL = vanilla_model.LEFT_ELYTRA:getOriginRot()
+		rotL = rotL + addToBoth
+		rotL = rotL + elytra.extraRotL
+		rotL = rotL + vec(0, yVel * 5, 0)
+		models.cat.Body.Elytra.left:setRot(rotL)
+		
+		local rotR = vanilla_model.RIGHT_ELYTRA:getOriginRot()
+		rotR = rotR + addToBoth
+		rotR = rotR + elytra.extraRotR
+		rotR = rotR + vec(0, yVel * -5, 0)
+		models.cat.Body.Elytra.right:setRot(rotR)
+	end
+end
+modules.events.RENDER:register(elytra.render)
 
 -- Reset elytra position when exiting sit animation
 function elytra.stopSitting()
@@ -48,15 +82,10 @@ function elytra.reset()
 		return
 	end
 
-	models.elytra.LEFT_ELYTRA:setPivot(-10, 24, -2)
-	models.elytra.RIGHT_ELYTRA:setPivot(10, 24, -2)
-	models.elytra.LEFT_ELYTRA:setPos(3, -0.5, -0.85)
-	models.elytra.RIGHT_ELYTRA:setPos(-2, -0.5, -0.85)
-
 	-- Set default elytra rotation so tail doesn't clip through
 	-- if avatar:canEditVanillaModel() then
-	models.elytra.LEFT_ELYTRA:setRot(vec(-2.5, -7.5, 0))
-	models.elytra.RIGHT_ELYTRA:setRot(vec(-2.5, 7.5, 0))
+	models.cat.Body.Elytra.left:setRot(elytra.extraRotL)
+	models.cat.Body.Elytra.right:setRot(elytra.extraRotR)
 	-- end
 end
 

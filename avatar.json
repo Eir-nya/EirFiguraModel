@@ -72,9 +72,6 @@
 		"models.cat.LeftLeg.LeftLeg3": {
 			"visible": false
 		},
-		"models.elytra": {
-			"visible": false
-		},
 		"models.firstPerson": {
 			"parentType": "Gui",
 			"visible": false

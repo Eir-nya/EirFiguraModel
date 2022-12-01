@@ -34,8 +34,6 @@ TODO:
 				* enable "[right/left]leg.armor.FluffyLeggings"
 				* disable "body.body", enable "body.body2"
 				* disable "[right/left].[right/left] leg", enable "[right/left]leg.[right/left] leg2"
-
-- make elytra follow body properly when animations are playing
 - fix sleep camera, first and third person
 
 NOTES:
