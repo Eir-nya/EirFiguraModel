@@ -97,34 +97,11 @@ modules.events.boots:register(armor.bootsEvent)
 
 
 -- Custom armor model functions
--- TODO: make these not suck
-armor["custom model minecraft:leather_helmet"] = function()
-	local parts = armor.getPartsToEdit({id = "minecraft:leather_helmet"}, "VISIBLE")
-	for _, part in pairs(parts) do
-		part:setVisible(true)
-	end
-end
+
 armor["custom model minecraft:leather_chestplate"] = function()
 	models.cat.Body["Body Layer Down"]:setVisible(false)
 	models.cat.LeftArm.FurUp:setVisible(false)
 	models.cat.RightArm.FurUp:setVisible(false)
-
-	local parts = armor.getPartsToEdit({id = "minecraft:leather_chestplate"}, "VISIBLE")
-	for _, part in pairs(parts) do
-		part:setVisible(true)
-	end
-end
-armor["custom model minecraft:leather_leggings"] = function()
-	local parts = armor.getPartsToEdit({id = "minecraft:leather_leggings"}, "VISIBLE")
-	for _, part in pairs(parts) do
-		part:setVisible(true)
-	end
-end
-armor["custom model minecraft:leather_boots"] = function()
-	local parts = armor.getPartsToEdit({id = "minecraft:leather_boots"}, "VISIBLE")
-	for _, part in pairs(parts) do
-		part:setVisible(true)
-	end
 end
 
 
@@ -147,6 +124,14 @@ function armor.equipEvent(item, slot)
 			end
 		else
 			-- Custom model displaying
+
+			-- Display all parts defined in getPartsToEdit
+			local parts = armor.getPartsToEdit({id = item.id}, "VISIBLE")
+			for _, part in pairs(parts) do
+				part:setVisible(true)
+			end
+
+			-- Function to run on custom model display
 			if armor["custom model " .. item.id] ~= nil then
 				armor["custom model " .. item.id]()
 			end
