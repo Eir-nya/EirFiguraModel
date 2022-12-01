@@ -1,11 +1,12 @@
 TODO:
-- action wheel: Third person sleep camera bullshit
+- action wheel:
+	- camera actions page
+	- Third person sleep camera bullshit
 - meow keybind
 - make back of shirt a bit more apparent (big hair?)
-- emotes continue until stopped if started with a right click
 - disable dynamic eye stuff while sitting
 - raycasting for sleeping and sitting
-- elytra positioning when sleeping
+- elytra positioning when sitting and sleeping
 - angel wings elytra + events for elytra flying
 - angry eyes when blocking
 - distinction between "swords" (incl. axes) and other "weapons" (bows, shields)
