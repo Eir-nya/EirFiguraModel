@@ -5,6 +5,7 @@ modules = {
 	"events",
 
 	"init",
+	"nameplate",
 	"animations",
 	"extra_animations",
 	"sit",

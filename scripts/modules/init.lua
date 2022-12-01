@@ -44,15 +44,5 @@ local init = function()
 	else
 		models.skull.Skull:setVisible(false)
 	end
-
-	-- Changes the wearer's nameplate to simply "Eir" if applicable
-	if avatar:canEditNameplate() then
-		if settings.misc.useCustomName then
-			nameplate.ENTITY:setText(settings.misc.customNameEntity)
-			nameplate.CHAT:setText(settings.misc.customNameChat)
-			nameplate.LIST:setText(settings.misc.customNameChat)
-		end
-		nameplate.ENTITY.shadow = true
-	end
 end
 modules.events.ENTITY_INIT:register(init)

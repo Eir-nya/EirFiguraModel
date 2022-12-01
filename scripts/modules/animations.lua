@@ -389,22 +389,6 @@ function anims.render(delta, context)
 end
 modules.events.RENDER:register(anims.render)
 
--- Additional render method that makes the nameplate follow the model head
-function anims.renderNameplate(delta, context)
-	if context ~= "RENDER" then
-		return
-	end
-
-	local nameplatePos = modules.util.partToWorldPos(models.cat.Head.NAMEPLATE_PIVOT)
-	nameplatePos = nameplatePos - player:getPos(delta)
-	if previous.pose == "SWIMMING" or previous.pose == "FALL_FLYING" then
-		nameplatePos = nameplatePos - vec(0, 0.75, 0)
-	else
-		nameplatePos = nameplatePos - vec(0, 1.916, 0)
-	end
-	nameplate.ENTITY:setPos(nameplatePos)
-end
-modules.events.POST_RENDER:register(anims.renderNameplate)
 
 
 function anims.handleAnimations(rank, partsOverridden, blendWeightRemaining, delta)

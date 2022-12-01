@@ -7,7 +7,8 @@ local events = {
 	TICK = events.TICK,
 	WORLD_TICK = events.WORLD_TICK,
 	RENDER = events.RENDER,
-	POST_RENDER = events.POST_RENDER
+	POST_RENDER = events.POST_RENDER,
+	CHAT_RECEIVE_MESSAGE = events.CHAT_RECEIVE_MESSAGE,
 }
 
 function events:new(figuraEvent)
