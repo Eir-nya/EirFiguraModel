@@ -101,7 +101,9 @@ function bfp.crosshairRender(delta, context)
 			-- models.firstPerson.crosshair:setScale(vec(1, 1, 1) * scale)
 		-- end
 	else
-		models.firstPerson.crosshair:setRot(-renderer:getCameraOffsetRot().__z)
+		if renderer:getCameraOffsetRot() then
+			models.firstPerson.crosshair:setRot(-renderer:getCameraOffsetRot().__z)
+		end
 		-- models.firstPerson.crosshair:setScale()
 	end
 
@@ -114,7 +116,7 @@ end
 modules.events.POST_RENDER:register(bfp.crosshairRender)
 
 function bfp.render(delta, context)
-	if context == "FIRST_PERSON" then
+	if context == "FIRST_PERSON" and previous.pose ~= "SLEEPING" then
 		local rot = player:getRot(delta)
 
 		-- Camera rot

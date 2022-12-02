@@ -6,7 +6,6 @@ local name = {
 
 -- Changes the wearer's nameplate to a custom value, if possible
 function name.init()
-	name.parseCustomName()
 	if avatar:canEditNameplate() then
 		if settings.misc.useCustomName then
 			nameplate.ENTITY:setText(settings.misc.customNameEntity)
@@ -76,6 +75,7 @@ function name.parseCustomName()
 		end
 	end
 end
+name.parseCustomName()
 
 function name.resetColor(delay)
 	avatar:setColor(vectors.hexToRGB(name.originalColor))
