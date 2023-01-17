@@ -75,15 +75,6 @@
 		"models.firstPerson": {
 			"parentType": "Gui",
 			"visible": false
-		},
-
-		"models.doodleEyes.rightDoodle": {
-			"moveTo": "models.cat.Head.Eyes",
-			"visible": false
-		},
-		"models.doodleEyes.leftDoodle": {
-			"moveTo": "models.cat.Head.Eyes",
-			"visible": false
 		}
 	}
 }
