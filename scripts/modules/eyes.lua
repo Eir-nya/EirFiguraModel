@@ -193,7 +193,7 @@ function eyes.decorateEyes()
 		models.cat.Head.EyesGlint:setColor(1, 1, 1)
 	elseif settings.eyes.glow.xpGlint then
 		eyes.rainbowSpeed = math.min(previous.xp / 9, 3 + (1/3))
-		models.cat.Head.EyesGlint:setOpacity(math.min(previous.xp / 30, 1))
+		models.cat.Head.EyesGlint:setOpacity(math.min(previous.xp / 30, 1) * 0.625)
 		models.cat.Head.EyesGlint:setLight(math.min(previous.xp / 45, 30 / 45) * 16)
 	end
 
