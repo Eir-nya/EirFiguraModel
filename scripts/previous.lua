@@ -37,6 +37,7 @@ previous = {
 	fire = nil, -- On fire
 	pose = nil, -- Pose
 	vehicle = nil, -- Riding vehicle
+	flying = nil, -- Creative flying
 
 	effects = {}, -- Potion effects
 

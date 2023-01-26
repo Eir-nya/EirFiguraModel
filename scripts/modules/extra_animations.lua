@@ -93,7 +93,7 @@ function exAnims.init()
 
 	-- Register invisible keybind for attack anims
 	if host:isHost() then
-		keybinds:newKeybind("Attack", keybinds:getVanillaKey("key.attack")).onPress = exAnims.attackAnim
+		keybinds:newKeybind("Attack", keybinds:getVanillaKey("key.attack")).press = exAnims.attackAnim
 	end
 
 	models.cat.RightArm.swipe:setVisible(false)
@@ -154,13 +154,13 @@ function exAnims.tick()
 	exAnims.lastOnGround = onGround
 
 	-- Player just toggled flight
-	if player:isFlying() ~= exAnims.lastFlying then
+	if previous.flying ~= exAnims.lastFlying then
 		-- modules.events.fall:run()
 		if modules.animations.jump.anim:getPlayState() == "PLAYING" then
 			modules.animations.jump:fade(modules.animations.fadeModes.FADE_OUT_FIXED, 0.4)
 		end
 	end
-	exAnims.lastFlying = player:isFlying()
+	exAnims.lastFlying = previous.flying
 
 	-- Player just mounted or dismounted a ladder
 	if player:isClimbing() ~= exAnims.lastClimbing then
@@ -274,7 +274,7 @@ modules.events.RENDER:register(exAnims.render)
 
 
 function exAnims.isFalling()
-	return exAnims.newVelY <= exAnims.fallThreshold and not player:isOnGround() and not player:isFlying() and not previous.vehicle
+	return exAnims.newVelY <= exAnims.fallThreshold and not player:isOnGround() and not previous.flying and not previous.vehicle
 end
 
 -- Attack anim code

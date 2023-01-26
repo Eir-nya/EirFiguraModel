@@ -92,7 +92,7 @@ settings = {
 		useCustomName = true,		-- Changes nameplates to a custom name (set below)
 		customNameEntity = [[ [
 				{"text":":moon:","font":"figura:emojis","bold":"true"},
-				{"text":"⭐","font":"minecraft:default","bold":"false","color":"gold"},
+				{"text":":sparkles:","font":"figura:emojis","bold":"false"},
 				{"text":":zzz:","font":"figura:emojis","bold":"true"},
 				{"text":"\nEir","color":"blue","font":"minecraft:default","bold":"false"}
 			] ]],

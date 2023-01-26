@@ -262,13 +262,34 @@ events.vehicle.condition = function()
 	return vehicle ~= lastVehicle
 end
 
--- Effects event
-events.effects = events:new(events.TICK)
-events.effects.condition = function()
-	local lastEffects = previous.effects
-	local effects = player:getStatusEffects()
-	previous.effects = effects
-	return modules.util.statusEffectsString(effects) ~= modules.util.statusEffectsString(lastEffects)
+
+-- Host only events
+if host:isHost() then
+	-- Effects event
+	function pings.setEffects(newEffects)
+		previous.effects = newEffects
+	end
+	events.effects = events:new(events.TICK)
+	events.effects.condition = function()
+		local lastEffects = previous.effects
+		local effects = host:getStatusEffects()
+		previous.effects = effects
+		return modules.util.statusEffectsString(effects) ~= modules.util.statusEffectsString(lastEffects)
+	end
+	events.effects:register(function() pings.setEffects(previous.effects) end)
+
+	-- Flying event
+	function pings.setFlying(newFlying)
+		previous.flying = newFlying
+	end
+	events.flying = events:new(events.TICK)
+	events.flying.condition = function()
+		local lastFlying = previous.flying
+		local flying = host:isFlying()
+		previous.flying = flying
+		return flying ~= lastFlying
+	end
+	events.flying:register(function() pings.setFlying(previous.flying) end)
 end
 
 

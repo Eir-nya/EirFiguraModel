@@ -13,6 +13,7 @@ TODO:
 	models.cat.RightArm.RIGHT_ITEM_PIVOT:newItem("rightItem"):item("minecraft:stone_pickaxe"):renderType("THIRD_PERSON_RIGHT_HAND"):rot(vec(-90+11.25, 0, 0)):pos(vec(0, 2, 0))
 	then rotate right arm somewhat while holding an item
 	and hide vanilla_model.HELD_ITEMS while in first person
+	use host:getAttackCharge()
 - dynamic and glowing eyes should only appear from "RENDER" context, all other ones should use the original textured eyes
 - make nonbinary stockings 3d
 - armor and boots replacements

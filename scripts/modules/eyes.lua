@@ -202,8 +202,12 @@ function eyes.decorateEyes()
 		models.cat.Head.EyesGlint:setSecondaryRenderType(previous.xp >= 30 and "GLINT" or "TRANSLUCENT")
 	end
 end
-if settings.eyes.glow.nightVision then
-	modules.events.effects:register(eyes.decorateEyes)
+-- Use a ping because only the host has access to current effects
+if host:isHost() and settings.eyes.glow.nightVision then
+	function pings.decorateEyes()
+		eyes.decorateEyes()
+	end
+	modules.events.effects:register(pings.decorateEyes)
 end
 if settings.eyes.glow.xpGlint then
 	modules.events.xp:register(eyes.decorateEyes)

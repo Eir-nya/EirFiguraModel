@@ -12,7 +12,7 @@ function name.init()
 			nameplate.CHAT:setText(settings.misc.customNameChat)
 			nameplate.LIST:setText(settings.misc.customNameChat)
 		end
-		nameplate.ENTITY.shadow = true
+		nameplate.ENTITY:setShadow(true)
 	end
 end
 modules.events.ENTITY_INIT:register(name.init)
