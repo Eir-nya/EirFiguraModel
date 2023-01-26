@@ -12,6 +12,7 @@ function name.init()
 			nameplate.CHAT:setText(settings.misc.customNameChat)
 			nameplate.LIST:setText(settings.misc.customNameChat)
 		end
+		nameplate.ENTITY:setLight(15)
 		nameplate.ENTITY:setShadow(true)
 	end
 end
@@ -55,6 +56,8 @@ function name.renderNameplate(delta, context)
 	nameplatePos = nameplatePos - player:getPos(delta)
 	if previous.pose == "SWIMMING" or previous.pose == "FALL_FLYING" then
 		nameplatePos = nameplatePos - vec(0, 0.75, 0)
+	elseif previous.pose == "CROUCHING" then
+		nameplatePos = nameplatePos - vec(0, 1.5, 0)
 	else
 		nameplatePos = nameplatePos - vec(0, 1.916, 0)
 	end
