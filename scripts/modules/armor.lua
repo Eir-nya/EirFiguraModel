@@ -439,7 +439,7 @@ function armor.knownMaterial(material)
 end
 
 function armor.checkItemVisible(item)
-	return item.id ~= "minecraft:air" and not modules.util.startsWith(item.id, "vanityslots:") and (item.tag == nil or item.tag.PhantomInk == nil)
+	return item.id ~= "minecraft:air" and not modules.util.startsWith(item.id, "vanityslots:") and (item.tag == nil or item.tag.phantomInk == nil)
 end
 
 function armor.checkSkull(helmet)
