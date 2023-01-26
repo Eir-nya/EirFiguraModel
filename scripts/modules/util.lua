@@ -12,8 +12,8 @@ function util.endsWith(s1, s2)
 	return s1:sub(#s1 - (#s2 - 1), #s1) == s2
 end
 
-function util.soundAtPlayer(sound)
-	sounds:playSound(sound, player:getPos())
+function util.soundAtPlayer(sound, vol)
+	sounds:playSound(sound, player:getPos(), vol or nil)
 end
 
 function util.pickFrom(array)

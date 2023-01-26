@@ -166,7 +166,7 @@ function emotes.setEmote(animation, infinite)
 			settings.sound.emotes[animation].purreow and "minecraft:entity.cat.purreow" or nil
 		}))
 	elseif animation == "rage" then
-		modules.util.soundAtPlayer(modules.util.pickFrom({settings.sound.emotes[animation].hiss and "minecraft:entity.cat.hiss" or nil}))
+		modules.util.soundAtPlayer(modules.util.pickFrom({settings.sound.emotes[animation].hiss and "minecraft:entity.cat.hiss" or nil}), 0.25)
 		-- Also spawn specific amount of particles here
 		for i = 1, math.random(6, 9) do
 			emotes.randomRageParticle()
