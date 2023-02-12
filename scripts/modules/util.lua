@@ -40,21 +40,70 @@ end
 
 
 -- Takes an item in the format {id = string, tag = {}}
-function util.asItemStack(item)
+-- tagMode:
+--     0 or nil: Only copies "display", "Enchantments", and "phantomInk" fields
+--     1: Uses string substitution to copy all tags up to 3 layers deep (heavy)
+--     2: Ignore tag
+function util.asItemStack(item, tagMode)
+	local tagMode = tagMode or 0
 	if type(item) == "ItemStack" then
 		return item
 	else
 		local newItemString = item.id
-		if item.tag ~= nil then
-			local tagOutput = printTable(item.tag, 2, true)
-			tagOutput = tagOutput:gsub("\n", ""):gsub("\t", "")
-			tagOutput = tagOutput:gsub("table: ", "")
-			tagOutput = tagOutput:gsub("%[\"(.-)\"%]", "%1")
-			tagOutput = tagOutput:gsub(" = ", ":")
-			tagOutput = tagOutput:gsub("}", "},")
-			tagOutput = tagOutput:sub(0, #tagOutput - 1)
+		if item.tag ~= nil and tagMode < 2 then
+			-- Only copies "display", "Enchantments", and "phantomInk" fields
+			if tagMode == 0 then
+				newItemString = newItemString .. "{"
 
-			newItemString = newItemString .. tagOutput
+				-- The only properties we are about are "display" and "Enchantments"
+				if item.tag.display ~= nil then
+					newItemString = newItemString .. "display:{color:" .. display.color .. "},"
+				end
+				if item.tag.Enchantments ~= nil then
+					newItemString = newItemString .. "Enchantments:["
+					for i = 1, #item.tag.Enchantments do
+						newItemString = newItemString .. "{id:\"" .. item.tag.Enchantments[i].id .. "\","
+						newItemString = newItemString .. "lvl:" .. item.tag.Enchantments[i].lvl .. "},"
+					end
+					newItemString = newItemString .. "],"
+				end
+				if item.tag.phantomInk then
+					newItemString = newItemString .. "phantomInk:1b,"
+				end
+
+				newItemString = newItemString .. "}"
+			-- Uses string substitution to copy all tags up to 3 layers deep (heavy)
+			elseif tagMode == 1 then
+				local tagOutput = printTable(item.tag, 3, true)
+				tagOutput = tagOutput:gsub("([^%{])\n", "%1,"):gsub("\t", ""):gsub("\n", "")
+				tagOutput = tagOutput:gsub("table: ", "")
+				tagOutput = tagOutput:gsub("%[\"(.-)\"%]", "%1")
+				tagOutput = tagOutput:gsub(" = ", ":")
+
+				-- Formats number-indexed sections of table
+				if tagOutput:find("{%[%d+%]:") then
+					local start = tagOutput:find("{%[%d+%]:")
+					local endOfTable = start
+					local braceCount = 0
+					for i = start, #tagOutput do
+						local char = tagOutput:sub(i, i)
+						if char == "{" then
+							braceCount = braceCount + 1
+						elseif char == "}" then
+							braceCount = braceCount - 1
+							if braceCount <= 0 then
+								endOfTable = i
+								break
+							end
+						end
+					end
+
+					tagOutput = tagOutput:sub(0, start - 1) .. "[" .. tagOutput:sub(start + 1, endOfTable - 1) .. "]" .. tagOutput:sub(endOfTable + 1)
+				end
+				tagOutput = tagOutput:gsub("%[%d+%]:", "")
+
+				newItemString = newItemString .. tagOutput
+			end
 		end
 
 		return world.newItem(newItemString)

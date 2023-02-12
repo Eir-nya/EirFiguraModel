@@ -230,7 +230,7 @@ function armor.defaultEquip(item)
 end
 
 function armor.equipHelmetItem(item)
-	local isBlock = modules.util.asItemStack(item):isBlockItem() and not armor.checkSkull(item)
+	local isBlock = modules.util.asItemStack(item, 2):isBlockItem() and not armor.checkSkull(item)
 
 	-- If a player head is being worn in the vanity head slot, it *must* be created using world.newItem with the SkullOwner tag.
 	if type(item) == "table" then
