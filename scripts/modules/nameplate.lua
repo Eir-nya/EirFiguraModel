@@ -1,6 +1,5 @@
 local name = {
 	originalColor = avatar:getColor(),
-	nameSearch = nil,
 	colorDelay = 0,
 }
 
@@ -31,8 +30,8 @@ modules.events.TICK:register(name.rainbowColor)
 if host:isHost() then
 	-- Resets avatar color when receiving a chat message that mentions player
 	function name.chatReceive(msg)
-		if msg:find(name.nameSearch) then
-			name.resetColor(1)
+		if msg:find(player:getName()) then
+			name.resetColor(0)
 		end
 	end
 	modules.events.CHAT_RECEIVE_MESSAGE:register(name.chatReceive)
@@ -40,7 +39,7 @@ if host:isHost() then
 	-- Resets avatar color on death
 	function name.onDeath()
 		if player:getHealth() <= 0 then
-			name.resetColor(1)
+			name.resetColor(0)
 		end
 	end
 	modules.events.hurt:register(name.onDeath)
@@ -52,33 +51,12 @@ function name.renderNameplate(delta, context)
 		return
 	end
 
-	local nameplatePos = modules.util.partToWorldPos(models.cat.Head.NAMEPLATE_PIVOT)
-	nameplatePos = nameplatePos - player:getPos(delta)
-	if previous.pose == "SWIMMING" or previous.pose == "FALL_FLYING" then
-		nameplatePos = nameplatePos - vec(0, 0.75, 0)
-	elseif previous.pose == "CROUCHING" then
-		nameplatePos = nameplatePos - vec(0, 1.5, 0)
-	else
-		nameplatePos = nameplatePos - vec(0, 1.916, 0)
-	end
-	nameplate.ENTITY:setPos(nameplatePos)
+	local nameplatePivot = modules.util.partToWorldPos(models.cat.Head.NAMEPLATE_PIVOT)
+	nameplatePivot = nameplatePivot - player:getPos(delta)
+	nameplatePivot = nameplatePivot + vec(0, 0.375, 0)
+	nameplate.ENTITY:setPivot(nameplatePivot)
 end
 modules.events.POST_RENDER:register(name.renderNameplate)
-
-
--- Parses settings.misc.customNameChat into a cohesive string to use string.find for
-function name.parseCustomName()
-	local jsonAsTable = world.newItem("minecraft:air{'name':" .. settings.misc.customNameChat .. "}").tag.name
-	if type(jsonAsTable) == "string" then
-		name.nameSearch = jsonAsTable
-	elseif type(jsonAsTable == "table") then
-		name.nameSearch = ""
-		for i = 1, #jsonAsTable do
-			name.nameSearch = name.nameSearch .. jsonAsTable[i].text
-		end
-	end
-end
-name.parseCustomName()
 
 function name.resetColor(delay)
 	avatar:setColor(vectors.hexToRGB(name.originalColor))

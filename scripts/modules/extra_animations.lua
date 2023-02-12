@@ -284,7 +284,7 @@ if host:isHost() then
 			return
 		end
 
-		local e = player:getTargetedEntity(5)
+		local e = player:getTargetedEntity(host:getReachDistance())
 		local g = player:isOnGround()
 		local s = player:isSprinting()
 		local sw = player:isSwingingArm()

@@ -44,16 +44,20 @@ function util.asItemStack(item)
 	if type(item) == "ItemStack" then
 		return item
 	else
-		local newItem = world.newItem(item.id .. "{}") -- Allows setting values in new item tags
-
-		-- This is only needed once. Done because I can't directly set newItem.tag = item.tag
+		local newItemString = item.id
 		if item.tag ~= nil then
-			for key, value in pairs(item.tag) do
-				newItem.tag[key] = value
-			end
+			local tagOutput = printTable(item.tag, 2, true)
+			tagOutput = tagOutput:gsub("\n", ""):gsub("\t", "")
+			tagOutput = tagOutput:gsub("table: ", "")
+			tagOutput = tagOutput:gsub("%[\"(.-)\"%]", "%1")
+			tagOutput = tagOutput:gsub(" = ", ":")
+			tagOutput = tagOutput:gsub("}", "},")
+			tagOutput = tagOutput:sub(0, #tagOutput - 1)
+
+			newItemString = newItemString .. tagOutput
 		end
 
-		return newItem
+		return world.newItem(newItemString)
 	end
 end
 
