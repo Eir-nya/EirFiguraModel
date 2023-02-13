@@ -93,8 +93,10 @@ settings = {
 		customNameEntity = "[" .. (client.compareVersions(client:getFiguraVersion(), "0.1.0-rc.13+" .. client:getVersion() .. "-396d2c0") > -1
 			and '{"text":":zzz::cat::sparkles::trans:"}'
 			or '{"text":":moon:","bold":"true"},{"text":":sparkles:","bold":"false"},{"text":":zzz:","bold":"true"}')
-			.. ',{"text":"\nEir","color":"blue","bold":"false"}]',
-		customNameChat = [[ [{"text":":cat2:Eir","color":"blue"}] ]]
+			.. ',{"text":"\nEir","color":"#8ecbea","bold":"false"}]',
+		customNameChat = client.compareVersions(client:getFiguraVersion(), "0.1.0-rc.13+" .. client:getVersion() .. "-396d2c0") > -1
+			and '[{"text":":cat2:Eir","color":"#8ecbea"}]'
+			or '[{"text":"Eir","color":"#8ecbea"}]'
 	}
 }
 
