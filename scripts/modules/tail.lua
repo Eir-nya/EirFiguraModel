@@ -104,6 +104,26 @@ modules.events.chestplate:register(tail.setIntendedRot)
 modules.events.pose:register(tail.setIntendedRot)
 modules.events.sit:register(tail.setIntendedRot)
 
+function tail.sleepEvent()
+	if previous.pose == "SLEEPING" then
+		tail.intendedRotations = {
+			vec(0, 0, 0), vec(0, 0, 0), vec(0, 0, 0),
+			vec(0, 0, 0), vec(0, 0, 0), vec(0, 0, 0),
+			vec(0, 0, 0), vec(0, 0, 0), vec(0, 0, 0),
+		}
+		for i = 1, #modules.tail.rotations do
+			modules.tail.rotations[i] = modules.tail.intendedRotations[i]
+		end
+		for i = 1, #modules.tail.displayedRotations do
+			modules.tail.displayedRotations[i] = modules.tail.intendedRotations[i]
+		end
+		for i = 1, #modules.tail.lastDisplayedRotations do
+			modules.tail.lastDisplayedRotations[i] = modules.tail.intendedRotations[i]
+		end
+	end
+end
+modules.events.sleep:register(tail.sleepEvent)
+
 function tail.velocityEvent()
 	if not tail.canCheckVelocity() then
 		return

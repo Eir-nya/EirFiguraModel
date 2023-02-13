@@ -5,7 +5,6 @@ TODO:
 - meow keybind
 - make back of shirt a bit more apparent (big hair?)
 - raycasting for sleeping
-- elytra positioning when sitting and sleeping
 - angel wings elytra + events for elytra flying
 - angry eyes when blocking
 - distinction between "swords" (incl. axes) and other "weapons" (bows, shields)

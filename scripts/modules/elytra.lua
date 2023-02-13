@@ -54,25 +54,14 @@ function elytra.render(delta)
 		rotR = rotR + elytra.extraRotR
 		rotR = rotR + vec(0, yVel * -5, 0)
 		models.cat.Body.Elytra.right:setRot(rotR)
+
+		if previous.pose == "SLEEPING" then
+			models.cat.Body.Elytra.left:setRot()
+			models.cat.Body.Elytra.right:setRot()
+		end
 	end
 end
 modules.events.RENDER:register(elytra.render)
-
--- Reset elytra position when exiting sit animation
-function elytra.stopSitting()
-	if not modules.sit.isSitting then
-		elytra.reset()
-	end
-end
-modules.events.sit:register(elytra.stopSitting)
-
--- Reset elytra position when exiting sleep pose
-function elytra.stopSleeping()
-	if previous.pose ~= "SLEEPING" then
-		elytra.reset()
-	end
-end
-modules.events.sleep:register(elytra.stopSleeping)
 
 
 

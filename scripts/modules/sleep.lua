@@ -37,36 +37,12 @@ function sleep.startSleeping()
 		sleep.cameraSetup()
 	end
 
-	animations["models.cat"].sleepPose:play()
-
-	-- Undo head parenting, undoes initial rotation when entering bed
-	models.cat.Head:setParentType("BODY")
-
-	-- Stop arm swaying
-	models.cat.LeftArm:setParentType("BODY")
-	models.cat.LeftArm:setPos(vanilla_model.LEFT_ARM:getOriginPos())
-	models.cat.RightArm:setParentType("BODY")
-	models.cat.RightArm:setPos(vanilla_model.RIGHT_ARM:getOriginPos())
-
-	-- Set tail position and rotation
-	modules.tail.intendedRotations = {
-		vec(82, -22, -22), vec(-20, -22, 6), vec(-20, -22, 6),
-		vec(-12, -1, 8), vec(-3, -22, 0), vec(-13, -15, -13),
-		vec(5, -13, -1), vec(5, -3, 10), vec(0, 0, 0)
-	}
-	for i = 1, #modules.tail.rotations do
-		modules.tail.rotations[i] = modules.tail.intendedRotations[i]
-	end
-	for i = 1, #modules.tail.displayedRotations do
-		modules.tail.displayedRotations[i] = modules.tail.intendedRotations[i]
-	end
-	for i = 1, #modules.tail.lastDisplayedRotations do
-		modules.tail.lastDisplayedRotations[i] = modules.tail.intendedRotations[i]
-	end
+	modules.animations.sleepPose:play()
+	animations["models.cat"].breatheIdle:speed(0.5)
 
 	-- Fixes a minecraft issue where the client-side specifically renders the model slightly lower than other players see it
-	if settings.sleep.clientHeightFix then
-		if host:isHost() then
+	if host:isHost() then
+		if settings.sleep.clientHeightFix then
 			local raiseAmount = vec(0, 3, 0)
 
 			models.cat.LeftLeg:setPos(models.cat.LeftLeg:getPos() + raiseAmount)
@@ -77,9 +53,8 @@ function sleep.startSleeping()
 			models.cat.Head:setPos(models.cat.Head:getPos() + raiseAmount)
 
 			-- Elytra
-			if settings.elytraFix then
-				models.elytra.LEFT_ELYTRA:setPos(models.elytra.LEFT_ELYTRA:getPos() + raiseAmount)
-				models.elytra.RIGHT_ELYTRA:setPos(models.elytra.RIGHT_ELYTRA:getPos() + raiseAmount)
+			if settings.model.elytra.enabled then
+				models.cat.Body.Elytra:setPos(raiseAmount)
 			end
 		end
 	end
@@ -101,26 +76,24 @@ function sleep.stopSleeping()
 		renderer:offsetCameraRot(0, 0, 0)
 	end
 
-	animations["models.cat"].sleepPose:stop()
+	modules.animations.sleepPose:stop()
+	animations["models.cat"].breatheIdle:speed(1)
 
-	-- Redo body part parenting
-	models.cat.Head:setParentType("Head")
-	models.cat.LeftArm:setParentType("LeftArm")
-	models.cat.RightArm:setParentType("RightArm")
+	if host:isHost() then
+		if settings.sleep.clientHeightFix then
+			-- Undo part raise offset
+			models.cat.LeftLeg:setPos()
+			models.cat.RightLeg:setPos()
+			models.cat.Body:setPos()
+			models.cat.LeftArm:setPos()
+			models.cat.RightArm:setPos()
+			models.cat.Head:setPos()
 
-	-- Undo part rotations and offsets
-	models.cat.LeftLeg:setPos(vec(0, 0, 0))
-	models.cat.LeftLeg:setRot(vec(0, 0, 0))
-	models.cat.RightLeg:setPos(vec(0, 0, 0))
-	models.cat.RightLeg:setRot(vec(0, 0, 0))
-	models.cat.Body:setPos(vec(0, 0, 0))
-	models.cat.Body:setRot(vec(0, 0, 0))
-	models.cat.LeftArm:setPos(vec(0, 0, 0))
-	models.cat.LeftArm:setRot(vec(0, 0, 0))
-	models.cat.RightArm:setPos(vec(0, 0, 0))
-	models.cat.RightArm:setRot(vec(0, 0, 0))
-	models.cat.Head:setPos(vec(0, 0, 0))
-	models.cat.Head:setRot(vec(0, 0, 0))
+			if settings.model.elytra.enabled then
+				models.cat.Body.Elytra:setPos()
+			end
+		end
+	end
 
 	modules.events.sleep:run()
 end
