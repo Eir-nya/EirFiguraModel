@@ -43,39 +43,46 @@ end
 pings.sitPose = sit.sitPose
 
 function sit.startSitting(animFast)
-	modules.animations.sit1:play()
-	modules.animations.sit1:fade(modules.animations.fadeModes.FADE_IN_SMOOTH, animFast and 0.6 or 0.4)
-
-	-- TODO
-	--[[
-	-- Raycast just below where the legs will be dangling, to see if it's OK for them to dangle lower
-	-- Converts body yaw angle in degrees into a unit vector
-	local direction = vec(-math.sin(math.rad(previous.bodyYaw)), 0, math.cos(math.rad(previous.bodyYaw))).normalized()
+	-- "Raycast" a bit in front of the player to decide which animation to play
+	local bodyYaw = player:getBodyYaw()
+	local direction = vec(-math.sin(math.rad(bodyYaw)), 0, math.cos(math.rad(bodyYaw))):normalized()
 	local checkPos1 = player:getPos() + (direction * 0.35)
 	local checkPos2 = player:getPos() + (direction * 1.5) + vec(0, -0.24, 0)
-	local result = renderer.raycastBlocks(checkPos1, checkPos2, "COLLIDER", "NONE")
-	if result == nil then
-		local legAddPos = vec(0, 0, -1)
-		vanilla_model.LEFT_LEG:setPos(vanilla_model.LEFT_LEG:getPos() + legAddPos)
-		vanilla_model.RIGHT_LEG:setPos(vanilla_model.RIGHT_LEG:getPos() + legAddPos)
 
-		local legAddRot = vec(-45, 0, 0):toRad()
-		vanilla_model.LEFT_LEG:setRot(vanilla_model.LEFT_LEG:getRot() + legAddRot)
-		vanilla_model.RIGHT_LEG:setRot(vanilla_model.RIGHT_LEG:getRot() + legAddRot)
+	local raycastClean = true
 
-		vanilla_model.TORSO:setPos(vanilla_model.TORSO:getPos() + vec(0, -1.5, -3.5))
-		vanilla_model.TORSO:setRot(vanilla_model.TORSO:getRot() + vec(-22.5, 0, 0):toRad())
+	local block1 = world.getBlockState(checkPos1)
+	if block1:isSolidBlock() and block1:hasCollision() then
+		local collision1 = block1:getCollisionShape()
+		local pos1Floor = vec(math.floor(checkPos1.x), math.floor(checkPos1.y), math.floor(checkPos1.z))
 
-		local armAddPos = vec(0, -0.5, -2.5)
-		vanilla_model.LEFT_ARM:setPos(vanilla_model.LEFT_ARM:getPos() + armAddPos)
-		vanilla_model.RIGHT_ARM:setPos(vanilla_model.RIGHT_ARM:getPos() + armAddPos)
-
-		vanilla_model.LEFT_ARM:setRot(vanilla_model.LEFT_ARM:getRot() + vec(-22.5, 0, 11.25):toRad())
-		vanilla_model.RIGHT_ARM:setRot(vanilla_model.RIGHT_ARM:getRot() + vec(-22.5, 0, -11.25):toRad())
-
-		vanilla_model.HEAD:setPos(vanilla_model.HEAD:getPos() + vec(0, -1, -2.5))
+		for i = 1, #collision1 do
+			if checkPos1 >= collision1[i][1] + pos1Floor and checkPos1 < collision1[i][2] + pos1Floor then
+				raycastClean = false
+				break
+			end
+		end
 	end
-	]]--
+
+	if raycastClean then
+		local block2 = world.getBlockState(checkPos2)
+		if block2:isSolidBlock() and block2:hasCollision() then
+			local collision2 = block2:getCollisionShape()
+			local pos2Floor = vec(math.floor(checkPos2.x), math.floor(checkPos2.y), math.floor(checkPos2.z))
+
+			for i = 1, #collision2 do
+				if checkPos2 >= collision2[i][1] + pos2Floor and checkPos2 < collision2[i][2] + pos2Floor then
+					raycastClean = false
+					break
+				end
+			end
+		end
+	end
+
+
+	local anim = raycastClean and modules.animations.sit2 or modules.animations.sit1
+	anim:play()
+	anim:fade(modules.animations.fadeModes.FADE_IN_SMOOTH, animFast and 0.6 or 0.4)
 
 	modules.events.sit:run()
 end
