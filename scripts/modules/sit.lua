@@ -3,6 +3,8 @@
 local sit = {
 	-- Is sitting?
 	isSitting = false,
+	facingDir = nil,
+	anim = modules.animations.sit1,
 }
 
 -- Subscribable events
@@ -80,19 +82,38 @@ function sit.startSitting(animFast)
 	end
 
 
-	local anim = raycastClean and modules.animations.sit2 or modules.animations.sit1
-	anim:play()
-	anim:fade(modules.animations.fadeModes.FADE_IN_SMOOTH, animFast and 0.6 or 0.4)
+	sit.anim = raycastClean and modules.animations.sit2 or modules.animations.sit1
+	sit.anim:play()
+	sit.anim:fade(modules.animations.fadeModes.FADE_IN_SMOOTH, animFast and 0.6 or 0.4)
 
+	sit.facingDir = bodyYaw
 	modules.events.sit:run()
 end
 
 function sit.stopSitting(animFast)
-	local anim = modules.animations.sit1.anim:isPlaying() and modules.animations.sit1 or modules.animations.sit2
-	anim:fade(modules.animations.fadeModes.FADE_OUT_SMOOTH, animFast and 0.6 or 0.2)
+	sit.anim:fade(modules.animations.fadeModes.FADE_OUT_SMOOTH, animFast and 0.6 or 0.2)
+	models.cat:setRot()
 
 	modules.events.sit:run()
 end
+
+function sit.faceSameDirection(delta, ctx)
+	if ctx ~= "RENDER" then
+		return
+	end
+
+	if sit.anim.anim:isPlaying() or sit.anim:isFading() then
+		local animFade = 1
+		if sit.anim:isFading() then
+			animFade = sit.anim:getFadeBlend(delta)
+		end
+
+		local shortAngle = math.shortAngle(player:getBodyYaw(delta), sit.facingDir)
+		local diff = sit.facingDir - (player:getBodyYaw(delta) % 360)
+		models.cat:setRot(vec(0, -shortAngle * animFade, 0))
+	end
+end
+modules.events.RENDER:register(sit.faceSameDirection)
 
 function sit.canSit()
 	return not previous.invisible and previous.velMagXZ < 0.05 and player:isOnGround() and previous.pose == "STANDING"
