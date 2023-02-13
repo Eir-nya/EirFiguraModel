@@ -93,7 +93,8 @@ local anims = {
 		},
 		onInterrupt = stopSit,
 	},
-	sitPose2 = {
+	sit2 = {
+		length = 2.2,
 		overrideVanillaModes = {
 			Body = overrideModes.OVERRIDE,
 			RightArm = overrideModes.OVERRIDE,

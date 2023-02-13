@@ -88,7 +88,8 @@ function sit.startSitting(animFast)
 end
 
 function sit.stopSitting(animFast)
-	modules.animations.sit1:fade(modules.animations.fadeModes.FADE_OUT_SMOOTH, animFast and 0.6 or 0.2)
+	local anim = modules.animations.sit1.anim:isPlaying() and modules.animations.sit1 or modules.animations.sit2
+	anim:fade(modules.animations.fadeModes.FADE_OUT_SMOOTH, animFast and 0.6 or 0.2)
 
 	modules.events.sit:run()
 end

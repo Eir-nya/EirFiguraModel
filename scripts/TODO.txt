@@ -4,7 +4,7 @@ TODO:
 	- Third person sleep camera bullshit
 - meow keybind
 - make back of shirt a bit more apparent (big hair?)
-- raycasting for sleeping and sitting
+- raycasting for sleeping
 - elytra positioning when sitting and sleeping
 - angel wings elytra + events for elytra flying
 - angry eyes when blocking
