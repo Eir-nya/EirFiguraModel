@@ -53,6 +53,7 @@ local eyes = {
 	-- Controls how much the dynamic eyes will move left or right. Set by other functions.
 	xMove = 0,
 	yMove = 0,
+	lookTooFar = false,
 
 	-- (Set by script)
 	rainbowSpeed = 0,
@@ -291,17 +292,35 @@ function eyes.moveEyes(getHeadTilt)
 	end
 
 	-- If object is behind player, just face forward instead
-	if math.abs(eyes.xMove) >= 1.75 then
+	local lastLookTooFar = eyes.lookTooFar
+	eyes.lookTooFar = math.abs(eyes.xMove) >= 1.75
+	if eyes.lookTooFar then
 		getHeadTilt = true
+
+		-- Blink if player just looked away from a target
+		if not lastLookTooFar then
+			if modules.emotes.emote ~= "blink" then
+				if modules.emotes.canBlink() then
+					modules.emotes.blinkTicks = 0
+					modules.emotes.setExpression("blink")
+					return
+				end
+			end
+		end
 	end
 
 	-- Fetch player's head tilt instead of distance to target entity's eyes
-	if getHeadTilt and settings.eyes.dynamic.followHead then
-		local headRot = modules.util.getHeadRot() + vanilla_model.HEAD:getOriginRot()
-		local headRotationX = headRot.y
-		headRotationX = headRotationX / 100
-		eyes.xMove = -headRotationX
-		eyes.yMove = headRot.x / 180
+	if getHeadTilt then
+		if settings.eyes.dynamic.followHead then
+			local headRot = modules.util.getHeadRot() + vanilla_model.HEAD:getOriginRot()
+			local headRotationX = headRot.y
+			headRotationX = headRotationX / 100
+			eyes.xMove = -headRotationX
+			eyes.yMove = headRot.x / 180
+		else
+			eyes.xMove = 0
+			eyes.yMove = 0
+		end
 	end
 
 	local rightEyePos = vec(eyes.eyePositions[previous.expression].r.x, eyes.eyePositions[previous.expression].r.y, models.cat.Head.Eyes.right:getPos().z)
