@@ -16,9 +16,9 @@ modules.events.sit = modules.events:new()
 function sit.update()
 	if sit.isSitting then
 		if modules.emotes.isEmoting() and modules.emotes.emote == "blush" then
-			modules.animations.sit1.anim:speed(1)
+			sit.anim.anim:speed(1)
 		else
-			modules.animations.sit1.anim:speed(0.75)
+			sit.anim.anim:speed(0.75)
 		end
 
 		-- Only the model wearer's client decides if they should stop posing
