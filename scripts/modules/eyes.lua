@@ -221,6 +221,14 @@ if settings.eyes.glow.xpGlint then
 	modules.events.RENDER:register(eyes.rainbow)
 end
 
+-- Hide overlay eyes when not in RENDER context
+function eyes.hideOverlayEyesNotRender(delta, ctx)
+	models.cat.Head.EyesGlint:setVisible(ctx == "RENDER")
+end
+if settings.eyes.glow.enabled then
+	modules.events.RENDER:register(eyes.hideOverlayEyesNotRender)
+end
+
 -- Determines if player should look scared
 function eyes.setScared()
 	local lastScared = eyes.scared
