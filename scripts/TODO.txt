@@ -23,4 +23,3 @@ TODO:
 	- netherite armor
 - fix sleep camera, first and third person
 - fix hair while sleeping
-- fix animations playing while riding a vehicle

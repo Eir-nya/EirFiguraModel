@@ -42,7 +42,7 @@ local exAnims = {
 			["swipeR"] = true, ["punchR"] = true, ["thrustR"] = true, ["jumpKick"] = false,
 		},
 		["minecraft:netherite_sword"] = {
-			["swipeR"] = true, ["punchR"] = true, ["thrustR"] = true,
+			["swipeR"] = true, ["punchR"] = true, ["thrustR"] = true, ["jumpKick"] = false,
 		},
 
 		["minecraft:wooden_axe"] = {
@@ -77,7 +77,7 @@ modules.events.fall = modules.events:new()
 modules.events.block = modules.events:new(events.TICK)
 modules.events.block.condition = function()
 	local lastBlocking = exAnims.lastBlocking
-	local blocking = player:isUsingItem() and player:getActiveItem().id == "minecraft:shield"
+	local blocking = player:isUsingItem() and player:getActiveItem().id == "minecraft:shield" and not previous.vehicle
 	exAnims.lastBlocking = blocking
 	return blocking ~= lastBlocking
 end
@@ -163,7 +163,8 @@ function exAnims.tick()
 	exAnims.lastFlying = previous.flying
 
 	-- Player just mounted or dismounted a ladder
-	if player:isClimbing() ~= exAnims.lastClimbing then
+	local isClimbing = player:isClimbing() and not previous.vehicle
+	if isClimbing ~= exAnims.lastClimbing then
 		if not exAnims.lastClimbing then
 			modules.animations.climb:play()
 			modules.animations.climb:fade(modules.animations.fadeModes.FADE_IN_SMOOTH, 0.4)
@@ -176,7 +177,7 @@ function exAnims.tick()
 			modules.animations.climb:fade(modules.animations.fadeModes.FADE_OUT_SMOOTH, 0.6)
 		end
 	end
-	exAnims.lastClimbing = player:isClimbing()
+	exAnims.lastClimbing = isClimbing
 
 	--[[
 	-- Player just toggled sprint
