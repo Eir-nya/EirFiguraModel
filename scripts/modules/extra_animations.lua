@@ -285,6 +285,11 @@ if host:isHost() then
 		end
 
 		local e = player:getTargetedEntity(host:getReachDistance())
+		if e == nil then
+			if player:getTargetedBlock(true, host:getReachDistance()).id ~= "minecraft:air" then
+				return
+			end
+		end
 		local g = player:isOnGround()
 		local s = player:isSprinting()
 		local sw = player:isSwingingArm()

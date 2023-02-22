@@ -24,4 +24,3 @@ TODO:
 - fix sleep camera, first and third person
 - fix hair while sleeping
 - fix animations playing while riding a vehicle
-- make punchR/swipeR not play if a block is targeted?
