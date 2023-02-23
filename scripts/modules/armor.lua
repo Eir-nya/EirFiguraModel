@@ -17,8 +17,23 @@ local armor = {
 	-- Default color for leather armor
 	leatherColor = vec(160/255, 101/255, 64/255),
 
+	-- Size of armor.png
+	armorTexOriginalSize = models.cat.Body.Armor.default:getTextureSize(),
+
 
 	-- Lookup tables
+
+	-- Override texture sizes for modded armor texture images
+	textureSizes = {
+		gilded_netherite_layer_1 = vec(64, 32),
+	},
+	-- Override texture paths for armor pieces (starts in "textures/models/armor/", ".png" is appended later)
+	texturePaths = {
+		golden_helmet = "gold_layer_1",
+		golden_chestplate = "gold_layer_1",
+		golden_leggings = "gold_layer_2",
+		golden_boots = "gold_layer_1",
+	},
 
 	-- Multiply uv functions by these amounts to display the desired armor type
 	uvMults = {
@@ -118,9 +133,14 @@ function armor.equipEvent(item, slot)
 			-- Is material recognized?
 			if armor.knownMaterial(material) then
 				armor.defaultEquip(item)
-			elseif slot == "helmet" then
-				-- item/block render tasks
-				armor.equipHelmetItem(item)
+			-- If not, assume it's a modded armor, and try to equip that
+			else
+				local isModdedArmor = armor.moddedArmorEquip(item, slot)
+				-- If all else fails, assume that an unrecognized helmet is, in fact, an item or block
+				if slot == "helmet" and not isModdedArmor then
+					-- item/block render tasks
+					armor.equipHelmetItem(item)
+				end
 			end
 		else
 			-- Custom model displaying
@@ -193,6 +213,8 @@ function armor.defaultEquip(item)
 		models.cat.Head:getTask("headBlock"):enabled(false)
 
 		models.cat.Head.Armor.default:setVisible(true)
+		models.cat.Head.Armor.default:setPrimaryTexture("PRIMARY")
+		models.cat.Head.Armor.default:getUVMatrix():reset()
 		models.cat.Head.Armor.default:setUVPixels(armor.getUVOffset(item, "helmet"))
 	elseif slot == "chestplate" then
 		local uv = armor.getUVOffset(item, "chestplate")
@@ -202,18 +224,30 @@ function armor.defaultEquip(item)
 			models.cat.Body.Boobs.Armor.default:setUVPixels(uv)
 		end
 		models.cat.Body.Armor.default:setVisible(true)
+		models.cat.Body.Armor.default:setPrimaryTexture("PRIMARY")
+		models.cat.Body.Armor.default:getUVMatrix():reset()
 		models.cat.Body.Armor.default:setUVPixels(uv)
 
 		models.cat.LeftArm.Armor.default:setVisible(true)
+		models.cat.LeftArm.Armor.default:setPrimaryTexture("PRIMARY")
+		models.cat.LeftArm.Armor.default:getUVMatrix():reset()
 		models.cat.RightArm.Armor.default:setVisible(true)
+		models.cat.RightArm.Armor.default:setPrimaryTexture("PRIMARY")
+		models.cat.RightArm.Armor.default:getUVMatrix():reset()
 
 		uv = armor.getUVOffset(item, "arms")
 		models.cat.LeftArm.Armor.default:setUVPixels(uv)
 		models.cat.RightArm.Armor.default:setUVPixels(uv)
 	elseif slot == "leggings" then
 		models.cat.Body.ArmorBottom.default:setVisible(true)
+		models.cat.Body.ArmorBottom.default:setPrimaryTexture("PRIMARY")
+		models.cat.Body.ArmorBottom.default:getUVMatrix():reset()
 		models.cat.LeftLeg.ArmorLeggings.default:setVisible(true)
+		models.cat.LeftLeg.ArmorLeggings.default:setPrimaryTexture("PRIMARY")
+		models.cat.LeftLeg.ArmorLeggings.default:getUVMatrix():reset()
 		models.cat.RightLeg.ArmorLeggings.default:setVisible(true)
+		models.cat.RightLeg.ArmorLeggings.default:setPrimaryTexture("PRIMARY")
+		models.cat.RightLeg.ArmorLeggings.default:getUVMatrix():reset()
 
 		local uv = armor.getUVOffset(item, "leggings")
 		models.cat.Body.ArmorBottom.default:setUVPixels(armor.getUVOffset(item, "chestplateBottom"))
@@ -221,12 +255,69 @@ function armor.defaultEquip(item)
 		models.cat.RightLeg.ArmorLeggings.default:setUVPixels(uv)
 	elseif slot == "boots" then
 		models.cat.LeftLeg.ArmorBoots.default:setVisible(true)
+		models.cat.LeftLeg.ArmorBoots.default:setPrimaryTexture("PRIMARY")
+		models.cat.LeftLeg.ArmorBoots.default:getUVMatrix():reset()
 		models.cat.RightLeg.ArmorBoots.default:setVisible(true)
+		models.cat.RightLeg.ArmorBoots.default:setPrimaryTexture("PRIMARY")
+		models.cat.RightLeg.ArmorBoots.default:getUVMatrix():reset()
 
 		local uv = armor.getUVOffset(item, "boots")
 		models.cat.LeftLeg.ArmorBoots.default:setUVPixels(uv)
 		models.cat.RightLeg.ArmorBoots.default:setUVPixels(uv)
 	end
+end
+
+-- Returns bool: true if item is considered modded armor, false if not
+function armor.moddedArmorEquip(item, slot)
+	-- Fetch resource prefix with string substitution
+	local prefix = item.id:sub(item.id:find(":") + 1, ({item.id:find(".*_")})[2] - 1)
+	-- Test if resource exists
+	local imageName = armor.texturePaths[item]
+	if not imageName then
+		imageName = prefix
+	end
+	local resourcePath = "textures/models/armor/" .. imageName .. (slot == "leggings" and "_layer_2.png" or "_layer_1.png")
+	if not client.hasResource(resourcePath) then
+		return false
+	end
+
+	-- Client has resource. Proceed to apply them.
+	local newTextureSize = armor.textureSizes[imageName]
+	if not newTextureSize then
+		newTextureSize = vec(64, 32) -- Default armor texture size, unless otherwise specified
+	end
+	local texScale = armor.armorTexOriginalSize / newTextureSize
+	texScale = vec(texScale.x, texScale.y, 1)
+
+	local partsToShow = armor.getPartsToEdit(item, "VISIBLE")
+	for _, part in pairs(partsToShow) do
+		part:setVisible(true)
+		part:setPrimaryTexture("RESOURCE", resourcePath)
+	end
+
+	-- TODO: make all of these model parts follow the vanilla standard AAAAAA
+	if slot == "helmet" then
+		models.cat.Head.Armor.default:setUVPixels(0, 2)
+	elseif slot == "chestplate" then
+		models.cat.Body.Boobs.Armor.default:setUVPixels(16, -26)
+		models.cat.Body.Armor.default:setUVPixels(16, -26)
+		models.cat.LeftArm.Armor.default:setUVPixels(40, 30)
+		models.cat.RightArm.Armor.default:setUVPixels(40, 30)
+	elseif slot == "leggings" then
+		models.cat.Body.ArmorBottom.default:setUVPixels(16, -11)
+		models.cat.LeftLeg.ArmorLeggings.default:setUVPixels(0, -23)
+		models.cat.RightLeg.ArmorLeggings.default:setUVPixels(0, -23)
+	elseif slot == "boots" then
+		models.cat.LeftLeg.ArmorBoots.default:setUVPixels(0, -21)
+		models.cat.RightLeg.ArmorBoots.default:setUVPixels(0, -21)
+	end
+
+	-- Apply UV scale
+	for _, part in pairs(partsToShow) do
+		part:getUVMatrix():scale(texScale)
+	end
+
+	return true
 end
 
 function armor.equipHelmetItem(item)
@@ -385,10 +476,13 @@ function armor.getPartsToEdit(item, mode)
 				end
 			end
 		end
+	-- Default
 	else
 		if slot == "helmet" then
-			table.insert(parts, models.cat.Head.LeftEar.Armor.default)
-			table.insert(parts, models.cat.Head.RightEar.Armor.default)
+			if armor.knownMaterial(armor.getItemMaterial(item)) then
+				table.insert(parts, models.cat.Head.LeftEar.Armor.default)
+				table.insert(parts, models.cat.Head.RightEar.Armor.default)
+			end
 			table.insert(parts, models.cat.Head.Armor.default)
 		elseif slot == "chestplate" then
 			table.insert(parts, models.cat.Body.Boobs.Armor.default)
@@ -420,9 +514,9 @@ function armor.getUVOffset(item, armorPiece)
 end
 
 function armor.getItemSlot(item)
-	local underscorePos = item.id:find("_")
-	if underscorePos then
-		return item.id:sub(underscorePos + 1, -1)
+	local underscoreFind, lastPos = item.id:find(".*_")
+	if underscoreFind then
+		return item.id:sub(lastPos + 1, -1)
 	end
 end
 
