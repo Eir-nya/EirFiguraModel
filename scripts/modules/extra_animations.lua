@@ -314,7 +314,12 @@ if host:isHost() then
 				end
 			end
 
-			local entityHurting = not (type(e) == "LivingEntityAPI" and (modules.util.getNbtValue(e:getNbt(), "HurtTime") == 0) or false)
+			local entityHurting = false
+			if type(e) == "LivingEntityAPI" then
+				if not settings.misc.disableGetNbt then
+					entityHurting = modules.util.getNbtValue(e:getNbt(), "HurtTime") > 0
+				end
+			end
 
 			-- Standard attack
 
