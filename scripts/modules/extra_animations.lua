@@ -197,7 +197,9 @@ function exAnims.fallEvent()
 	else
 		-- modules.animations.fall:stop()
 		if modules.animations.fall.fadeMode ~= modules.animations.fadeModes.FADE_OUT_SMOOTH then
+			local _fadeProgress, _lastFadeProgress = modules.animations.fall.fadeProgress, modules.animations.fall.lastFadeProgress
 			modules.animations.fall:fade(modules.animations.fadeModes.FADE_OUT_SMOOTH, 0.3)
+			modules.animations.fall.fadeProgress, modules.animations.fall.lastFadeProgress = 1 - _fadeProgress, 1 - _lastFadeProgress
 		end
 	end
 end
