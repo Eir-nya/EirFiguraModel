@@ -2,9 +2,9 @@
 
 modules = {
 	"util",
+	"init",
 	"events",
 
-	"init",
 	"nameplate",
 	"animations",
 	"extra_animations",

@@ -74,32 +74,36 @@ events.xp.condition = function()
 	return xp ~= lastXP
 end
 
--- Hurt event - has different behavior if entity:getNbt is disabled (thanks Requiem/Locki)
-if settings.misc.disableGetNbt then
-	local lastHealthPercent = 0
-	events.health:register(function()
-		if lastHealthPercent > previous.healthPercent then
-			previous.hurtTicks = 10
-		end
-		lastHealthPercent = previous.healthPercent
-	end)
+-- Hurt event needs to exist immediately on model load. Condition is set below, after player init
+events.hurt = events:new(events.TICK)
+events.hurt.condition = function() return false end
 
-	events.hurt = events:new(events.TICK)
-	events.hurt.condition = function()
-		local lastHurtTicks = previous.hurtTicks
-		previous.hurtTicks = math.max(0, previous.hurtTicks - 1)
-		return lastHurtTicks == 10 or (previous.hurtTicks < lastHurtTicks and previous.hurtTicks == 0)
+events.ENTITY_INIT:register(function()
+	-- Hurt event - has different behavior if entity:getNbt is disabled (thanks Requiem/Locki)
+	if settings.misc.disableGetNbt then
+		local lastHealthPercent = 0
+		events.health:register(function()
+			if lastHealthPercent > previous.healthPercent then
+				previous.hurtTicks = 10
+			end
+			lastHealthPercent = previous.healthPercent
+		end)
+
+		events.hurt.condition = function()
+			local lastHurtTicks = previous.hurtTicks
+			previous.hurtTicks = math.max(0, previous.hurtTicks - 1)
+			return lastHurtTicks == 10 or (previous.hurtTicks < lastHurtTicks and previous.hurtTicks == 0)
+		end
+	-- Hurt event default behavior
+	else
+		events.hurt.condition = function()
+			local lastHurtTicks = previous.hurtTicks
+			local hurtTicks = player:getNbt().HurtTime
+			previous.hurtTicks = hurtTicks
+			return (hurtTicks > lastHurtTicks and lastHurtTicks == 0) or (hurtTicks < lastHurtTicks and hurtTicks == 0)
+		end
 	end
--- Hurt event default behavior
-else
-	events.hurt = events:new(events.TICK)
-	events.hurt.condition = function()
-		local lastHurtTicks = previous.hurtTicks
-		local hurtTicks = player:getNbt().HurtTime
-		previous.hurtTicks = hurtTicks
-		return (hurtTicks > lastHurtTicks and lastHurtTicks == 0) or (hurtTicks < lastHurtTicks and hurtTicks == 0)
-	end
-end
+end)
 
 events.frozen = events:new(events.TICK)
 events.frozen.condition = function()
