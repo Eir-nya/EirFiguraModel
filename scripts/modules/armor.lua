@@ -25,14 +25,17 @@ local armor = {
 
 	-- Override texture sizes for modded armor texture images
 	textureSizes = {
-		gilded_netherite_layer_1 = vec(64, 32),
+		-- gilded_netherite_layer_1 = vec(64, 32),
 	},
-	-- Override texture paths for armor pieces (starts in "textures/models/armor/", ".png" is appended later)
+	-- Override texture paths for armor pieces (starts in "textures/models/armor/", "_layer_1/2.png" is appended later)
 	texturePaths = {
-		golden_helmet = "gold_layer_1",
-		golden_chestplate = "gold_layer_1",
-		golden_leggings = "gold_layer_2",
-		golden_boots = "gold_layer_1",
+		golden = "gold",
+		fetchling = "gemstone",
+		ferocious = "gemstone",
+		sylph = "gemstone",
+		oread = "gemstone",
+		olvite = "paradise_lost_olvite",
+		phoenix = "paradise_lost_phoenix",
 	},
 
 	-- Multiply uv functions by these amounts to display the desired armor type
@@ -272,7 +275,7 @@ function armor.moddedArmorEquip(item, slot)
 	-- Fetch resource prefix with string substitution
 	local prefix = item.id:sub(item.id:find(":") + 1, ({item.id:find(".*_")})[2] - 1)
 	-- Test if resource exists
-	local imageName = armor.texturePaths[item]
+	local imageName = armor.texturePaths[prefix]
 	if not imageName then
 		imageName = prefix
 	end
