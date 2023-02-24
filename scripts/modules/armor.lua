@@ -48,12 +48,12 @@ local armor = {
 	-- Widths of different texture patterns in armor.png
 	uvWidths = {
 		earArmor = 14,
-		helmet = 40,
+		helmet = 32,
 		chestplate = 24,
-		arms = 17,
+		arms = 16,
 		chestplateBottom = 24,
 		leggings = 16,
-		boots = 20
+		boots = 16
 	},
 	-- Which helmets allow ear rotation while worn?
 	earRotationHelmets = {
@@ -295,21 +295,20 @@ function armor.moddedArmorEquip(item, slot)
 		part:setPrimaryTexture("RESOURCE", resourcePath)
 	end
 
-	-- TODO: make all of these model parts follow the vanilla standard AAAAAA
 	if slot == "helmet" then
-		models.cat.Head.Armor.default:setUVPixels(0, 2)
+		models.cat.Head.Armor.default:setUVPixels(0, -6)
 	elseif slot == "chestplate" then
-		models.cat.Body.Boobs.Armor.default:setUVPixels(16, -26)
-		models.cat.Body.Armor.default:setUVPixels(16, -26)
-		models.cat.LeftArm.Armor.default:setUVPixels(40, 30)
-		models.cat.RightArm.Armor.default:setUVPixels(40, 30)
+		models.cat.Body.Boobs.Armor.default:setUVPixels(16, -2)
+		models.cat.Body.Armor.default:setUVPixels(16, -1)
+		models.cat.LeftArm.Armor.default:setUVPixels(40, -16)
+		models.cat.RightArm.Armor.default:setUVPixels(40, -16)
 	elseif slot == "leggings" then
-		models.cat.Body.ArmorBottom.default:setUVPixels(16, -11)
-		models.cat.LeftLeg.ArmorLeggings.default:setUVPixels(0, -23)
-		models.cat.RightLeg.ArmorLeggings.default:setUVPixels(0, -23)
+		models.cat.Body.ArmorBottom.default:setUVPixels(16, -32)
+		models.cat.LeftLeg.ArmorLeggings.default:setUVPixels(0, -48)
+		models.cat.RightLeg.ArmorLeggings.default:setUVPixels(0, -48)
 	elseif slot == "boots" then
-		models.cat.LeftLeg.ArmorBoots.default:setUVPixels(0, -21)
-		models.cat.RightLeg.ArmorBoots.default:setUVPixels(0, -21)
+		models.cat.LeftLeg.ArmorBoots.default:setUVPixels(0, -61)
+		models.cat.RightLeg.ArmorBoots.default:setUVPixels(0, -61)
 	end
 
 	-- Apply UV scale
