@@ -29,6 +29,7 @@ previous = {
 	bootsString = nil,
 
 	elytra = nil, -- Elytra should be displayed
+	elytraHide = false, -- An elytra is eqiupped, but the model one should be hidden
 	elytraGlint = nil, -- Elytra is enchanted
 
 	invisible = nil, -- Invisible from potion effect or spectator mode

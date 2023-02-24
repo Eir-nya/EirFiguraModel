@@ -26,8 +26,8 @@ modules.events.ENTITY_INIT:register(elytra.initEvent)
 
 -- Show or hide elytra model if it's equipped
 function elytra.displayEvent()
-	models.cat.Body.Elytra:setVisible(previous.elytra)
-	if previous.elytra then
+	models.cat.Body.Elytra:setVisible(previous.elytra and not previous.elytraHide)
+	if previous.elytra and not previous.elytraHide then
 		models.cat.Body.Elytra:setSecondaryRenderType(previous.elytraGlint and "GLINT" or nil)
 	end
 end
@@ -64,6 +64,19 @@ end
 modules.events.RENDER:register(elytra.render)
 
 
+
+-- Checks if an item qualifies as an elytra
+function elytra.isElytra(item)
+	if item.id == "minecraft:elytra" then
+		return true, false
+	else
+		local pos = item.id:find("_elytra")
+		if pos ~= nil and pos > -1 then
+			return item.id:sub(pos, -1) == "_elytra", true
+		end
+	end
+	return false, false
+end
 
 -- Resets elytra
 function elytra.reset()
