@@ -272,8 +272,13 @@ end
 
 -- Returns bool: true if item is considered modded armor, false if not
 function armor.moddedArmorEquip(item, slot)
+	local underscoreFound, lastUnderscore = item.id:find(".*_")
+	if not underscoreFound then
+		return false
+	end
+
 	-- Fetch resource prefix with string substitution
-	local prefix = item.id:sub(item.id:find(":") + 1, ({item.id:find(".*_")})[2] - 1)
+	local prefix = item.id:sub(item.id:find(":") + 1, lastUnderscore - 1)
 	-- Test if resource exists
 	local imageName = armor.texturePaths[prefix]
 	if not imageName then
