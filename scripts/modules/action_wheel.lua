@@ -20,13 +20,18 @@ local emoteMethod = function(emoteName, infinite)
 		pings.setEmote(emoteName, infinite)
 	end
 end
+-- Icon texture
+local iconTex = textures["models.firstPerson.models.ui"]
+if not iconTex then
+	iconTex = textures["textures.ui"]
+end
 
 -- Action 1: Love
 local loveAction = actionsPage:newAction()
 	:title("Love")
 	:color(1, 0.5, 0.5)
 	:hoverColor(250/255, 170/255, 171/255)
-	:texture(textures["models.firstPerson.models.ui"], 15, 0, 8, 8, 2)
+	:texture(iconTex, 15, 0, 8, 8, 2)
 loveAction.leftClick = function() emoteMethod("love") end
 loveAction.rightClick = function() emoteMethod("love", true) end
 
@@ -35,7 +40,7 @@ local blushAction = actionsPage:newAction()
 	:title("Blush")
 	:color(0.8, 0.2, 0.2)
 	:hoverColor(0.8, 0.3, 0.3)
-	:texture(textures["models.firstPerson.models.ui"], 23, 0, 8, 8, 2)
+	:texture(iconTex, 23, 0, 8, 8, 2)
 blushAction.leftClick = function() emoteMethod("blush") end
 blushAction.rightClick = function() emoteMethod("blush", true) end
 
@@ -44,7 +49,7 @@ local rageAction = actionsPage:newAction()
 	:title("Rage")
 	:color(0.6, 0.1, 0.1)
 	:hoverColor(0.7, 0.2, 0.1)
-	:texture(textures["models.firstPerson.models.ui"], 61, 22, 8, 8, 2)
+	:texture(iconTex, 61, 22, 8, 8, 2)
 rageAction.leftClick = function() emoteMethod("rage") end
 rageAction.rightClick = function() emoteMethod("rage", true) end
 
@@ -54,7 +59,7 @@ if avatar:canEditVanillaModel() then
 		:title("Hug")
 		:color(226/255, 189/255, 110/255)
 		:hoverColor(246/255, 229/255, 151/255)
-		:texture(textures["models.firstPerson.models.ui"], 0, 17, 11, 13, 2)
+		:texture(iconTex, 0, 17, 11, 13, 2)
 	hugAction.leftClick = function()
 		playClickSound()
 		if modules.emotes.isEmoting() and modules.emotes.emote == "hug" then
@@ -75,7 +80,7 @@ if avatar:canEditVanillaModel() then
 		:title("Sit")
 		:color(87/255, 61/255, 142/255)
 		:hoverColor(127/255, 101/255, 182/255)
-		:texture(textures["models.firstPerson.models.ui"], 11, 15, 16, 15, 1.5)
+		:texture(iconTex, 11, 15, 16, 15, 1.5)
 	sitAction.leftClick = function()
 		playClickSound()
 		if modules.sit.isSitting then
@@ -95,7 +100,7 @@ local cameraAction = actionsPage:newAction()
 	:title("Camera")
 	:color(32/255, 32/255, 32/255)
 	:hoverColor(72/255, 72/255, 72/255)
-	:texture(textures["models.firstPerson.models.ui"], 15, 8, 10, 6, 2)
+	:texture(iconTex, 15, 8, 10, 6, 2)
 cameraAction.leftClick = function()
 	playClickSound()
 	-- TODO
