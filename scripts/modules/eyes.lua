@@ -60,6 +60,7 @@ local eyes = {
 
 	-- Player will be scared and pupils will shrink when at low health or food, freezing, drowning, or having the darkness or wither effects
 	scared = false,
+	scaredEffects = false, -- Set by event. determines if potion effects are currently applied on the host that should make eyes scared
 	-- UV offset for eyes when scared
 	scaredUVOffset = vec(3, 0)
 }
@@ -188,6 +189,7 @@ function eyes.decorateEyes()
 	models.cat.Head.EyesGlint:setLight(nil)
 
 	-- Prioritize night vision glow over xp glint rainbow
+	-- TODO: use host to sync night vision effects or not
 	if settings.eyes.glow.nightVision and modules.util.getEffect("effect.minecraft.night_vision") then
 		models.cat.Head.EyesGlint:setOpacity(1)
 		models.cat.Head.EyesGlint:setLight(15)
@@ -238,9 +240,7 @@ function eyes.setScared()
 		or previous.freezeTicks >= 140
 		or previous.airPercent <= 0.2
 		or previous.fire
-		or modules.util.getEffect("effect.minecraft.darkness")
-		or modules.util.getEffect("effect.minecraft.wither")
-		or modules.util.getEffect("effect.minecraft.poison")
+		or eyes.scaredEffects
 		or modules.extra_animations.isFalling()
 
 	-- Update eyes
@@ -267,8 +267,20 @@ if settings.eyes.dynamic.fear then
 	modules.events.frozen:register(eyes.setScared)
 	modules.events.air:register(eyes.setScared)
 	modules.events.fire:register(eyes.setScared)
-	modules.events.effects:register(eyes.setScared)
 	modules.events.fall:register(eyes.setScared)
+end
+
+function pings.setScaredEffects(x)
+	eyes.scaredEffects = x
+	eyes.setScared()
+end
+if host:isHost() then
+	function eyes.checkScaredEffects()
+		pings.setScaredEffects(modules.util.getEffect("effect.minecraft.darkness")
+			or modules.util.getEffect("effect.minecraft.wither")
+			or modules.util.getEffect("effect.minecraft.poison"))
+	end
+	modules.events.effects:register(eyes.checkScaredEffects)
 end
 
 
