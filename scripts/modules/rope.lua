@@ -343,15 +343,19 @@ for parentName, parent in pairs(rope.parents) do
 end
 
 -- World tick method - gets wind power level and direction based on location
-function rope.worldTick()
-	-- 210 (next 5 lines)
-	if world.exists() and not previous.invisible then
-		rope.windDir = math.rad(world.getTime() / 4)
-		rope.windPower = rope.getWindPower()
-		rope.windPowerDiv100 = rope.windPower / 100
+modules.events.ENTITY_INIT:register(function()
+	function rope.worldTick()
+		-- 210 (next 5 lines)
+		if world.exists() and player:isLoaded() then
+			if not previous.invisible then
+				rope.windDir = math.rad(world.getTime() / 4)
+				rope.windPower = rope.getWindPower()
+				rope.windPowerDiv100 = rope.windPower / 100
+			end
+		end
 	end
-end
-modules.events.WORLD_TICK:register(rope.worldTick)
+	modules.events.WORLD_TICK:register(rope.worldTick)
+end)
 
 
 -- Fetches the full path of a model part, as a string.
