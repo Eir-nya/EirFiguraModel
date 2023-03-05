@@ -13,7 +13,6 @@ TODO:
 	then rotate right arm somewhat while holding an item
 	and hide vanilla_model.HELD_ITEMS while in first person
 	use host:getAttackCharge()
-- make nonbinary stockings 3d
 - armor and boots replacements
 	- turtle helmet
 	- iron armor

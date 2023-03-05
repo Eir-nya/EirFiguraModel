@@ -70,22 +70,7 @@
 			"moveTo": "models.cat.LeftLeg",
 			"visible": false
 		},
-		"models.cat.Body.Body2": {
-			"visible": false
-		},
 		"models.cat.RightArm.swipe": {
-			"visible": false
-		},
-		"models.cat.RightLeg.RightLeg2": {
-			"visible": false
-		},
-		"models.cat.RightLeg.RightLeg3": {
-			"visible": false
-		},
-		"models.cat.LeftLeg.LeftLeg2": {
-			"visible": false
-		},
-		"models.cat.LeftLeg.LeftLeg3": {
 			"visible": false
 		},
 		"models.firstPerson": {
