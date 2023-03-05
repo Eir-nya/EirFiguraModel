@@ -59,7 +59,10 @@ local punchBlend = {
 	LeftArm = overrideModes.BLEND_OUT,
 }
 local hideSwipe = function() models.cat.RightArm.swipe:setVisible(false) end
-local stopSit = function() modules.sit.stopSitting(true) end
+local stopSit = function(self)
+	modules.sit.isSitting = false
+	-- modules.sit.stopSitting(true)
+end
 
 local anims = {
 	[1] = nil, -- Primary animation
