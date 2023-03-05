@@ -26,6 +26,10 @@ local exAnims = {
 
 	-- What animations are allowed for each item.
 	itemAnims = {
+		default = {
+			["swipeR"] = true, ["punchR"] = true, ["thrustR"] = false, ["jumpKick"] = true,
+		},
+
 		["minecraft:wooden_sword"] = {
 			["swipeR"] = true, ["punchR"] = true, ["thrustR"] = true, ["jumpKick"] = false,
 		},
@@ -327,17 +331,15 @@ if host:isHost() then
 			if not onGround and sprinting and exAnims.canAnim("jumpKick") then
 				pings.attackAnim("jumpKick", not entityHurting)
 			-- Sprinting ground attack: sword
-			elseif onGround and sprinting and exAnims.canAnim("thrustR") and exAnims.itemAnims[previous.mainItem.id] ~= nil then
+			elseif onGround and sprinting and exAnims.canAnim("thrustR") and (exAnims.itemAnims[previous.mainItem.id] ~= nil or exAnims.itemAnims.default["thrustR"]) then
 				pings.attackAnim("thrustR", not entityHurting)
 			-- Standard sword swing
-			elseif exAnims.itemAnims[previous.mainItem.id] ~= nil then
-				if exAnims.canAnim("swipeR") or exAnims.canAnim("punchR") then
-					exAnims.showSwipe = true
-					pings.attackAnim(modules.util.pickFrom({
-						exAnims.canAnim("swipeR") and "swipeR" or nil,
-						exAnims.canAnim("punchR") and "punchR" or nil
-					}), not entityHurting)
-				end
+			elseif exAnims.canAnim("swipeR") then
+				exAnims.showSwipe = true
+				pings.attackAnim(modules.util.pickFrom({
+					exAnims.canAnim("swipeR") and "swipeR" or nil,
+					exAnims.canAnim("punchR") and "punchR" or nil
+				}), not entityHurting)
 			-- Punch animation
 			else
 				pings.attackAnim("punchR", not entityHurting)
@@ -347,8 +349,8 @@ if host:isHost() then
 		end
 
 		-- Attacking nothing
-		if exAnims.itemAnims[previous.mainItem.id] ~= nil and exAnims.canAnim("swipeR") then
-			exAnims.showSwipe = exAnims.itemAnims[previous.mainItem.id] ~= nil
+		if exAnims.canAnim("swipeR") then
+			exAnims.showSwipe = true
 			pings.attackAnim("swipeR", not swingingArm)
 		end
 	end
@@ -360,16 +362,21 @@ end
 
 -- Returns true if the animation should be played, based on the player's held main item.
 function exAnims.canAnim(anim)
+	local key = previous.mainItem.id
+	if not exAnims.itemAnims[key] and previous.holdingWeapon then
+		key = "default"
+	end
+
 	-- Item found in table
-	if exAnims.itemAnims[previous.mainItem.id] ~= nil then
+	if exAnims.itemAnims[key] ~= nil then
 		-- Animation is defined
-		if exAnims.itemAnims[previous.mainItem.id][anim] ~= nil then
-			return exAnims.itemAnims[previous.mainItem.id][anim]
+		if exAnims.itemAnims[key][anim] ~= nil then
+			return exAnims.itemAnims[key][anim]
 		end
 	end
 
 	-- Item was not found in table, or animation is not defined in item's table
-	return true
+	return false
 end
 
 -- Table that converts cardinal directions to vec3s.
