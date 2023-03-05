@@ -231,16 +231,26 @@ function armor.defaultEquip(item)
 		models.cat.Body.Armor.default:getUVMatrix():reset()
 		models.cat.Body.Armor.default:setUVPixels(uv)
 
-		modules.util.getArmBase(false).Armor.default:setVisible(true)
-		modules.util.getArmBase(false).Armor.default:setPrimaryTexture("PRIMARY")
-		modules.util.getArmBase(false).Armor.default:getUVMatrix():reset()
-		modules.util.getArmBase(true).Armor.default:setVisible(true)
-		modules.util.getArmBase(true).Armor.default:setPrimaryTexture("PRIMARY")
-		modules.util.getArmBase(true).Armor.default:getUVMatrix():reset()
+		-- Get array of ModelParts to apply operations to
+		local armArmorParts = {
+			[modules.util.getArmBase(false).Armor.default] = true,
+			[modules.util.getArmBase(true).Armor.default] = true
+		}
+		if settings.model.newArms then
+			armArmorParts[modules.util.getArmBase(false).Forearm.Armor.default] = true
+			armArmorParts[modules.util.getArmBase(true).Forearm.Armor.default] = true
+		end
+
+		for modelPart in pairs(armArmorParts) do
+			modelPart:setVisible(true)
+			modelPart:setPrimaryTexture("PRIMARY")
+			modelPart:getUVMatrix():reset()
+		end
 
 		uv = armor.getUVOffset(item, "arms")
-		modules.util.getArmBase(false).Armor.default:setUVPixels(uv)
-		modules.util.getArmBase(true).Armor.default:setUVPixels(uv)
+		for modelPart in pairs(armArmorParts) do
+			modelPart:setUVPixels(uv)
+		end
 	elseif slot == "leggings" then
 		models.cat.Body.ArmorBottom.default:setVisible(true)
 		models.cat.Body.ArmorBottom.default:setPrimaryTexture("PRIMARY")
@@ -310,6 +320,10 @@ function armor.moddedArmorEquip(item, slot)
 		models.cat.Body.Armor.default:setUVPixels(16, -1)
 		modules.util.getArmBase(false).Armor.default:setUVPixels(40, -16)
 		modules.util.getArmBase(true).Armor.default:setUVPixels(40, -16)
+		if settings.model.newArms then
+			modules.util.getArmBase(false).Forearm.Armor.default:setUVPixels(40, -16)
+			modules.util.getArmBase(true).Forearm.Armor.default:setUVPixels(40, -16)
+		end
 	elseif slot == "leggings" then
 		models.cat.Body.ArmorBottom.default:setUVPixels(16, -32)
 		models.cat.LeftLeg.ArmorLeggings.default:setUVPixels(0, -48)
@@ -388,6 +402,10 @@ function armor.unequipChestplate()
 	modules.util.setChildrenVisible(models.cat.Body.Boobs.Armor, false)
 	modules.util.setChildrenVisible(modules.util.getArmBase(false).Armor, false)
 	modules.util.setChildrenVisible(modules.util.getArmBase(true).Armor, false)
+	if settings.model.newArms then
+		modules.util.setChildrenVisible(modules.util.getArmBase(false).Forearm.Armor, false)
+		modules.util.setChildrenVisible(modules.util.getArmBase(true).Forearm.Armor, false)
+	end
 end
 
 function armor.unequipLeggings()
@@ -496,6 +514,10 @@ function armor.getPartsToEdit(item, mode)
 			table.insert(parts, models.cat.Body.Armor.default)
 			table.insert(parts, modules.util.getArmBase(false).Armor.default)
 			table.insert(parts, modules.util.getArmBase(true).Armor.default)
+			if settings.model.newArms then
+				table.insert(parts, modules.util.getArmBase(false).Forearm.Armor.default)
+				table.insert(parts, modules.util.getArmBase(true).Forearm.Armor.default)
+			end
 		elseif slot == "leggings" then
 			table.insert(parts, models.cat.Body.ArmorBottom.default)
 			table.insert(parts, models.cat.LeftLeg.ArmorLeggings.default)
