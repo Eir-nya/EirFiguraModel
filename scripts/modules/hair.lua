@@ -62,7 +62,19 @@ local hair = {
 			yVelInfluence = 10,
 			limits = {
 				{ xMax = 22.5, xMin = -112.5, zMin = -11.25 },
-				{ xMax = 22.5, xMin = -22.5, zMin = 0, },
+				{ xMax = 22.5, xMin = -22.5, zMin = 0 },
+			},
+		},
+		Top = {
+			gravity = 0.075,
+			friction = 0.5,
+			facingDir = 0,
+			xzVelInfluence = -18,
+			yVelInfluence = 0,
+			windInfluence = 1 / 24,
+			limits = {
+				{ xMax = 22.5, xMin = -22.5, },
+				{ xMax = 22.5, xMin = -22.5, },
 			},
 		},
 	},
@@ -81,6 +93,8 @@ modules.events.ENTITY_INIT:register(hair.init)
 function hair.helmetEvent()
 	-- Only visible items count
 	if modules.armor.checkItemVisible(previous.helmet) then
+		hair.ropes.Top:setVisible(false) -- Always hidden
+
 		-- Custom helmets: varies
 		if modules.armor.useCustomModel(previous.helmet) then
 			-- Leather helmet: hide all rope physics hair
@@ -124,6 +138,7 @@ function hair.helmetEvent()
 		hair.ropes.Back1:setVisible(true)
 		hair.ropes.Back2:setVisible(true)
 		hair.ropes.Back3:setVisible(true)
+		hair.ropes.Top:setVisible(true)
 
 		models.cat.Head.Frilly:setPos()
 		models.cat.Head.Frilly:setVisible(true)
