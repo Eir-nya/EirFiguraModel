@@ -477,11 +477,19 @@ function armor.getPartsToEdit(item, mode)
 					table.insert(parts, models.cat.Body.Armor.FluffyJacket.leather)
 					table.insert(parts, modules.util.getArmBase(false).Armor.FluffyJacket.leather)
 					table.insert(parts, modules.util.getArmBase(true).Armor.FluffyJacket.leather)
+					if settings.model.newArms then
+						table.insert(parts, modules.util.getArmBase(false).Forearm.Armor.FluffyJacket.leather)
+						table.insert(parts, modules.util.getArmBase(true).Forearm.Armor.FluffyJacket.leather)
+					end
 				else
 					table.insert(parts, models.cat.Body.Boobs.Armor.FluffyJacket)
 					table.insert(parts, models.cat.Body.Armor.FluffyJacket)
 					table.insert(parts, modules.util.getArmBase(false).Armor.FluffyJacket)
 					table.insert(parts, modules.util.getArmBase(true).Armor.FluffyJacket)
+					if settings.model.newArms then
+						table.insert(parts, modules.util.getArmBase(false).Forearm.Armor.FluffyJacket)
+						table.insert(parts, modules.util.getArmBase(true).Forearm.Armor.FluffyJacket)
+					end
 				end
 			elseif slot == "leggings" then
 				table.insert(parts, models.cat.Body.ArmorBottom.FluffyLeggings)
