@@ -84,7 +84,8 @@ settings = {
 		elytra = {
 			enabled = true,			-- Elytra mimic model (Copies vanilla elytra. Required for elytra compatibility with poses)
 			wings = false			-- Custom angel wings-style elytra
-		}
+		},
+		newArms = true,				-- Uses custom modeled 3d arms with hindarm, forearm, and paw fingers
 	},
 
 	-- Misc settings

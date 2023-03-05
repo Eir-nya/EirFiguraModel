@@ -55,3 +55,9 @@ if settings.model.skull then
 else
 	models.skull.Skull:setVisible(false)
 end
+
+-- Toggle new arms
+models.cat.LeftArm.default:setVisible(not settings.model.newArms)
+models.cat.RightArm.default:setVisible(not settings.model.newArms)
+models.cat.LeftArm.new:setVisible(settings.model.newArms)
+models.cat.RightArm.new:setVisible(settings.model.newArms)
