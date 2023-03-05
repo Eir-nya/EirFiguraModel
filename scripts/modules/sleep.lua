@@ -70,10 +70,9 @@ function sleep.stopSleeping()
 		return
 	end
 
-	-- Revert camera on model wearer's client only
+	-- Reset camera on model wearer's client only
 	if host:isHost() then
-		renderer:offsetCameraPivot(0, 0, 0)
-		renderer:offsetCameraRot(0, 0, 0)
+		sleep.resetCamera()
 	end
 
 	modules.animations.sleepPose:stop()
@@ -99,6 +98,10 @@ function sleep.stopSleeping()
 end
 
 function sleep.cameraSetup()
+	if renderer:isFirstPerson() then
+		models.cat:setScale(vec(0, 0, 0))
+		return
+	end
 	-- TODO
 	-- -- Code that moves the model wearer's camera to various positions
 	-- local lookDir = player:getLookDir()
@@ -169,6 +172,16 @@ function sleep.cameraSetup()
 	-- -- camera.THIRD_PERSON:setRot(vec(20, -angle + 135 + (renderer:isCameraBackwards() and 180 or 0), 0))
 	-- -- camera.THIRD_PERSON:setPos(vec(0, 0, 0))
 	-- -- sleep.cameraRotation = camera.THIRD_PERSON:getRot()
+end
+
+function sleep.resetCamera()
+	if renderer:isFirstPerson() then
+		models.cat:setScale()
+		return
+	end
+
+	renderer:offsetCameraPivot(0, 0, 0)
+	renderer:offsetCameraRot(0, 0, 0)
 end
 
 return sleep
