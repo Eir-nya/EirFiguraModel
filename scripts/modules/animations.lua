@@ -266,6 +266,7 @@ local animClass = {
 	end,
 	stop = function(self)
 		self.anim:stop()
+		self.fadeMode = nil
 	end,
 	fade = function(self, fadeMode, rate)
 		self.fadeMode = fadeMode
@@ -330,7 +331,9 @@ function anims.entityInit()
 		animClass:new(t)
 	end
 	anims.breatheIdle = nil
-	animations["models.cat"].breatheIdle:play()
+	if avatar:canEditVanillaModel() then
+		animations["models.cat"].breatheIdle:play()
+	end
 end
 modules.events.ENTITY_INIT:register(anims.entityInit)
 
