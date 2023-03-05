@@ -23,3 +23,9 @@ TODO:
 	- netherite armor
 - fix sleep camera, first and third person
 - fix hair while sleeping
+- fix animations stuck on death (namely blocking)
+- fix rapid blinking (reproducible with paradise lost mod by wearing a cloud hare on head and emoting)
+	- can't reproduce in singleplayer
+
+spectrum bedrock armor just gives missing textures??
+	- currently broken for unknown reasons. instead, bedrock armor has been set to break intentionally

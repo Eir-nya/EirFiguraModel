@@ -33,6 +33,7 @@ local armor = {
 		fetchling = "gemstone",
 		ferocious = "gemstone",
 		sylph = "gemstone",
+		bedrock = "broken", -- Texture exists but is currently unreadable for unknown reasons.
 		oread = "gemstone",
 		olvite = "paradise_lost_olvite",
 		phoenix = "paradise_lost_phoenix",

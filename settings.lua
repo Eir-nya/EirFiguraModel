@@ -15,7 +15,7 @@ settings = {
 			diamond = false,
 			netherite = false,
 		},
-		vanitySlots = true,
+		vanitySlots = true,			-- Compatibility with VanitySlots fabric mod
 	},
 
 	-- Sound settings
@@ -66,9 +66,15 @@ settings = {
 		},
 	},
 
+	-- Rope physics
+	rope = {
+		-- TODO
+		-- enabled = true,				-- Enables rope physics. Set to false to force-disable for everything that uses rope physics
+		windInfluence = true,		-- Enables wind influence over rope physics parts, eg. swaying hair
+	},
 	-- Hair settings
 	hair = {
-		enabled = true				-- Enables modeled, moving hair to attempt realism
+		physics = true,				-- Adds some dangly strands of hair that use rope physics. Requires rope.enabled
 	},
 
 	-- Sleep settings
@@ -109,10 +115,8 @@ settings = {
 
 if not avatar:canEditVanillaModel() then
 	settings.sleep.enabled = false
-	settings.customArmor.chest = false
-	settings.customArmor.legs = false
-	settings.customArmor.boobArmor = false
-	settings.model.elytra = false
+	settings.armor.boobArmor = false
+	settings.model.elytra.enabled = false
 	settings.eyes.dynamic.enabled = false
 	settings.eyes.glow.enabled = false
 end

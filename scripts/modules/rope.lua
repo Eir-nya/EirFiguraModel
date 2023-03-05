@@ -225,8 +225,6 @@ local ropeClass = {
 	end,
 
 	TICK = function(self)
-		-- TODO: rope physics (lol)
-
 		-- How much will the segments be influenced by each factor?
 		local partInfluence = self.parentType.partInfluence * self.partInfluence
 		local xzVelInfluence = previous.velMagXZ * self.xzVelInfluence
@@ -235,13 +233,15 @@ local ropeClass = {
 		local yVelInfluence = rope.yVelInfluence * self.yVelInfluence
 
 		local windInfluence = 0
-		-- 185 (next 7 lines)
-		if rope.windPower > 0 and self.windInfluence > 0 and not rope.isUnderwater then
-			windInfluence = rope.windPower * self.windInfluence
-			local windMult = math.sin(((world.getTime() / 2) + (self.id * 2.2)) * rope.windPowerDiv100)
-			windMult = windMult + (math.cos((world.getTime() + (self.id * 1.5)) * rope.windPowerDiv100) * (rope.windPower / 20))
-			windMult = (windMult / 3) + 0.5
-			windInfluence = windInfluence * windMult
+		-- ~186 (next 7 lines)
+		if settings.rope.windInfluence then
+			if rope.windPower > 0 and self.windInfluence > 0 and not rope.isUnderwater then
+				windInfluence = rope.windPower * self.windInfluence
+				local windMult = math.sin(((world.getTime() / 2) + (self.id * 2.2)) * rope.windPowerDiv100)
+				windMult = windMult + (math.cos((world.getTime() + (self.id * 1.5)) * rope.windPowerDiv100) * (rope.windPower / 20))
+				windMult = (windMult / 3) + 0.5
+				windInfluence = windInfluence * windMult
+			end
 		end
 
 		-- For each segment...

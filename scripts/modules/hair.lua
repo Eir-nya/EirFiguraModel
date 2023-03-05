@@ -82,6 +82,13 @@ local hair = {
 
 -- Sets up hair rope physics objects
 function hair.init()
+	if not settings.hair.physics then
+		for name in pairs(hair.ropes) do
+			models.cat.Head.Hair[name]:setVisible(false)
+		end
+		return
+	end
+	
 	for name, properties in pairs(hair.ropes) do
 		local rope = modules.rope:new(properties, models.cat.Head.Hair[name])
 		hair.ropes[name] = rope
@@ -116,7 +123,7 @@ function hair.helmetEvent()
 				-- TODO: set limits on Left and Right wavey hair
 			end
 			-- TODO
-		-- Default helmet model: disable Left and Back2, move down Frilly
+		-- Default helmet model: disable Back2, move down Frilly
 		elseif modules.armor.knownMaterial(modules.armor.getItemMaterial(previous.helmet)) then
 			hair.ropes.Back2:setVisible(false)
 			models.cat.Head.Frilly:setPos(vec(0, -1.5, -1))
@@ -145,6 +152,8 @@ function hair.helmetEvent()
 		modules.util.setChildrenVisible(models.cat.Head["3DHair"], true)
 	end
 end
-modules.events.helmet:register(hair.helmetEvent)
+if settings.hair.physics then
+	modules.events.helmet:register(hair.helmetEvent)
+end
 
 return hair
