@@ -331,11 +331,13 @@ if host:isHost() then
 				pings.attackAnim("thrustR", not entityHurting)
 			-- Standard sword swing
 			elseif exAnims.itemAnims[previous.mainItem.id] ~= nil then
-				exAnims.showSwipe = true
-				pings.attackAnim(modules.util.pickFrom({
-					exAnims.canAnim("swipeR") and "swipeR" or nil,
-					exAnims.canAnim("punchR") and "punchR" or nil
-				}), not entityHurting)
+				if exAnims.canAnim("swipeR") or exAnims.canAnim("punchR") then
+					exAnims.showSwipe = true
+					pings.attackAnim(modules.util.pickFrom({
+						exAnims.canAnim("swipeR") and "swipeR" or nil,
+						exAnims.canAnim("punchR") and "punchR" or nil
+					}), not entityHurting)
+				end
 			-- Punch animation
 			else
 				pings.attackAnim("punchR", not entityHurting)
