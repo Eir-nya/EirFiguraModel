@@ -224,6 +224,7 @@ function armor.defaultEquip(item)
 
 		if settings.armor.boobArmor and armor.knownMaterial(material) then
 			models.cat.Body.Boobs.Armor.default:setVisible(true)
+			models.cat.Body.Boobs.Armor.default:setPrimaryTexture("PRIMARY")
 			models.cat.Body.Boobs.Armor.default:setUVPixels(uv)
 		end
 		models.cat.Body.Armor.default:setVisible(true)
