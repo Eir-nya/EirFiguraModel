@@ -48,7 +48,7 @@ function sit.startSitting(animFast)
 	-- "Raycast" a bit in front of the player to decide which animation to play
 	local bodyYaw = player:getBodyYaw()
 	local direction = vec(-math.sin(math.rad(bodyYaw)), 0, math.cos(math.rad(bodyYaw))):normalized()
-	local checkPos1 = player:getPos() + (direction * 0.35)
+	local checkPos1 = player:getPos() + (direction * 0.4) + vec(0, -0.01, 0)
 	local checkPos2 = player:getPos() + (direction * 1.5) + vec(0, -0.24, 0)
 
 	local raycastClean = true
