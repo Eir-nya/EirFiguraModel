@@ -215,10 +215,6 @@ function armor.defaultEquip(item)
 		models.cat.Head:getTask("headBlock"):enabled(false)
 
 		armor.useDefaultTexture(item, slot)
-		-- models.cat.Head.Armor.default:setVisible(true)
-		-- models.cat.Head.Armor.default:setPrimaryTexture("PRIMARY")
-		-- models.cat.Head.Armor.default:getUVMatrix():reset()
-		-- models.cat.Head.Armor.default:setUVPixels(armor.getUVOffset(item, "helmet"))
 	elseif slot == "chestplate" then
 		local uv = armor.getUVOffset(item, "chestplate")
 
@@ -268,16 +264,7 @@ function armor.defaultEquip(item)
 		models.cat.LeftLeg.ArmorLeggings.default:setUVPixels(uv)
 		models.cat.RightLeg.ArmorLeggings.default:setUVPixels(uv)
 	elseif slot == "boots" then
-		models.cat.LeftLeg.ArmorBoots.default:setVisible(true)
-		models.cat.LeftLeg.ArmorBoots.default:setPrimaryTexture("PRIMARY")
-		models.cat.LeftLeg.ArmorBoots.default:getUVMatrix():reset()
-		models.cat.RightLeg.ArmorBoots.default:setVisible(true)
-		models.cat.RightLeg.ArmorBoots.default:setPrimaryTexture("PRIMARY")
-		models.cat.RightLeg.ArmorBoots.default:getUVMatrix():reset()
-
-		local uv = armor.getUVOffset(item, "boots")
-		models.cat.LeftLeg.ArmorBoots.default:setUVPixels(uv)
-		models.cat.RightLeg.ArmorBoots.default:setUVPixels(uv)
+		armor.useDefaultTexture(item, slot)
 	end
 end
 
@@ -330,12 +317,12 @@ function armor.useDefaultTexture(item, slot)
 		models.cat.LeftLeg.ArmorLeggings.default:setUVPixels(0, -48)
 		models.cat.RightLeg.ArmorLeggings.default:setUVPixels(0, -48)
 	elseif slot == "boots" then
-		models.cat.LeftLeg.ArmorBoots.default:setUVPixels(0, -61)
-		models.cat.RightLeg.ArmorBoots.default:setUVPixels(0, -61)
+		-- models.cat.LeftLeg.ArmorBoots.default:setUVPixels(0, -61)
+		-- models.cat.RightLeg.ArmorBoots.default:setUVPixels(0, -61)
 	end
 
 	-- Apply UV scale
-	if slot ~= "helmet" then
+	if slot ~= "helmet" and slot ~= "boots" then
 		for _, part in pairs(partsToShow) do
 			part:getUVMatrix():scale(texScale)
 		end
