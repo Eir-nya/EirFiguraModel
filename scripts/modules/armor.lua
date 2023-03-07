@@ -119,8 +119,8 @@ modules.events.boots:register(armor.bootsEvent)
 
 armor["custom model minecraft:leather_chestplate"] = function()
 	models.cat.Body["Body Layer Down"]:setVisible(false)
-	modules.util.getArmBase(false).FurUp:setVisible(false)
-	modules.util.getArmBase(true).FurUp:setVisible(false)
+	models.cat.LeftArm.FurUp:setVisible(false)
+	models.cat.RightArm.FurUp:setVisible(false)
 end
 
 
@@ -230,13 +230,11 @@ function armor.defaultEquip(item)
 
 		-- Get array of ModelParts to apply operations to
 		local armArmorParts = {
-			[modules.util.getArmBase(false).Armor.default] = true,
-			[modules.util.getArmBase(true).Armor.default] = true
+			[models.cat.LeftArm.Armor.default] = true,
+			[models.cat.LeftArm.Forearm.Armor.default] = true,
+			[models.cat.RightArm.Armor.default] = true,
+			[models.cat.RightArm.Forearm.Armor.default] = true,
 		}
-		if settings.model.newArms then
-			armArmorParts[modules.util.getArmBase(false).Forearm.Armor.default] = true
-			armArmorParts[modules.util.getArmBase(true).Forearm.Armor.default] = true
-		end
 
 		for modelPart in pairs(armArmorParts) do
 			modelPart:setVisible(true)
@@ -306,12 +304,10 @@ function armor.useDefaultTexture(item, slot)
 	elseif slot == "chestplate" then
 		models.cat.Body.Boobs.Armor.default:setUVPixels(16, -2)
 		models.cat.Body.Armor.default:setUVPixels(16, -1)
-		modules.util.getArmBase(false).Armor.default:setUVPixels(40, -16)
-		modules.util.getArmBase(true).Armor.default:setUVPixels(40, -16)
-		if settings.model.newArms then
-			modules.util.getArmBase(false).Forearm.Armor.default:setUVPixels(40, -16)
-			modules.util.getArmBase(true).Forearm.Armor.default:setUVPixels(40, -16)
-		end
+		models.cat.LeftArm.Armor.default:setUVPixels(40, -16)
+		models.cat.RightArm.Armor.default:setUVPixels(40, -16)
+		models.cat.LeftArm.Forearm.Armor.default:setUVPixels(40, -16)
+		models.cat.RightArm.Forearm.Armor.default:setUVPixels(40, -16)
 	elseif slot == "leggings" then
 		models.cat.Body.ArmorBottom.default:setUVPixels(16, -32)
 		models.cat.LeftLeg.ArmorLeggings.default:setUVPixels(0, -48)
@@ -381,17 +377,15 @@ function armor.unequipChestplate()
 	models.cat.Body["Body Layer Down"]:setVisible(true)
 	models.cat.Body["3DShirt"]:setVisible(true)
 	models.cat.Body.Boobs.Armor:setVisible(false)
-	modules.util.getArmBase(false).FurUp:setVisible(true)
-	modules.util.getArmBase(true).FurUp:setVisible(true)
+	models.cat.LeftArm.FurUp:setVisible(true)
+	models.cat.RightArm.FurUp:setVisible(true)
 
 	modules.util.setChildrenVisible(models.cat.Body.Armor, false)
 	modules.util.setChildrenVisible(models.cat.Body.Boobs.Armor, false)
-	modules.util.setChildrenVisible(modules.util.getArmBase(false).Armor, false)
-	modules.util.setChildrenVisible(modules.util.getArmBase(true).Armor, false)
-	if settings.model.newArms then
-		modules.util.setChildrenVisible(modules.util.getArmBase(false).Forearm.Armor, false)
-		modules.util.setChildrenVisible(modules.util.getArmBase(true).Forearm.Armor, false)
-	end
+	modules.util.setChildrenVisible(models.cat.LeftArm.Armor, false)
+	modules.util.setChildrenVisible(models.cat.RightArm.Armor, false)
+	modules.util.setChildrenVisible(models.cat.LeftArm.Forearm.Armor, false)
+	modules.util.setChildrenVisible(models.cat.RightArm.Forearm.Armor, false)
 end
 
 function armor.unequipLeggings()
@@ -458,21 +452,17 @@ function armor.getPartsToEdit(item, mode)
 				if mode == "COLOR" then
 					table.insert(parts, models.cat.Body.Boobs.Armor.FluffyJacket.leather)
 					table.insert(parts, models.cat.Body.Armor.FluffyJacket.leather)
-					table.insert(parts, modules.util.getArmBase(false).Armor.FluffyJacket.leather)
-					table.insert(parts, modules.util.getArmBase(true).Armor.FluffyJacket.leather)
-					if settings.model.newArms then
-						table.insert(parts, modules.util.getArmBase(false).Forearm.Armor.FluffyJacket.leather)
-						table.insert(parts, modules.util.getArmBase(true).Forearm.Armor.FluffyJacket.leather)
-					end
+					table.insert(parts, models.cat.LeftArm.Armor.FluffyJacket.leather)
+					table.insert(parts, models.cat.RightArm.Armor.FluffyJacket.leather)
+					table.insert(parts, models.cat.LeftArm.Forearm.Armor.FluffyJacket.leather)
+					table.insert(parts, models.cat.RightArm.Forearm.Armor.FluffyJacket.leather)
 				else
 					table.insert(parts, models.cat.Body.Boobs.Armor.FluffyJacket)
 					table.insert(parts, models.cat.Body.Armor.FluffyJacket)
-					table.insert(parts, modules.util.getArmBase(false).Armor.FluffyJacket)
-					table.insert(parts, modules.util.getArmBase(true).Armor.FluffyJacket)
-					if settings.model.newArms then
-						table.insert(parts, modules.util.getArmBase(false).Forearm.Armor.FluffyJacket)
-						table.insert(parts, modules.util.getArmBase(true).Forearm.Armor.FluffyJacket)
-					end
+					table.insert(parts, models.cat.LeftArm.Armor.FluffyJacket)
+					table.insert(parts, models.cat.RightArm.Armor.FluffyJacket)
+					table.insert(parts, models.cat.LeftArm.Forearm.Armor.FluffyJacket)
+					table.insert(parts, models.cat.RightArm.Forearm.Armor.FluffyJacket)
 				end
 			elseif slot == "leggings" then
 				table.insert(parts, models.cat.Body.ArmorBottom.FluffyLeggings)
@@ -504,12 +494,10 @@ function armor.getPartsToEdit(item, mode)
 		elseif slot == "chestplate" then
 			table.insert(parts, models.cat.Body.Boobs.Armor.default)
 			table.insert(parts, models.cat.Body.Armor.default)
-			table.insert(parts, modules.util.getArmBase(false).Armor.default)
-			table.insert(parts, modules.util.getArmBase(true).Armor.default)
-			if settings.model.newArms then
-				table.insert(parts, modules.util.getArmBase(false).Forearm.Armor.default)
-				table.insert(parts, modules.util.getArmBase(true).Forearm.Armor.default)
-			end
+			table.insert(parts, models.cat.LeftArm.Armor.default)
+			table.insert(parts, models.cat.RightArm.Armor.default)
+			table.insert(parts, models.cat.LeftArm.Forearm.Armor.default)
+			table.insert(parts, models.cat.RightArm.Forearm.Armor.default)
 		elseif slot == "leggings" then
 			table.insert(parts, models.cat.Body.ArmorBottom.default)
 			table.insert(parts, models.cat.LeftLeg.ArmorLeggings.default)

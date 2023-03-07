@@ -42,9 +42,3 @@ else
 	models.cat.RightArm["Right Arm"]:setVisible(false)
 	models.cat.LeftArm["Left Arm"]:setVisible(false)
 end
-
--- Toggle new arms
-models.cat.LeftArm.default:setVisible(not settings.model.newArms)
-models.cat.RightArm.default:setVisible(not settings.model.newArms)
-models.cat.LeftArm.new:setVisible(settings.model.newArms)
-models.cat.RightArm.new:setVisible(settings.model.newArms)

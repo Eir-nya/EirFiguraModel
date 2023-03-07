@@ -30,28 +30,20 @@
 			"moveTo": "models.cat.Body",
 			"visible": false
 		},
-		"models.armor.RightArm.default.Armor": {
-			"moveTo": "models.cat.RightArm.default",
+		"models.armor.RightArm.Armor": {
+			"moveTo": "models.cat.RightArm",
 			"visible": false
 		},
-		"models.armor.RightArm.new.Armor": {
-			"moveTo": "models.cat.RightArm.new",
+		"models.armor.RightArm.Forearm.Armor": {
+			"moveTo": "models.cat.RightArm.Forearm",
 			"visible": false
 		},
-		"models.armor.RightArm.new.Forearm.Armor": {
-			"moveTo": "models.cat.RightArm.new.Forearm",
+		"models.armor.LeftArm.Armor": {
+			"moveTo": "models.cat.LeftArm",
 			"visible": false
 		},
-		"models.armor.LeftArm.default.Armor": {
-			"moveTo": "models.cat.LeftArm.default",
-			"visible": false
-		},
-		"models.armor.LeftArm.new.Armor": {
-			"moveTo": "models.cat.LeftArm.new",
-			"visible": false
-		},
-		"models.armor.LeftArm.new.Forearm.Armor": {
-			"moveTo": "models.cat.LeftArm.new.Forearm",
+		"models.armor.LeftArm.Forearm.Armor": {
+			"moveTo": "models.cat.LeftArm.Forearm",
 			"visible": false
 		},
 		"models.armor.RightLeg.ArmorLeggings": {
