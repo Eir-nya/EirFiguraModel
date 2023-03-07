@@ -139,7 +139,7 @@ function armor.equipEvent(item, slot)
 				armor.defaultEquip(item)
 			-- If not, assume it's a modded armor, and try to equip that
 			else
-				local isModdedArmor = armor.moddedArmorEquip(item, slot)
+				local isModdedArmor = armor.useDefaultTexture(item, slot)
 				-- If all else fails, assume that an unrecognized helmet is, in fact, an item or block
 				if slot == "helmet" and not isModdedArmor then
 					-- item/block render tasks
@@ -214,10 +214,11 @@ function armor.defaultEquip(item)
 		models.cat.Head:getTask("headItem"):enabled(false)
 		models.cat.Head:getTask("headBlock"):enabled(false)
 
-		models.cat.Head.Armor.default:setVisible(true)
-		models.cat.Head.Armor.default:setPrimaryTexture("PRIMARY")
-		models.cat.Head.Armor.default:getUVMatrix():reset()
-		models.cat.Head.Armor.default:setUVPixels(armor.getUVOffset(item, "helmet"))
+		armor.useDefaultTexture(item, slot)
+		-- models.cat.Head.Armor.default:setVisible(true)
+		-- models.cat.Head.Armor.default:setPrimaryTexture("PRIMARY")
+		-- models.cat.Head.Armor.default:getUVMatrix():reset()
+		-- models.cat.Head.Armor.default:setUVPixels(armor.getUVOffset(item, "helmet"))
 	elseif slot == "chestplate" then
 		local uv = armor.getUVOffset(item, "chestplate")
 
@@ -280,8 +281,8 @@ function armor.defaultEquip(item)
 	end
 end
 
--- Returns bool: true if item is considered modded armor, false if not
-function armor.moddedArmorEquip(item, slot)
+-- Returns bool: true if texture is found, false if not
+function armor.useDefaultTexture(item, slot)
 	local underscoreFound, lastUnderscore = item.id:find(".*_")
 	if not underscoreFound then
 		return false
@@ -307,14 +308,14 @@ function armor.moddedArmorEquip(item, slot)
 	local texScale = armor.armorTexOriginalSize / newTextureSize
 	texScale = vec(texScale.x, texScale.y, 1)
 
-	local partsToShow = armor.getPartsToEdit(item, "VISIBLE")
+	local partsToShow = armor.getPartsToEdit(item, "EXCLUDE_EARS")
 	for _, part in pairs(partsToShow) do
 		part:setVisible(true)
 		part:setPrimaryTexture("RESOURCE", resourcePath)
 	end
 
 	if slot == "helmet" then
-		models.cat.Head.Armor.default:setUVPixels(0, -6)
+		-- models.cat.Head.Armor.default:setUVPixels(0, -6)
 	elseif slot == "chestplate" then
 		models.cat.Body.Boobs.Armor.default:setUVPixels(16, -2)
 		models.cat.Body.Armor.default:setUVPixels(16, -1)
@@ -334,8 +335,10 @@ function armor.moddedArmorEquip(item, slot)
 	end
 
 	-- Apply UV scale
-	for _, part in pairs(partsToShow) do
-		part:getUVMatrix():scale(texScale)
+	if slot ~= "helmet" then
+		for _, part in pairs(partsToShow) do
+			part:getUVMatrix():scale(texScale)
+		end
 	end
 
 	return true
@@ -510,7 +513,7 @@ function armor.getPartsToEdit(item, mode)
 	-- Default
 	else
 		if slot == "helmet" then
-			if armor.knownMaterial(armor.getItemMaterial(item)) then
+			if armor.knownMaterial(armor.getItemMaterial(item)) and mode ~= "EXCLUDE_EARS" then
 				table.insert(parts, models.cat.Head.LeftEar.Armor.default)
 				table.insert(parts, models.cat.Head.RightEar.Armor.default)
 			end
