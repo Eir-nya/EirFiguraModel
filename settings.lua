@@ -68,10 +68,10 @@ settings = {
 
 	-- Rope physics
 	rope = {
-		-- TODO
-		-- enabled = true,				-- Enables rope physics. Set to false to force-disable for everything that uses rope physics
+		enabled = true,				-- Enables rope physics. Set to false to force-disable for everything that uses rope physics
 		windInfluence = true,		-- Enables wind influence over rope physics parts, eg. swaying hair
 	},
+
 	-- Hair settings
 	hair = {
 		physics = true,				-- Adds some dangly strands of hair that use rope physics. Requires rope.enabled
@@ -85,11 +85,9 @@ settings = {
 
 	-- Model settings
 	model = {
-		skull = true,				-- Player skull replacement
-		snoot = true,				-- 3d snout
 		elytra = {
 			enabled = true,			-- Elytra mimic model (Copies vanilla elytra. Required for elytra compatibility with poses)
-			wings = false			-- Custom angel wings-style elytra
+			-- wings = false			-- Custom angel wings-style elytra
 		},
 		newArms = true,				-- Uses custom modeled 3d arms with hindarm, forearm, and paw fingers
 	},
@@ -121,7 +119,9 @@ if not avatar:canEditVanillaModel() then
 	settings.eyes.glow.enabled = false
 end
 
-require("scripts/complexity")
+if not settings.rope.enabled then
+	settings.hair.physics = false
+end
 
 if not settings.eyes.dynamic.enabled then
 	settings.eyes.dynamic.followHead = false

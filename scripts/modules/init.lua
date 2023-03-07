@@ -43,19 +43,6 @@ else
 	models.cat.LeftArm["Left Arm"]:setVisible(false)
 end
 
--- Toggle snout
-models.cat.Head.Snoot:setVisible(settings.model.snoot)
-if settings.model.skull then
-	models.cat.Skull.Snoot:setVisible(settings.model.snoot)
-end
-
--- Set up skull model
-if settings.model.skull then
-	models.cat.Skull:setParentType("Skull")
-else
-	models.cat.Skull:setVisible(false)
-end
-
 -- Toggle new arms
 models.cat.LeftArm.default:setVisible(not settings.model.newArms)
 models.cat.RightArm.default:setVisible(not settings.model.newArms)

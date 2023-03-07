@@ -353,9 +353,7 @@ function armor.equipHelmetItem(item)
 		models.cat.Head:getTask("headItem"):item(item)
 	end
 
-	if settings.model.snoot then
-		models.cat.Head.Snoot:setVisible(false)
-	end
+	models.cat.Head.Snoot:setVisible(false)
 end
 
 
@@ -376,9 +374,7 @@ function armor.unequipHelmet()
 
 	models.cat.Head.Bow:setVisible(true)
 	models.cat.Head.Bow:setPos()
-	if settings.model.snoot then
-		models.cat.Head.Snoot:setVisible(true)
-	end
+	models.cat.Head.Snoot:setVisible(true)
 end
 
 function armor.unequipChestplate()

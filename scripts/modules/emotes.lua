@@ -219,10 +219,8 @@ function emotes.setExpression(expression)
 	end
 
 	-- Manipulate snout UVs (saves on number of snouts)
-	if settings.model.snoot then
-		if emotes.addUVs[expression] then
-			models.cat.Head.Snoot:setUVPixels(emotes.addUVs[expression])
-		end
+	if emotes.addUVs[expression] then
+		models.cat.Head.Snoot:setUVPixels(emotes.addUVs[expression])
 	end
 
 	previous.expression = expression
