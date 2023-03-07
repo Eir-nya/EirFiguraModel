@@ -299,22 +299,17 @@ function armor.useDefaultTexture(item, slot)
 		part:setPrimaryTexture("RESOURCE", resourcePath)
 	end
 
-	if slot == "helmet" then
-		-- models.cat.Head.Armor.default:setUVPixels(0, -6)
-	elseif slot == "chestplate" then
-		models.cat.Body.Boobs.Armor.default:setUVPixels(16, -2)
-		models.cat.Body.Armor.default:setUVPixels(16, -1)
-		models.cat.LeftArm.Armor.default:setUVPixels(40, -16)
-		models.cat.RightArm.Armor.default:setUVPixels(40, -16)
-		models.cat.LeftArm.Forearm.Armor.default:setUVPixels(40, -16)
-		models.cat.RightArm.Forearm.Armor.default:setUVPixels(40, -16)
+	if slot == "chestplate" then
+		models.cat.Body.Boobs.Armor.default:setUVPixels(16, -6 + 20)
+		models.cat.Body.Armor.default:setUVPixels(16, -6 + 20)
+		models.cat.LeftArm.Armor.default:setUVPixels(40, -16 + 16)
+		models.cat.RightArm.Armor.default:setUVPixels(40, -16 + 16)
+		models.cat.LeftArm.Forearm.Armor.default:setUVPixels(40, -16 + 16)
+		models.cat.RightArm.Forearm.Armor.default:setUVPixels(40, -16 + 16)
 	elseif slot == "leggings" then
-		models.cat.Body.ArmorBottom.default:setUVPixels(16, -32)
-		models.cat.LeftLeg.ArmorLeggings.default:setUVPixels(0, -48)
-		models.cat.RightLeg.ArmorLeggings.default:setUVPixels(0, -48)
-	elseif slot == "boots" then
-		-- models.cat.LeftLeg.ArmorBoots.default:setUVPixels(0, -61)
-		-- models.cat.RightLeg.ArmorBoots.default:setUVPixels(0, -61)
+		models.cat.Body.ArmorBottom.default:setUVPixels(16, -32 + 16)
+		models.cat.LeftLeg.ArmorLeggings.default:setUVPixels(0, -48 + 16)
+		models.cat.RightLeg.ArmorLeggings.default:setUVPixels(0, -48 + 16)
 	end
 
 	-- Apply UV scale
