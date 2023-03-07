@@ -46,14 +46,14 @@ end
 -- Toggle snout
 models.cat.Head.Snoot:setVisible(settings.model.snoot)
 if settings.model.skull then
-	models.skull.Skull.Snoot:setVisible(settings.model.snoot)
+	models.cat.Skull.Snoot:setVisible(settings.model.snoot)
 end
 
 -- Set up skull model
 if settings.model.skull then
-	models.skull.Skull:setParentType("Skull")
+	models.cat.Skull:setParentType("Skull")
 else
-	models.skull.Skull:setVisible(false)
+	models.cat.Skull:setVisible(false)
 end
 
 -- Toggle new arms
