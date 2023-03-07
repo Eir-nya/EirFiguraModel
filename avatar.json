@@ -1,6 +1,6 @@
 {
 	"name": "§9Eir ▲ §e(Rewrite) §r2",
-	"version": "0.1.0-rc.12",
+	"version": "0.1.0-rc.13",
 	"author": "Eir",
 	"color": "faaaab",
 	"background": "clouds",
@@ -76,6 +76,9 @@
 		"models.firstPerson": {
 			"parentType": "Gui",
 			"visible": false
+		},
+		"models.cat.Skull": {
+			"visible": true
 		}
 	}
 }
