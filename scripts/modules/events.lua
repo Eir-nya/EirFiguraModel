@@ -293,9 +293,11 @@ if host:isHost() then
 	events.effects.condition = function()
 		local lastEffects = previous.effects
 		local effects = host:getStatusEffects()
-		pings.setEffects(effects)
+		previous.effects = effects
 		return modules.util.statusEffectsString(effects) ~= modules.util.statusEffectsString(lastEffects)
 	end
+	events.effects:register(function() pings.setEffects(previous.effects) end)
+
 
 	-- Flying event
 	function pings.setFlying(newFlying)
@@ -322,9 +324,10 @@ if host.getAir then
 		events.air.condition = function()
 			local lastAirPercent = previous.airPercent
 			local airPercent = host:getAir() / player:getMaxAir()
-			pings.setAir(airPercent)
+			previous.airPercent = airPercent
 			return airPercent ~= lastAirPercent
 		end
+		events.air:register(function() pings.setAir(previous.airPercent) end)
 	end
 else
 	events.air.condition = function()
