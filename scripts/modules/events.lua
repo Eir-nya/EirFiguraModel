@@ -59,13 +59,6 @@ events.food.condition = function()
 	previous.food = food
 	return food ~= lastFood
 end
-events.air = events:new(events.TICK)
-events.air.condition = function()
-	local lastAirPercent = previous.airPercent
-	local airPercent = player:getAir() / player:getMaxAir()
-	previous.airPercent = airPercent
-	return airPercent ~= lastAirPercent
-end
 events.xp = events:new(events.TICK)
 events.xp.condition = function()
 	local lastXP = previous.xp
@@ -289,19 +282,20 @@ end
 
 
 -- Host only events
+
+-- Effects event
+function pings.setEffects(newEffects)
+	previous.effects = newEffects
+end
+
 if host:isHost() then
-	-- Effects event
-	function pings.setEffects(newEffects)
-		previous.effects = newEffects
-	end
 	events.effects = events:new(events.TICK)
 	events.effects.condition = function()
 		local lastEffects = previous.effects
 		local effects = host:getStatusEffects()
-		previous.effects = effects
+		pings.setEffects(effects)
 		return modules.util.statusEffectsString(effects) ~= modules.util.statusEffectsString(lastEffects)
 	end
-	events.effects:register(function() pings.setEffects(previous.effects) end)
 
 	-- Flying event
 	function pings.setFlying(newFlying)
@@ -315,6 +309,30 @@ if host:isHost() then
 		return flying ~= lastFlying
 	end
 	events.flying:register(function() pings.setFlying(previous.flying) end)
+end
+
+-- As of figura rc14, player:getAir has been moved to host:getAir
+events.air = events:new(events.TICK)
+if host.getAir then
+	-- Air event
+	function pings.setAir(newAir)
+		previous.airPercent = newAir
+	end
+	if host:isHost() then
+		events.air.condition = function()
+			local lastAirPercent = previous.airPercent
+			local airPercent = host:getAir() / player:getMaxAir()
+			pings.setAir(airPercent)
+			return airPercent ~= lastAirPercent
+		end
+	end
+else
+	events.air.condition = function()
+		local lastAirPercent = previous.airPercent
+		local airPercent = player:getAir() / player:getMaxAir()
+		previous.airPercent = airPercent
+		return airPercent ~= lastAirPercent
+	end
 end
 
 

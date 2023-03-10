@@ -25,6 +25,10 @@ TODO:
 - fix animations stuck on death (namely blocking)
 - fix rapid blinking (reproducible with paradise lost mod by wearing a cloud hare on head and emoting)
 	- can't reproduce in singleplayer
+- exclude player's own vehicle from eyes check
+- check collision just below player when starting fall animation, cancel if close
+- try and reduce lag when playing, might be exclusive to first person?
+- use pain expression while blocking
 
 spectrum bedrock armor just gives missing textures??
 	- currently broken for unknown reasons. instead, bedrock armor has been set to break intentionally
