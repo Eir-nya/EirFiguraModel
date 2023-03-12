@@ -97,6 +97,11 @@ function eyes.trackMobs()
 	-- Get entities the player has started to look at
 	eyes.lastEntityRaycast = { player:getTargetedEntity(20) }
 	local target = eyes.lastEntityRaycast[1]
+	if previous.vehicle then
+		if target == player:getVehicle():getUUID() then
+			target = nil
+		end
+	end
 
 	-- Hovering over an entity.
 	if target ~= nil then
@@ -154,6 +159,20 @@ end
 if host:isHost() and settings.eyes.dynamic.followMobs then
 	modules.events.TICK:register(eyes.trackMobs)
 end
+
+function eyes.unwatchVehicle()
+	if previous.vehicle then
+		local vehicle = player:getVehicle()
+		-- Iterate through nearby entities in order of decreasing priority, remove ones which shouldn't be looked at
+		for i = eyes.highestPriority, 0, -1 do
+			if eyes.nearbyEntities[i] == vehicle then
+				eyes.nearbyEntities[i] = nil
+				break
+			end
+		end
+	end
+end
+modules.events.vehicle:register(eyes.unwatchVehicle)
 
 function eyes.watchEntity(tickProgress)
 	-- Look at nearest entity
@@ -218,7 +237,7 @@ function eyes.decorateEyes()
 		models.cat.Head.EyesGlint:setLight(15)
 		models.cat.Head.EyesGlint:setColor(1, 1, 1)
 	elseif settings.eyes.glow.xpGlint then
-		eyes.rainbowSpeed = math.min(previous.xp / 9, 3 + (1/3))
+		eyes.rainbowSpeed = math.min(previous.xp / 9, 3 + (1 / 3))
 		models.cat.Head.EyesGlint:setOpacity(math.min(previous.xp / 30, 1) * 0.625)
 		models.cat.Head.EyesGlint:setLight(math.min(previous.xp / 45, 30 / 45) * 16)
 	end
