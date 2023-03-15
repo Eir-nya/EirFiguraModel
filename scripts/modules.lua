@@ -23,6 +23,8 @@ modules = {
 	host:isHost() and "action_wheel" or nil,
 	-- host:isHost() and "action_wheel_icons" or nil,
 	host:isHost() and "better_first_person" or nil,
+
+	"vanilla_transforms"
 }
 
 
