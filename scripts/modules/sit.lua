@@ -54,28 +54,36 @@ function sit.startSitting(animFast)
 	local raycastClean = true
 
 	local block1 = world.getBlockState(checkPos1)
-	if block1:isSolidBlock() and block1:hasCollision() then
-		local collision1 = block1:getCollisionShape()
-		local pos1Floor = vec(math.floor(checkPos1.x), math.floor(checkPos1.y), math.floor(checkPos1.z))
+	if block1:hasCollision() then
+		if block1:isFullCube() then
+			raycastClean = false
+		else
+			local collision1 = block1:getCollisionShape()
+			local pos1Floor = vec(math.floor(checkPos1.x), math.floor(checkPos1.y), math.floor(checkPos1.z))
 
-		for i = 1, #collision1 do
-			if checkPos1 >= collision1[i][1] + pos1Floor and checkPos1 < collision1[i][2] + pos1Floor then
-				raycastClean = false
-				break
+			for i = 1, #collision1 do
+				if checkPos1 >= collision1[i][1] + pos1Floor and checkPos1 < collision1[i][2] + pos1Floor then
+					raycastClean = false
+					break
+				end
 			end
 		end
 	end
 
 	if raycastClean then
 		local block2 = world.getBlockState(checkPos2)
-		if block2:isSolidBlock() and block2:hasCollision() then
-			local collision2 = block2:getCollisionShape()
-			local pos2Floor = vec(math.floor(checkPos2.x), math.floor(checkPos2.y), math.floor(checkPos2.z))
+		if block2:hasCollision() then
+			if block2:isFullCube() then
+				raycastClean = false
+			else
+				local collision2 = block2:getCollisionShape()
+				local pos2Floor = vec(math.floor(checkPos2.x), math.floor(checkPos2.y), math.floor(checkPos2.z))
 
-			for i = 1, #collision2 do
-				if checkPos2 >= collision2[i][1] + pos2Floor and checkPos2 < collision2[i][2] + pos2Floor then
-					raycastClean = false
-					break
+				for i = 1, #collision2 do
+					if checkPos2 >= collision2[i][1] + pos2Floor and checkPos2 < collision2[i][2] + pos2Floor then
+						raycastClean = false
+						break
+					end
 				end
 			end
 		end
