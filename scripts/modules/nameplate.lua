@@ -28,21 +28,23 @@ end
 modules.events.TICK:register(name.rainbowColor)
 
 if host:isHost() then
-	-- Resets avatar color when receiving a chat message that mentions player
-	function name.chatReceive(msg)
-		if msg:find(player:getName()) then
-			name.resetColor(0)
+	modules.events.ENTITY_INIT:register(function()
+		-- Resets avatar color when receiving a chat message that mentions player
+		function name.chatReceive(msg)
+			if msg:find(player:getName()) then
+				name.resetColor(0)
+			end
 		end
-	end
-	modules.events.CHAT_RECEIVE_MESSAGE:register(name.chatReceive)
+		modules.events.CHAT_RECEIVE_MESSAGE:register(name.chatReceive)
 
-	-- Resets avatar color on death
-	function name.onDeath()
-		if player:getHealth() <= 0 then
-			name.resetColor(0)
+		-- Resets avatar color on death
+		function name.onDeath()
+			if player:getHealth() <= 0 then
+				name.resetColor(0)
+			end
 		end
-	end
-	modules.events.hurt:register(name.onDeath)
+		modules.events.hurt:register(name.onDeath)
+	end)
 end
 
 -- Makes the nameplate follow the model head
