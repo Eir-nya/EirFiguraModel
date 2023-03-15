@@ -11,16 +11,12 @@ local elytra = {
 -- Events
 
 function elytra.initEvent()
-	if not settings.model.elytra.enabled then
-		models.cat.Body.Elytra:setVisible(false)
-		return
-	end
-
-	vanilla_model.ELYTRA:setVisible(false)
-
-	elytra.reset()
+	models.cat.Body.Elytra:setVisible(settings.model.elytra.custom)
+	vanilla_model.ELYTRA:setVisible(not settings.model.elytra.custom)
 	models.cat.Body.Elytra.left.default:setPrimaryTexture("ELYTRA")
 	models.cat.Body.Elytra.right.default:setPrimaryTexture("ELYTRA")
+
+	elytra.reset()
 end
 modules.events.ENTITY_INIT:register(elytra.initEvent)
 
@@ -31,10 +27,12 @@ function elytra.displayEvent()
 		models.cat.Body.Elytra:setSecondaryRenderType(previous.elytraGlint and "GLINT" or nil)
 	end
 end
-modules.events.TICK:register(elytra.displayEvent)
+if settings.model.elytra.custom then
+	modules.events.TICK:register(elytra.displayEvent)
+end
 
 function elytra.render(delta)
-	if previous.elytra then
+	if not settings.model.elytra.custom or previous.elytra then
 		local addToBoth = vec(0, 0, 0)
 		if previous.pose == "CROUCHING" then
 			addToBoth = addToBoth + elytra.extraRotCrouch
@@ -80,15 +78,9 @@ end
 
 -- Resets elytra
 function elytra.reset()
-	if not settings.model.elytra.enabled then
-		return
-	end
-
 	-- Set default elytra rotation so tail doesn't clip through
-	-- if avatar:canEditVanillaModel() then
 	models.cat.Body.Elytra.left:setRot(elytra.extraRotL)
 	models.cat.Body.Elytra.right:setRot(elytra.extraRotR)
-	-- end
 end
 
 return elytra

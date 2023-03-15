@@ -53,9 +53,7 @@ function sleep.startSleeping()
 			models.cat.Head:setPos(models.cat.Head:getPos() + raiseAmount)
 
 			-- Elytra
-			if settings.model.elytra.enabled then
-				models.cat.Body.Elytra:setPos(raiseAmount)
-			end
+			models.cat.Body.Elytra:setPos(raiseAmount)
 		end
 	end
 
@@ -88,9 +86,7 @@ function sleep.stopSleeping()
 			models.cat.RightArm:setPos()
 			models.cat.Head:setPos()
 
-			if settings.model.elytra.enabled then
-				models.cat.Body.Elytra:setPos()
-			end
+			models.cat.Body.Elytra:setPos()
 		end
 	end
 

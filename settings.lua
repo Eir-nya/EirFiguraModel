@@ -94,7 +94,7 @@ settings = {
 	-- Model settings
 	model = {
 		elytra = {
-			enabled = true,			-- Elytra mimic model (Copies vanilla elytra. Required for elytra compatibility with poses)
+			custom = true,			-- Elytra mimic model (Copies vanilla elytra. Required for model.elytra.wings)
 			-- wings = false			-- Custom angel wings-style elytra
 		}
 	},
@@ -133,7 +133,7 @@ end
 if not avatar:canEditVanillaModel() then
 	settings.sleep.enabled = false
 	settings.armor.boobArmor = false
-	settings.model.elytra.enabled = false
+	settings.model.elytra.custom = false
 	settings.eyes.dynamic.enabled = false
 	settings.eyes.glow.enabled = false
 end
