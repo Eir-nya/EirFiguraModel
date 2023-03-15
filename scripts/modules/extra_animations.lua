@@ -262,19 +262,20 @@ function exAnims.render(tickProgress, context)
 				modules.animations.climb.anim:speed(math.clamp(math.abs(velY * 3), 0, 1))
 			end
 
-			-- Rotate to face direction, if set
-			if exAnims.climbingFaceDir then
-				local animFade = 1
-				if modules.animations.climb:isFading() then
-					animFade = modules.animations.climb:getFadeBlend(tickProgress)
-				end
+			-- TODO: Restore once a vanilla model-compatible method for this exists
+			-- -- Rotate to face direction, if set
+			-- if exAnims.climbingFaceDir then
+			-- 	local animFade = 1
+			-- 	if modules.animations.climb:isFading() then
+			-- 		animFade = modules.animations.climb:getFadeBlend(tickProgress)
+			-- 	end
 
-				local shortAngle = math.shortAngle(player:getBodyYaw(tickProgress), exAnims.climbingFaceDir)
-				local diff = exAnims.climbingFaceDir - (player:getBodyYaw(tickProgress) % 360)
-				models.cat:setRot(vec(0, -shortAngle * animFade, 0))
-			end
+			-- 	local shortAngle = math.shortAngle(player:getBodyYaw(tickProgress), exAnims.climbingFaceDir)
+			-- 	local diff = exAnims.climbingFaceDir - (player:getBodyYaw(tickProgress) % 360)
+			-- 	models.cat:setRot(vec(0, -shortAngle * animFade, 0))
+			-- end
 		else
-			models.cat:setRot()
+			-- models.cat:setRot()
 		end
 	end
 	-- animations["models.cat"].run:blend(exAnims.sprintMult
