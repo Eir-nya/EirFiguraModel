@@ -6,7 +6,6 @@ TODO:
 - make back of shirt a bit more apparent (big hair?)
 - raycasting for sleeping
 - angel wings elytra + events for elytra flying
-- angry eyes when blocking
 - distinction between "swords" (incl. axes) and other "weapons" (bows, shields)
 - "better first person"
 	models.cat.RightArm.RIGHT_ITEM_PIVOT:newItem("rightItem"):item("minecraft:stone_pickaxe"):renderType("THIRD_PERSON_RIGHT_HAND"):rot(vec(-90+11.25, 0, 0)):pos(vec(0, 2, 0))
@@ -28,6 +27,9 @@ TODO:
 - check collision just below player when starting fall animation, cancel if close
 - try and reduce lag when playing, might be exclusive to first person?
 - use pain expression while blocking
+- wave emote?
+- cry emote?
+- add funny cartoon squeak sfx when taking fall damage and when dying
 
 spectrum bedrock armor just gives missing textures??
 	- currently broken for unknown reasons. instead, bedrock armor has been set to break intentionally
