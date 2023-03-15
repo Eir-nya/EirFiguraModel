@@ -18,6 +18,9 @@ events.ENTITY_INIT:register(init)
 -- Disable rendering of vanilla model, because figura tries to render both it and custom models
 if avatar:canEditVanillaModel() then
 	vanilla_model.PLAYER:setVisible(false)
+	if settings.model.vanillaMatch then
+		vanilla_model.HELMET_ITEM:setVisible(true)
+	end
 else
 	models.cat.RightLeg:setVisible(false)
 	models.cat.LeftLeg:setVisible(false)

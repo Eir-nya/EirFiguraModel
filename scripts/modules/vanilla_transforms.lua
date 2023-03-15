@@ -3,6 +3,10 @@ local vt = {
     originalRot = {},
 }
 
+if not settings.model.vanillaMatch then
+    return
+end
+
 function vt.render(delta, ctx)
     vt.applyToVanillaPart(models.cat.Head, vanilla_model.HEAD, vanilla_model.HAT)
     vt.applyToVanillaPart(models.cat.Body, vanilla_model.BODY, vanilla_model.JACKET)

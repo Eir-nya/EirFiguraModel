@@ -96,7 +96,8 @@ settings = {
 		elytra = {
 			custom = true,			-- Elytra mimic model (Copies vanilla elytra. Required for model.elytra.wings)
 			-- wings = false			-- Custom angel wings-style elytra
-		}
+		},
+		vanillaMatch = true,		-- Attempts to make vanilla model parts match custom model parts visually, for maximum mod compatibility.
 	},
 
 	-- Action wheel settings
@@ -150,4 +151,8 @@ end
 if not settings.eyes.glow.enabled then
 	settings.eyes.glow.nightVision = false
 	settings.eyes.glow.xpGlint = false
+end
+
+if client.compareVersions("0.1.0-rc.13", client:getFiguraVersion():sub(0, client:getFiguraVersion():find("+") - 1)) == -1 then
+	settings.model.vanillaMatch = false
 end
