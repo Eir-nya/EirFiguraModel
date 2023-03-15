@@ -16,6 +16,7 @@ local animRanks = {
 	PRIMARY = 1,
 	SECONDARY = 2,
 	TERTIARY = 3,
+	QUATERNARY = 4,
 }
 -- Controls the way that animations in higher ranks will be prioritized over lesser ranked ones.
 local blendWeightModes = {
@@ -72,6 +73,11 @@ local anims = {
 	fadeModes = fadeModes,
 
 	-- Animation registry...
+
+	-- Breathe animation (on all the time)
+	breatheIdle = {
+		rank = animRanks.QUATERNARY
+	},
 
 	-- Simple poses
 	sleepPose = {
@@ -330,9 +336,8 @@ function anims.entityInit()
 		t.anim = anim
 		animClass:new(t)
 	end
-	anims.breatheIdle = nil
 	if avatar:canEditVanillaModel() then
-		animations["models.cat"].breatheIdle:play()
+		anims.breatheIdle:play()
 	end
 end
 modules.events.ENTITY_INIT:register(anims.entityInit)
