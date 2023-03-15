@@ -77,24 +77,26 @@ function sit.stopSitting(animFast)
 end
 pings.stopSitting = sit.stopSitting
 
--- TODO: Restore once a vanilla model-compatible method for this exists
--- function sit.faceSameDirection(delta, ctx)
--- 	if ctx ~= "RENDER" then
--- 		return
--- 	end
+--TODO: Restore once a vanilla model-compatible method for this exists
+if not settings.model.vanillaMatch then
+	function sit.faceSameDirection(delta, ctx)
+		if ctx ~= "RENDER" then
+			return
+		end
 
--- 	if sit.anim.anim:isPlaying() or sit.anim:isFading() then
--- 		local animFade = 1
--- 		if sit.anim:isFading() then
--- 			animFade = sit.anim:getFadeBlend(delta)
--- 		end
+		if sit.anim.anim:isPlaying() or sit.anim:isFading() then
+			local animFade = 1
+			if sit.anim:isFading() then
+				animFade = sit.anim:getFadeBlend(delta)
+			end
 
--- 		local shortAngle = math.shortAngle(player:getBodyYaw(delta), sit.facingDir)
--- 		local diff = sit.facingDir - (player:getBodyYaw(delta) % 360)
--- 		models.cat:setRot(vec(0, -shortAngle * animFade, 0))
--- 	end
--- end
--- modules.events.RENDER:register(sit.faceSameDirection)
+			local shortAngle = math.shortAngle(player:getBodyYaw(delta), sit.facingDir)
+			local diff = sit.facingDir - (player:getBodyYaw(delta) % 360)
+			models.cat:setRot(vec(0, -shortAngle * animFade, 0))
+		end
+	end
+	modules.events.RENDER:register(sit.faceSameDirection)
+end
 
 function sit.canSit()
 	return not previous.invisible and previous.velMagXZ < 0.05 and player:isOnGround() and previous.pose == "STANDING"
