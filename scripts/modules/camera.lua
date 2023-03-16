@@ -5,7 +5,12 @@ local camera = {
 }
 
 function camera.render(delta, context)
-	if context ~= "FIRST_PERSON" and context ~= "RENDER" then
+	if context ~= "RENDER" then
+		if context == "FIRST_PERSON" then
+			renderer:setCameraPivot()
+			renderer:setCameraRot()
+			camera.frozen = false
+		end
 		return
 	end
 
