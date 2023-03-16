@@ -144,6 +144,13 @@ function armor.equipEvent(item, slot)
 				if slot == "helmet" and not isModdedArmor and not item:isArmor() then
 					-- item/block render tasks
 					armor.equipHelmetItem(item)
+				-- Use vanilla armor piece if applicable
+				elseif settings.model.vanillaMatch then
+					vanilla_model[slot]:setVisible(true)
+					if slot == "chestplate" then
+						models.cat.Body.Boobs:setVisible(false)
+						models.cat.Body["3DHairBoobs"]:setVisible(false)
+					end
 				end
 			end
 		else
@@ -385,6 +392,7 @@ function armor.unequipHelmet()
 		models.cat.Head:getTask("headItem"):enabled(false)
 		models.cat.Head:getTask("headBlock"):enabled(false)
 	end
+	vanilla_model.HELMET:setVisible(false)
 
 	models.cat.Head.Bow:setVisible(true)
 	models.cat.Head.Bow:setPos()
@@ -394,9 +402,13 @@ end
 function armor.unequipChestplate()
 	models.cat.Body["Body Layer Down"]:setVisible(true)
 	models.cat.Body["3DShirt"]:setVisible(true)
+	models.cat.Body.Boobs:setVisible(true)
+	models.cat.Body["3DHairBoobs"]:setVisible(true)
 	models.cat.Body.Boobs.Armor:setVisible(false)
 	models.cat.LeftArm.FurUp:setVisible(true)
 	models.cat.RightArm.FurUp:setVisible(true)
+
+	vanilla_model.CHESTPLATE:setVisible(false)
 
 	modules.util.setChildrenVisible(models.cat.Body.Armor, false)
 	modules.util.setChildrenVisible(models.cat.Body.Boobs.Armor, false)
@@ -411,6 +423,8 @@ function armor.unequipLeggings()
 	models.cat.LeftLeg["3DShorts"]:setVisible(true)
 	models.cat.RightLeg["3DShorts"]:setVisible(true)
 
+	vanilla_model.LEGGINGS:setVisible(false)
+
 	modules.util.setChildrenVisible(models.cat.Body.ArmorBottom, false)
 	modules.util.setChildrenVisible(models.cat.LeftLeg.ArmorLeggings, false)
 	modules.util.setChildrenVisible(models.cat.RightLeg.ArmorLeggings, false)
@@ -419,6 +433,8 @@ end
 function armor.unequipBoots()
 	models.cat.LeftLeg["3DEnbySocks"]:setVisible(true)
 	models.cat.RightLeg["3DEnbySocks"]:setVisible(true)
+
+	vanilla_model.BOOTS:setVisible(false)
 
 	modules.util.setChildrenVisible(models.cat.LeftLeg.ArmorBoots, false)
 	modules.util.setChildrenVisible(models.cat.RightLeg.ArmorBoots, false)
