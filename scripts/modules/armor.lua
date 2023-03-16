@@ -30,11 +30,12 @@ local armor = {
 	-- Override texture paths for armor pieces (starts in "textures/models/armor/", "_layer_1/2.png" is appended later)
 	texturePaths = {
 		golden = "gold",
-		fetchling = "gemstone",
+		diving = { prefix = "copper", appendLayer = false, namespace = "create", hideSnout = true },
+		copper = { prefix = "copper", appendLayer = false, namespace = "create", hideSnout = true },
 		ferocious = "gemstone",
 		sylph = "gemstone",
-		bedrock = "broken", -- Texture exists but is currently unreadable for unknown reasons.
 		oread = "gemstone",
+		crystalite = "broken", -- Broken intentionally. The texture sucks for some reason.
 		olvite = "paradise_lost_olvite",
 		phoenix = "paradise_lost_phoenix",
 	},
@@ -77,14 +78,16 @@ function armor.init()
 	vanilla_model.BOOTS:setVisible(false)
 
 	-- Set up render task to render items and blocks such as skulls
-	models.cat.Head:newItem("headItem")
-		:scale(1.1, 1.1, 1.1)
-		:pos(-0.05, 7.95, -0.05)
-		:enabled(false)
-	models.cat.Head:newBlock("headBlock")
-		:scale(0.5625, 0.5625, 0.5625)
-		:pos(-4.5, -0.5, -4.5)
-		:enabled(false)
+	if not settings.model.vanillaMatch then
+		models.cat.Head:newItem("headItem")
+			:scale(1.1, 1.1, 1.1)
+			:pos(-0.05, 7.95, -0.05)
+			:enabled(false)
+		models.cat.Head:newBlock("headBlock")
+			:scale(0.5625, 0.5625, 0.5625)
+			:pos(-4.5, -0.5, -4.5)
+			:enabled(false)
+	end
 end
 modules.events.ENTITY_INIT:register(armor.init)
 
@@ -141,7 +144,7 @@ function armor.equipEvent(item, slot)
 			else
 				local isModdedArmor = armor.useDefaultTexture(item, slot)
 				-- If all else fails, assume that an unrecognized helmet is, in fact, an item or block
-				if slot == "helmet" and not isModdedArmor then
+				if slot == "helmet" and not isModdedArmor and not item:isArmor() then
 					-- item/block render tasks
 					armor.equipHelmetItem(item)
 				end
@@ -280,9 +283,22 @@ function armor.useDefaultTexture(item, slot)
 	if not imageName then
 		imageName = prefix
 	end
-	local resourcePath = "textures/models/armor/" .. imageName .. (slot == "leggings" and "_layer_2.png" or "_layer_1.png")
+	if type(imageName) == "table" then
+		imageName = armor.texturePaths[prefix].prefix
+	end
+	local resourcePath = "textures/models/armor/" .. imageName
+	if type(armor.texturePaths[prefix]) ~= "table" or armor.texturePaths[prefix].appendLayer then
+		resourcePath = resourcePath.. (slot == "leggings" and "_layer_2" or "_layer_1")
+	end
+	resourcePath = resourcePath .. ".png"
+	if type(armor.texturePaths[prefix]) == "table" and armor.texturePaths[prefix].namespace then
+		resourcePath = armor.texturePaths[prefix].namespace .. ":" .. resourcePath
+	end
 	if not client.hasResource(resourcePath) then
-		return false
+		resourcePath = "textures/models/armor/" .. imageName .. ".png"
+		if not client.hasResource(resourcePath) then
+			return false
+		end
 	end
 
 	-- Client has resource. Proceed to apply them.
@@ -297,6 +313,11 @@ function armor.useDefaultTexture(item, slot)
 	for _, part in pairs(partsToShow) do
 		part:setVisible(true)
 		part:setPrimaryTexture("RESOURCE", resourcePath)
+	end
+
+	-- Hide snout
+	if slot == "helmet" then
+		models.cat.Head.Snoot:setVisible(type(armor.texturePaths[prefix]) ~= "table" or not armor.texturePaths[prefix].hideSnout)
 	end
 
 	if slot == "chestplate" then
@@ -344,7 +365,7 @@ function armor.equipHelmetItem(item)
 		models.cat.Head:getTask("headItem"):item(item)
 	end
 
-	models.cat.Head.Snoot:setVisible(false)
+	models.cat.Head.Snoot:setVisible(not isBlock)
 end
 
 
