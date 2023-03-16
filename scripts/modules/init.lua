@@ -10,22 +10,7 @@ local init = function()
 	end
 
 	if not settings.misc.disableGetNbt then
-		-- If VanitySlots is not installed, disable the settings for it
-		local testNbt = modules.util.getNbtValue("cardinal_components")
-		local disableVanitySlotsSettings = testNbt == nil
-
-		-- Cardinal components mod is installed
-		if testNbt ~= nil then
-			disableVanitySlotsSettings = testNbt["trinkets:trinkets"] == nil
-			-- Trinkets mod is installed
-			if testNbt["trinkets:trinkets"] ~= nil then
-				disableVanitySlotsSettings = testNbt["trinkets:trinkets"].chest.vanity == nil
-			end
-		end
-
-		if disableVanitySlotsSettings then
-			settings.armor.vanitySlots = false
-		end
+		settings.armor.vanitySlots = client.isModLoaded("vanityslots")
 	end
 end
 events.ENTITY_INIT:register(init)
