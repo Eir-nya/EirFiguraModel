@@ -141,7 +141,7 @@ function armor.equipEvent(item, slot)
 			else
 				local isModdedArmor = armor.useDefaultTexture(item, slot)
 				-- If all else fails, assume that an unrecognized helmet is, in fact, an item or block
-				if slot == "helmet" and not isModdedArmor and not item:isArmor() then
+				if slot == "helmet" and not isModdedArmor and not modules.util.asItemStack(item, 2):isArmor() then
 					-- item/block render tasks
 					armor.equipHelmetItem(item)
 				-- Use vanilla armor piece if applicable
