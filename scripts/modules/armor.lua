@@ -75,16 +75,14 @@ function armor.init()
 	vanilla_model.HELMET_ITEM:setVisible(false)
 
 	-- Set up render task to render items and blocks such as skulls
-	if not settings.model.vanillaMatch then
-		models.cat.Head:newItem("headItem")
-			:scale(1.1, 1.1, 1.1)
-			:pos(-0.05, 7.95, -0.05)
-			:enabled(false)
-		models.cat.Head:newBlock("headBlock")
-			:scale(0.5625, 0.5625, 0.5625)
-			:pos(-4.5, -0.5, -4.5)
-			:enabled(false)
-	end
+	models.cat.Head:newItem("headItem")
+		:scale(1.1, 1.1, 1.1)
+		:pos(-0.05, 7.95, -0.05)
+		:enabled(false)
+	models.cat.Head:newBlock("headBlock")
+		:scale(0.5625, 0.5625, 0.5625)
+		:pos(-4.5, -0.5, -4.5)
+		:enabled(false)
 end
 modules.events.ENTITY_INIT:register(armor.init)
 
@@ -218,10 +216,8 @@ function armor.defaultEquip(item)
 			models.cat.Head.RightEar.Armor.default:setUVPixels(uv)
 		end
 
-		if not settings.model.vanillaMatch then
-			models.cat.Head:getTask("headItem"):enabled(false)
-			models.cat.Head:getTask("headBlock"):enabled(false)
-		end
+		models.cat.Head:getTask("headItem"):enabled(false)
+		models.cat.Head:getTask("headBlock"):enabled(false)
 
 		armor.useDefaultTexture(item, slot)
 	elseif slot == "chestplate" then
@@ -363,14 +359,12 @@ function armor.equipHelmetItem(item)
 		end
 	end
 
-	if not settings.model.vanillaMatch then
-		models.cat.Head:getTask("headItem"):enabled(not isBlock)
-		models.cat.Head:getTask("headBlock"):enabled(isBlock)
-		if isBlock then
-			models.cat.Head:getTask("headBlock"):block(item.id)
-		else
-			models.cat.Head:getTask("headItem"):item(item)
-		end
+	models.cat.Head:getTask("headItem"):enabled(not isBlock)
+	models.cat.Head:getTask("headBlock"):enabled(isBlock)
+	if isBlock then
+		models.cat.Head:getTask("headBlock"):block(item.id)
+	else
+		models.cat.Head:getTask("headItem"):item(item)
 	end
 	models.cat.Head.Snoot:setVisible(not isBlock)
 end
@@ -388,11 +382,8 @@ function armor.unequipHelmet()
 
 	modules.util.setChildrenVisible(models.cat.Head.Armor, false)
 
-	if not settings.model.vanillaMatch then
-		models.cat.Head:getTask("headItem"):enabled(false)
-		models.cat.Head:getTask("headBlock"):enabled(false)
-	end
-	vanilla_model.HELMET:setVisible(false)
+	models.cat.Head:getTask("headItem"):enabled(false)
+	models.cat.Head:getTask("headBlock"):enabled(false)
 
 	models.cat.Head.Bow:setVisible(true)
 	models.cat.Head.Bow:setPos()
