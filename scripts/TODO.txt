@@ -30,3 +30,5 @@ TODO:
 - wave emote?
 - cry emote?
 - add funny cartoon squeak sfx when taking fall damage and when dying
+
+- parent entire model to WORLD so it doesnt get rotation modified by vanilla animations?
