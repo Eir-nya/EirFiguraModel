@@ -133,21 +133,23 @@ function armor.equipEvent(item, slot)
 
 		if not armor.useCustomModel(item) then
 			-- Is material recognized?
-			if armor.knownMaterial(material) then
+			if armor.knownMaterial(material) or (slot == "chestplate" and previous.elytra) then
 				armor.defaultEquip(item)
 			-- If not, assume it's a modded armor, and try to equip that
 			else
 				local isModdedArmor = armor.useDefaultTexture(item, slot)
-				-- If all else fails, assume that an unrecognized helmet is, in fact, an item or block
-				if slot == "helmet" and not isModdedArmor and not modules.util.asItemStack(item, 2):isArmor() then
-					-- item/block render tasks
-					armor.equipHelmetItem(item)
-				-- Use vanilla armor piece if applicable
-				elseif settings.model.vanillaMatch then
-					vanilla_model[slot]:setVisible(true)
-					if slot == "chestplate" then
-						models.cat.Body.Boobs:setVisible(false)
-						models.cat.Body["3DHairBoobs"]:setVisible(false)
+				if not isModdedArmor then
+					-- If all else fails, assume that an unrecognized helmet is, in fact, an item or block
+					if slot == "helmet" and not modules.util.asItemStack(item, 2):isArmor() then
+						-- item/block render tasks
+						armor.equipHelmetItem(item)
+					-- Use vanilla armor piece if applicable
+					elseif settings.model.vanillaMatch then
+						vanilla_model[slot]:setVisible(true)
+						if slot == "chestplate" then
+							models.cat.Body.Boobs:setVisible(false)
+							models.cat.Body["3DHairBoobs"]:setVisible(false)
+						end
 					end
 				end
 			end
