@@ -71,11 +71,8 @@ local armor = {
 -- Events
 
 function armor.init()
-	vanilla_model.HELMET:setVisible(false)
+	vanilla_model.ARMOR:setVisible(false)
 	vanilla_model.HELMET_ITEM:setVisible(false)
-	vanilla_model.CHESTPLATE:setVisible(false)
-	vanilla_model.LEGGINGS:setVisible(false)
-	vanilla_model.BOOTS:setVisible(false)
 
 	-- Set up render task to render items and blocks such as skulls
 	if not settings.model.vanillaMatch then

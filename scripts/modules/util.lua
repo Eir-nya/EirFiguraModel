@@ -145,14 +145,6 @@ function util.getEffect(effectType)
 	end
 end
 
-function util.getArmBase(isRight)
-	if settings.model.newArms then
-		return isRight and models.cat.RightArm.new or models.cat.LeftArm.new
-	else
-		return isRight and models.cat.RightArm.default or models.cat.LeftArm.default
-	end
-end
-
 local partToVanillaPartTable = {
 	Head = vanilla_model.HEAD,
 	Body = vanilla_model.BODY,

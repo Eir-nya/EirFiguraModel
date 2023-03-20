@@ -30,6 +30,3 @@ TODO:
 - wave emote?
 - cry emote?
 - add funny cartoon squeak sfx when taking fall damage and when dying
-
-spectrum bedrock armor just gives missing textures??
-	- currently broken for unknown reasons. instead, bedrock armor has been set to break intentionally
