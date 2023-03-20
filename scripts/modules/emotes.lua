@@ -132,13 +132,10 @@ function emotes.tickEvent()
 end
 modules.events.TICK:register(emotes.tickEvent)
 
-if host:isHost() then
-	function emotes.hugFirstPerson()
-		vanilla_model.HELD_ITEMS:setVisible(emotes.emotes ~= "hug" or not previous.firstPerson)
-	end
-	modules.events.firstPerson:register(emotes.hugFirstPerson)
-	modules.events.emote:register(emotes.hugFirstPerson)
+function emotes.hugHideItems(emote)
+	vanilla_model.HELD_ITEMS:setVisible(emote ~= "hug")
 end
+modules.events.emote:register(emotes.hugHideItems)
 
 -- Set first expression (hides other expression groups)
 function emotes.init()
@@ -158,6 +155,7 @@ function emotes.setEmote(animation, infinite)
 
 	-- Change facial expression
 	emotes.setExpression(animation)
+	modules.events.emote:run(animation, infinite)
 
 	-- SFX ("hurt" sfx is in emotes.hurtEvent)
 	if animation == "love" or animation == "blush" or animation == "hug" then
@@ -184,6 +182,9 @@ function emotes.stopEmote(resetExpression)
 	if emotes.emote == "hug" then
 		animations["models.cat"].hug:stop()
 	end
+
+	emotes.emote = nil
+	modules.events.emote:run(nil)
 
 	emotes.ticksLeft = 0
 	if resetExpression then
