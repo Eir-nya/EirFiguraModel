@@ -8,6 +8,10 @@ if not settings.model.vanillaMatch then
 end
 
 function vt.render(delta, ctx)
+	if ctx ~= "RENDER" then
+		return
+	end
+
     vt.applyToVanillaPart(models.cat.Head, vanilla_model.HEAD, vanilla_model.HAT)
     vt.applyToVanillaPart(models.cat.Body, vanilla_model.BODY, vanilla_model.JACKET)
     vt.applyToVanillaPart(models.cat.LeftArm, vanilla_model.LEFT_ARM, vanilla_model.LEFT_SLEEVE)
@@ -25,6 +29,10 @@ end
 modules.events.RENDER:register(vt.render)
 
 function vt.postRender(delta, ctx)
+	if ctx ~= "RENDER" then
+		return
+	end
+
     vt.restorePart(models.cat.Head)
     vt.restorePart(models.cat.Body)
     vt.restorePart(models.cat.LeftArm)
@@ -51,6 +59,7 @@ function vt.applyToVanillaPart(modelPart, ...)
         vanillaPart:setRot(vanillaPart:getOriginRot() + modelPart:getTrueRot())
     end
     modelPart:setPos(-modelPart:getTruePos())
+    modelPart:setRot(0, 0, 0)
     modelPart:setRot(-modelPart:getTrueRot())
 end
 
