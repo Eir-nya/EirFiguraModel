@@ -6,10 +6,10 @@ local init = function()
 	-- Check is entity:getNbt works (thanks Requiem/Locki)
 	if not pcall(player.getNbt, player) then
 		settings.misc.disableGetNbt = true
-		settings.armor.vanitySlots = false
 	end
-
-	if not settings.misc.disableGetNbt then
+	if settings.misc.disableGetNbt then
+		settings.armor.vanitySlots = false
+	else
 		settings.armor.vanitySlots = client.isModLoaded("vanityslots")
 	end
 end
