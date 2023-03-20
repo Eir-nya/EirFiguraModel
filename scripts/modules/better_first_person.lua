@@ -14,44 +14,41 @@ function bfp.init()
 end
 modules.events.ENTITY_INIT:register(bfp.init)
 
-function bfp.updateArms(delta, context)
-	-- FIRST_PERSON render context always comes first.
-	if context == "FIRST_PERSON" then
-		models.cat:setRot()
-
-		bfp.lastLeftArmRot = models.cat.LeftArm:getRot()
-		bfp.lastLeftArmPos = models.cat.LeftArm:getPos()
-		bfp.lastRightArmRot = models.cat.RightArm:getRot()
-		bfp.lastRightArmPos = models.cat.RightArm:getPos()
-
-		models.cat.LeftArm:setRot(-models.cat.LeftArm:getAnimRot() / 1.375)
-		models.cat.RightArm:setRot(-models.cat.RightArm:getAnimRot() / 1.375)
-		models.cat.LeftArm:setPos(-models.cat.LeftArm:getAnimPos() / 1.25)
-		models.cat.RightArm:setPos(-models.cat.RightArm:getAnimPos() / 1.25)
-	elseif renderer:isFirstPerson() then
-		models.cat.LeftArm:setRot(bfp.lastLeftArmRot)
-		models.cat.RightArm:setRot(bfp.lastRightArmRot)
-
-		if not modules.sit.isSitting then
-			models.cat.LeftArm:setPos(bfp.lastLeftArmPos)
-			models.cat.RightArm:setPos(bfp.lastRightArmPos)
-		else
-			models.cat.LeftArm:setPos()
-			models.cat.RightArm:setPos()
-		end
-	elseif bfp.lastLeftArmRot ~= nil then
-		bfp.lastLeftArmRot = nil
-		bfp.lastLeftArmPos = nil
-		bfp.lastRightArmRot = nil
-		bfp.lastRightArmPos = nil
-
-		models.cat.LeftArm:setRot()
-		models.cat.LeftArm:setPos()
-		models.cat.RightArm:setRot()
-		models.cat.RightArm:setPos()
+function bfp.updateArms(delta, ctx)
+	if ctx ~= "FIRST_PERSON" then
+		return
 	end
+
+	-- models.cat:setRot()
+
+	bfp.lastLeftArmRot = models.cat.LeftArm:getRot()
+	bfp.lastLeftArmPos = models.cat.LeftArm:getPos()
+	bfp.lastRightArmRot = models.cat.RightArm:getRot()
+	bfp.lastRightArmPos = models.cat.RightArm:getPos()
+
+	models.cat.LeftArm:setRot(-models.cat.LeftArm:getAnimRot() / 1.375)
+	models.cat.RightArm:setRot(-models.cat.RightArm:getAnimRot() / 1.375)
+	models.cat.LeftArm:setPos(-models.cat.LeftArm:getAnimPos() / 1.25)
+	models.cat.RightArm:setPos(-models.cat.RightArm:getAnimPos() / 1.25)
 end
 modules.events.RENDER:register(bfp.updateArms)
+
+function bfp.postRender(delta, ctx)
+	if ctx ~= "FIRST_PERSON" then
+		return
+	end
+
+	models.cat.LeftArm:setRot(bfp.lastLeftArmRot)
+	models.cat.LeftArm:setPos(bfp.lastLeftArmPos)
+	models.cat.RightArm:setRot(bfp.lastRightArmRot)
+	models.cat.RightArm:setPos(bfp.lastRightArmPos)
+
+	bfp.lastLeftArmRot = nil
+	bfp.lastLeftArmPos = nil
+	bfp.lastRightArmRot = nil
+	bfp.lastRightArmPos = nil
+end
+modules.events.POST_RENDER:register(bfp.postRender)
 
 function bfp.crosshairRender(delta, context)
 	-- Allow viewing in third person with camera frozen
