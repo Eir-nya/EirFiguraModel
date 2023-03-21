@@ -150,7 +150,7 @@ function emotes.setEmote(animation, infinite)
 	emotes.emote = animation
 
 	-- Set remaining time
-	emotes.ticksLeft = infinite and math.huge or emotes.ticks[animation]
+	emotes.ticksLeft = infinite and math.huge or (emotes.ticks[animation] and emotes.ticks[animation] or 0)
 	emotes.particleTimer = 0
 
 	-- Change facial expression
