@@ -37,6 +37,11 @@ function sit.sitPose(newSit, animFast)
 	sit.isSitting = newSit
 	
 	if newSit then
+		-- Cancel hug animation if applicable
+		if modules.emotes.isEmoting() and modules.emotes.emote == "hug" then
+			pings.stopEmote(true)
+		end
+
 		sit.startSitting(animFast)
 	else
 		sit.stopSitting(animFast)
