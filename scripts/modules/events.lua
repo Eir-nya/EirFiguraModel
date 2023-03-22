@@ -93,7 +93,7 @@ events.ENTITY_INIT:register(function()
 			local lastHurtTicks = previous.hurtTicks
 			local hurtTicks = player:getNbt().HurtTime
 			previous.hurtTicks = hurtTicks
-			return (hurtTicks > lastHurtTicks and lastHurtTicks == 0) or (hurtTicks < lastHurtTicks and hurtTicks == 0)
+			return (hurtTicks > lastHurtTicks) or (hurtTicks < lastHurtTicks and hurtTicks == 0)
 		end
 	end
 end)
