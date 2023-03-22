@@ -22,28 +22,39 @@ return function(aw)
 				createPage(value, suffix .. name .. ".")
 			-- Just action
 			else
+				local originalTitle = pageTable.title or name
+
 				-- Bool
 				if type(value) == "boolean" then
+					local update = function(self, realAction)
+						self.title = '[{"text":"' .. (pageTable[name] and "+" or "*") .. ' ","font":"figura:ui"},{"text":"' .. originalTitle .. '","font":"default"}]'
+						if realAction then
+							realAction:title(self.title)
+						end
+					end
+
 					newAction.isToggled = value
 					newAction.texture = off_uv
 					newAction.toggleTexture = on_uv
 					newAction.toggle = function(self, newValue, realAction)
 						aw.playClickSound()
 						pageTable[name] = newValue
+						update(self, realAction)
 					end
 					newAction.color = vec(0, 1, 0)
 					newAction.colorOff = vec(0.7, 0, 0)
 					newAction.hoverColor = vec(0.25, 0.8, 0.25)
 					newAction.hoverColorOff = vec(0.6, 0.25, 0.25)
+					update(newAction)
 				-- Number
 				elseif type(value) == "number" then
-					local originalTitle = pageTable.title or name
 					local update = function(self, realAction)
-						self.title = '[{"text":"' .. originalTitle .. '"},{"text":"\n  (' .. pageTable[name] .. ')","color":"gray"}' .. ']'
+						self.title = '[{"text":"- ","font":"figura:ui"},{"text":"' .. originalTitle .. '","font":"default"},{"text":"\n  (' .. pageTable[name] .. ')","color":"gray","font":"default"}' .. ']'
 						if realAction then
 							realAction:title(self.title)
 						end
 					end
+
 					newAction.texture = scroll_uv
 					newAction.scroll = function(self, scrollAmount, realAction)
 						aw.playClickSound()

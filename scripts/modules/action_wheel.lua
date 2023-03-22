@@ -48,7 +48,7 @@ aw.pages = {
 		title = "Emotes",
 		{
 			title = '{"text":"Love"}',
-			disabledTitle = '[{"text":"❌ ","font":"figura:badges"},{"text":"Love","color":"gray","font":"default"}]',
+			disabledTitle = '[{"text":"* ","font":"figura:ui"},{"text":"Love","color":"gray","font":"default"}]',
 			color = vec(1, 0.5, 0.5),
 			hoverColor = vec(250 / 255, 170 / 255, 171 / 255),
 			texture = { u = 15, v = 0, w = 8, h = 8, s = 2 },
@@ -58,7 +58,7 @@ aw.pages = {
 		},
 		{
 			title = '{"text":"Blush"}',
-			disabledTitle = '[{"text":"❌ ","font":"figura:badges"},{"text":"Blush","color":"gray","font":"default"}]',
+			disabledTitle = '[{"text":"* ","font":"figura:ui"},{"text":"Blush","color":"gray","font":"default"}]',
 			color = vec(0.8, 0.2, 0.2),
 			hoverColor = vec(0.8, 0.3, 0.3),
 			texture = { u = 23, v = 0, w = 8, h = 8, s = 2 },
@@ -68,7 +68,7 @@ aw.pages = {
 		},
 		{
 			title = '{"text":"Rage"}',
-			disabledTitle = '[{"text":"❌ ","font":"figura:badges"},{"text":"Rage","color":"gray","font":"default"}]',
+			disabledTitle = '[{"text":"* ","font":"figura:ui"},{"text":"Rage","color":"gray","font":"default"}]',
 			color = vec(0.6, 0.1, 0.1),
 			hoverColor = vec(0.7, 0.2, 0.1),
 			texture = { u = 61, v = 22, w = 8, h = 8, s = 2 },
@@ -78,7 +78,7 @@ aw.pages = {
 		},
 		{
 			title = '{"text":"Hug"}',
-			disabledTitle = '[{"text":"❌ ","font":"figura:badges"},{"text":"Hug","color":"gray","font":"default"}]',
+			disabledTitle = '[{"text":"* ","font":"figura:ui"},{"text":"Hug","color":"gray","font":"default"}]',
 			color = vec(226 / 255, 189 / 255, 110 / 255),
 			hoverColor = vec(246 /255, 229 / 255, 151 / 255),
 			texture = { u = 0, v = 17, w = 11, h = 13, s = 2 },
@@ -87,7 +87,7 @@ aw.pages = {
 		},
 		{
 			title = '{"text":"Sit"}',
-			disabledTitle = '[{"text":"❌ ","font":"figura:badges"},{"text":"Sit","color":"gray","font":"default"}]',
+			disabledTitle = '[{"text":"* ","font":"figura:ui"},{"text":"Sit","color":"gray","font":"default"}]',
 			color = vec(87 / 255, 61 / 255, 142 / 255),
 			hoverColor = vec(127 / 255, 101 / 255, 182 / 255),
 			texture = { u = 11, v = 15, w = 16, h = 15, s = 1.5 },
@@ -107,7 +107,7 @@ aw.pages = {
 		title = "Camera",
 		{
 			title = '{"text":"Freeze Camera"}',
-			disabledTitle = '[{"text":"❌ ","font":"figura:badges"},{"text":"Freeze Camera","color":"gray","font":"default"}]',
+			disabledTitle = '[{"text":"* ","font":"figura:ui"},{"text":"Freeze Camera","color":"gray","font":"default"}]',
 			color = vectors.hexToRGB("c9a363"),
 			hoverColor = vectors.hexToRGB("f4e295"),
 			texture = { u = 15, v = 8, w = 10, h = 6, s = 2 },
