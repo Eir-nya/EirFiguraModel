@@ -25,16 +25,21 @@ aw.pages = {
 		noBack = true,
 		{
 			title = '{"text":"Emotes..."}',
+			color = vectors.hexToRGB("faaaab"),
+			hoverColor = vec(1, 0.5, 0.5),
 			texture = { u = 0, v = 17, w = 11, h = 13, s = 2 },
 			leftClick = function() aw.playClickSound() aw.setPage("emotes") end,
 		},
 		{
 			title = '{"text":"Camera..."}',
+			color = vectors.hexToRGB("c9a363"),
+			hoverColor = vectors.hexToRGB("f4e295"),
 			texture = { u = 15, v = 8, w = 10, h = 6, s = 2 },
 			leftClick = function() aw.playClickSound() aw.setPage("camera") end,
 		},
 		{
 			title = '{"text":"Settings..."}',
+			color = vec(0.3, 0.3, 0.3),
 			texture = { u = 69, v = 8, w = 10, h = 10, s = 2 },
 			leftClick = function() aw.playClickSound() aw.setPage("settings") end,
 		},
@@ -103,8 +108,8 @@ aw.pages = {
 		{
 			title = '{"text":"Freeze Camera"}',
 			disabledTitle = '[{"text":"❌ ","font":"figura:badges"},{"text":"Freeze Camera","color":"gray","font":"default"}]',
-			color = vec(32 / 255, 32 / 255, 32 / 255),
-			hoverColor = vec(72 / 255, 72 / 255, 72 / 255),
+			color = vectors.hexToRGB("c9a363"),
+			hoverColor = vectors.hexToRGB("f4e295"),
 			texture = { u = 15, v = 8, w = 10, h = 6, s = 2 },
 			leftClick = function(self)
 				aw.playClickSound()
@@ -208,7 +213,7 @@ createPage = function(pageName, pageTable)
 	-- Add final "back" option, if possible
 	if not pageTable.noBack then
 		actions = actions + 1
-		actionList[actions] = aw.pages.special.back
+		actionList[math.ceil(actions / 8) * 8] = aw.pages.special.back
 	end
 
 	-- Update pageTable to actionList - preserves indexes for runtime
@@ -217,8 +222,10 @@ createPage = function(pageName, pageTable)
 	pageTable = actionList
 
 	-- Create actions
-	for i = 1, actions do
-		createAction(actionList[i], page, i)
+	for i = 1, (math.ceil(actions / 8) * 8) do
+		if actionList[i] then
+			createAction(actionList[i], page, i)
+		end
 	end
 
 	-- Store created page for runtime indexing
@@ -233,16 +240,22 @@ createAction = function(actionTable, page, i)
 	if actionTable.texture then
 		action:texture(iconTex, actionTable.texture.u, actionTable.texture.v, actionTable.texture.w, actionTable.texture.h, actionTable.texture.s)
 	end
+	if actionTable.toggleTexture then
+		action:toggleTexture(iconTex, actionTable.toggleTexture.u, actionTable.toggleTexture.v, actionTable.toggleTexture.w, actionTable.toggleTexture.h, actionTable.toggleTexture.s)
+	end
+	if actionTable.item then
+		action:item(actionTable.item)
+	end
 	if actionTable.leftClick then
-		action.leftClick = function() actionTable.leftClick(actionTable) end
+		action.leftClick = function(realAction) actionTable.leftClick(actionTable, realAction) end
 	end
 	if actionTable.rightClick then
-		action.rightClick = function() actionTable.rightClick(actionTable) end
+		action.rightClick = function(realAction) actionTable.rightClick(actionTable, realAction) end
 	end
 	if actionTable.toggle then
 		action:setToggled(action.isToggled)
-		action.toggle = function(newValue)
-			actionTable.toggle(actionTable, newValue)
+		action.toggle = function(newValue, realAction)
+			actionTable.toggle(actionTable, newValue, realAction)
 
 			-- Set colors ("color" for on, "colorOff" for off)
 			if actionTable.color and actionTable.colorOff then
@@ -265,6 +278,9 @@ createAction = function(actionTable, page, i)
 			action:color(action.colorOff)
 		end
 	end
+	if actionTable.scroll then
+		action.scroll = function(scrollAmount, realAction) actionTable.scroll(actionTable, scrollAmount, realAction) end
+	end
 
 	actionTable.originalLeftClick = action.leftClick
 	actionTable.originalRightClick = action.rightClick
@@ -274,7 +290,7 @@ isAction = function(t)
 	if type(t) ~= "table" then
 		return false
 	end
-	return t.color or t.texture or t.leftClick or t.toggle
+	return t.color or t.texture or t.leftClick or t.toggle or t.scroll
 end
 
 
