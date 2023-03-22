@@ -77,6 +77,16 @@ aw.pages = {
 			enabledFunc = function() return aw.enableEmoteMethod("rage") end,
 		},
 		{
+			title = '{"text":"Sad"}',
+			disabledTitle = '[{"text":"* ","font":"figura:ui"},{"text":"Sad","color":"gray","font":"default"}]',
+			color = vec(0.6, 0.1, 0.1),
+			hoverColor = vec(0.7, 0.2, 0.1),
+			texture = { u = 69, v = 0, w = 8, h = 8, s = 2 },
+			leftClick = function(self) aw.emoteMethod(self, "sad") end,
+			rightClick = function(self) aw.emoteMethod(self, "sad", true) end,
+			enabledFunc = function() return aw.enableEmoteMethod("sad") end,
+		},
+		{
 			title = '{"text":"Hug"}',
 			disabledTitle = '[{"text":"* ","font":"figura:ui"},{"text":"Hug","color":"gray","font":"default"}]',
 			color = vec(226 / 255, 189 / 255, 110 / 255),

@@ -49,6 +49,9 @@ settings = {
 			rage = {
 				hiss = true,		-- Use minecraft:entity.cat.hiss
 			},
+			sad = {
+				beg_for_food = true,	-- Use minecraft:entity.cat.beg_for_food
+			}
 		},
 		sleep = {
 			purr = true,			-- Use minecraft:entity.cat.purr

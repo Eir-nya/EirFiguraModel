@@ -12,7 +12,9 @@ local emotes = {
 		blush = vec(16, 0),
 		sleep = vec(24, 0),
 		angry = vec(48, 0),
-		angryHole = vec(48, 8)
+		angryHole = vec(48, 8),
+		sad = vec(56, 0),
+		sadHole = vec(56, 8),
 	},
 	-- Name of expression model part to enable for each expression
 	parts = {
@@ -28,6 +30,8 @@ local emotes = {
 		angryHole = "angryHole",
 		rage = "angry", -- uses angry
 		rageHole = "angryHole",
+		sad = "sad",
+		sadHole = "sadHole",
 	},
 	-- Current emote type
 	emote = "normal",
@@ -46,6 +50,7 @@ local emotes = {
 		blush = 100,
 		sleep = math.huge,
 		rage = 50,
+		sad = 140,
 	},
 
 	-- Substrings that, when present at the start or end of an item name, indicate it is a weapon and the "angry" expression should be switched to
@@ -173,6 +178,8 @@ function emotes.setEmote(animation, infinite)
 		for i = 1, math.random(6, 9) do
 			emotes.randomRageParticle()
 		end
+	elseif animation == "sad" then
+		modules.util.soundAtPlayer(modules.util.pickFrom({settings.sound.emotes[animation].beg_for_food and "minecraft:entity.cat.beg_for_food" or nil}), 1)
 	end
 
 	-- Hugging
@@ -288,6 +295,16 @@ function emotes.update(emote)
 			if not emotes.canHug() then
 				pings.stopEmote(true)
 			end
+		end
+	-- Sad
+	elseif emote == "sad" then
+		emotes.particleTimer = emotes.particleTimer - 1
+		if emotes.particleTimer <= 0 then
+			emotes.particleTimer = emotes.particleTimer + math.random(15, 25)
+			particles.falling_water
+				:pos(modules.util.pickFrom({ models.cat.Head.Eyes.left, models.cat.Head.Eyes.right }):partToWorldMatrix():apply(vec(0, -4, -2)))
+				:lifetime(60)
+				:spawn()
 		end
 	end
 end

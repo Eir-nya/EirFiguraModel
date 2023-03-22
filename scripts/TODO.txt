@@ -22,4 +22,3 @@ TODO:
 - fix hair while sleeping
 - fix animations stuck on death (namely blocking)
 - wave emote?
-- cry emote?

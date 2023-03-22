@@ -6,6 +6,7 @@ local eyes = {
 	eyePositions = {
 		normalHole = { r = vec(0, 0), l = vec(0, 0), },
 		angryHole = { r = vec(0, -0.5), l = vec(0, -0.5), },
+		sadHole = { r = vec(0, 0), l = vec(0, 0), },
 	},
 	eyeBoundaries = {
 		normalHole = {
@@ -15,6 +16,10 @@ local eyes = {
 		angryHole = {
 			r = { x1 = 0, y1 = -1, x2 = 1, y2 = 0 },
 			l = { x1 = -1, y1 = -1, x2 = 0, y2 = 0 },
+		},
+		sadHole = {
+			r = { x1 = 0, y1 = -0.5, x2 = 1, y2 = 1 },
+			l = { x1 = -1, y1 = -0.5, x2 = 0, y2 = 1 },
 		},
 	},
 	-- Distance added to left and right dynamic eyes so they won't appear as robotic
