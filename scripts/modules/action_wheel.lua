@@ -88,9 +88,9 @@ aw.pages = {
 			leftClick = function(self)
 				aw.playClickSound()
 				if modules.sit.isSitting then
-					pings.sitPose(false)
+					pings.stopSitting(false)
 				elseif self.enabledFunc() then
-					pings.sitPose(true)
+					pings.startSitting(modules.sit.pickSitAnim())
 				end
 				aw.emoteMethod(self, "sit")
 			end,

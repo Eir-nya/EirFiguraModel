@@ -24,7 +24,7 @@ function sit.update()
 		-- Only the model wearer's client decides if they should stop posing
 		if host:isHost() then
 			if not sit.canSit() then
-				pings.sitPose(false, true)
+				pings.stopSitting(true)
 			end
 		end
 	end
@@ -33,82 +33,82 @@ modules.events.TICK:register(sit.update)
 
 
 
-function sit.sitPose(newSit, animFast)
-	sit.isSitting = newSit
-	
-	if newSit then
-		-- Cancel hug animation if applicable
-		if modules.emotes.isEmoting() and modules.emotes.emote == "hug" then
-			pings.stopEmote(true)
-		end
+if host:isHost() then
+	function sit.pickSitAnim()
+		-- "Raycast" a bit in front of the player to decide which animation to play
+		local bodyYaw = player:getBodyYaw()
+		local direction = vec(-math.sin(math.rad(bodyYaw)), 0, math.cos(math.rad(bodyYaw))):normalized()
+		local checkPos1 = player:getPos() + (direction * 0.4) + vec(0, -0.01, 0)
+		local checkPos2 = player:getPos() + (direction * 1.5) + vec(0, -0.24, 0)
 
-		sit.startSitting(animFast)
-	else
-		sit.stopSitting(animFast)
-	end
-end
-pings.sitPose = sit.sitPose
+		local raycastClean = true
 
-function sit.startSitting(animFast)
-	-- "Raycast" a bit in front of the player to decide which animation to play
-	local bodyYaw = player:getBodyYaw()
-	local direction = vec(-math.sin(math.rad(bodyYaw)), 0, math.cos(math.rad(bodyYaw))):normalized()
-	local checkPos1 = player:getPos() + (direction * 0.4) + vec(0, -0.01, 0)
-	local checkPos2 = player:getPos() + (direction * 1.5) + vec(0, -0.24, 0)
-
-	local raycastClean = true
-
-	local block1 = world.getBlockState(checkPos1)
-	if block1:hasCollision() then
-		if block1:isFullCube() then
-			raycastClean = false
-		else
-			local collision1 = block1:getCollisionShape()
-			local pos1Floor = vec(math.floor(checkPos1.x), math.floor(checkPos1.y), math.floor(checkPos1.z))
-
-			for i = 1, #collision1 do
-				if checkPos1 >= collision1[i][1] + pos1Floor and checkPos1 < collision1[i][2] + pos1Floor then
-					raycastClean = false
-					break
-				end
-			end
-		end
-	end
-
-	if raycastClean then
-		local block2 = world.getBlockState(checkPos2)
-		if block2:hasCollision() then
-			if block2:isFullCube() then
+		local block1 = world.getBlockState(checkPos1)
+		if block1:hasCollision() then
+			if block1:isFullCube() then
 				raycastClean = false
 			else
-				local collision2 = block2:getCollisionShape()
-				local pos2Floor = vec(math.floor(checkPos2.x), math.floor(checkPos2.y), math.floor(checkPos2.z))
+				local collision1 = block1:getCollisionShape()
+				local pos1Floor = vec(math.floor(checkPos1.x), math.floor(checkPos1.y), math.floor(checkPos1.z))
 
-				for i = 1, #collision2 do
-					if checkPos2 >= collision2[i][1] + pos2Floor and checkPos2 < collision2[i][2] + pos2Floor then
+				for i = 1, #collision1 do
+					if checkPos1 >= collision1[i][1] + pos1Floor and checkPos1 < collision1[i][2] + pos1Floor then
 						raycastClean = false
 						break
 					end
 				end
 			end
 		end
+
+		if raycastClean then
+			local block2 = world.getBlockState(checkPos2)
+			if block2:hasCollision() then
+				if block2:isFullCube() then
+					raycastClean = false
+				else
+					local collision2 = block2:getCollisionShape()
+					local pos2Floor = vec(math.floor(checkPos2.x), math.floor(checkPos2.y), math.floor(checkPos2.z))
+
+					for i = 1, #collision2 do
+						if checkPos2 >= collision2[i][1] + pos2Floor and checkPos2 < collision2[i][2] + pos2Floor then
+							raycastClean = false
+							break
+						end
+					end
+				end
+			end
+		end
+
+		sit.facingDir = bodyYaw
+
+		return raycastClean and "sit2" or "sit1"
 	end
-
-
-	sit.anim = raycastClean and modules.animations.sit2 or modules.animations.sit1
-	sit.anim:play()
-	sit.anim:fade(modules.animations.fadeModes.FADE_IN_SMOOTH, animFast and 0.6 or 0.4)
-
-	sit.facingDir = bodyYaw
-	modules.events.sit:run()
 end
 
+function sit.startSitting(anim)
+	sit.isSitting = true
+
+	-- Cancel hug animation if applicable
+	if modules.emotes.isEmoting() and modules.emotes.emote == "hug" then
+		pings.stopEmote(true)
+	end
+
+	sit.anim = modules.animations[anim]
+	sit.anim:play()
+	sit.anim:fade(modules.animations.fadeModes.FADE_IN_SMOOTH, 0.4)
+
+	modules.events.sit:run()
+end
+pings.startSitting = sit.startSitting
+
 function sit.stopSitting(animFast)
+	sit.isSitting = false
 	sit.anim:fade(modules.animations.fadeModes.FADE_OUT_SMOOTH, animFast and 0.6 or 0.2)
 	models.cat:setRot()
 
 	modules.events.sit:run()
 end
+pings.stopSitting = sit.stopSitting
 
 function sit.faceSameDirection(delta, ctx)
 	if ctx ~= "RENDER" then
