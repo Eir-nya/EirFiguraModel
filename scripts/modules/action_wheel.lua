@@ -253,7 +253,7 @@ createAction = function(actionTable, page, i)
 		action.rightClick = function(realAction) actionTable.rightClick(actionTable, realAction) end
 	end
 	if actionTable.toggle then
-		action:setToggled(action.isToggled)
+		action:setToggled(actionTable.isToggled)
 		action.toggle = function(newValue, realAction)
 			actionTable.toggle(actionTable, newValue, realAction)
 
@@ -274,8 +274,14 @@ createAction = function(actionTable, page, i)
 				end
 			end
 		end
-		if action.color and action.colorOff and not action.isToggled then
-			action:color(action.colorOff)
+		-- Started as false
+		if not actionTable.isToggled then
+			if actionTable.color and actionTable.colorOff then
+				action:color(actionTable.colorOff)
+			end
+			if actionTable.hoverColor and actionTable.hoverColorOff then
+				action:hoverColor(actionTable.hoverColorOff)
+			end
 		end
 	end
 	if actionTable.scroll then

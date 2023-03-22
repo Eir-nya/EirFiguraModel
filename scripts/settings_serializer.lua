@@ -63,6 +63,9 @@ return function(aw)
 					end
 					newAction.color = vec(0.6, 0.6, 0.6)
 					update(newAction)
+				-- Unsupported
+				else
+					newAction = nil
 				end
 			end
 
