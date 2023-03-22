@@ -192,7 +192,17 @@ function emotes.stopEmote(resetExpression)
 
 	emotes.ticksLeft = 0
 	if resetExpression then
-		emotes.setExpression((previous.holdingWeapon and not modules.eyes.scared) and "angry" or "normal")
+		if not modules.eyes.scared then
+			if modules.extra_animations.lastBlocking then
+				emotes.setExpression("hurt")
+			elseif previous.holdingWeapon then
+				emotes.setExpression("angry")
+			else
+				emotes.setExpression("normal")
+			end
+		else
+			emotes.setExpression("normal")
+		end
 	end
 end
 pings.stopEmote = emotes.stopEmote

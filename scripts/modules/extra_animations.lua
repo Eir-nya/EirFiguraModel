@@ -228,6 +228,8 @@ function exAnims.blockEvent()
 	else
 		anim:stop()
 	end
+
+	pings.stopEmote(true)
 end
 modules.events.block:register(exAnims.blockEvent)
 
