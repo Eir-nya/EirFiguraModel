@@ -51,11 +51,16 @@ function ears.positionEvent()
 	if previous.freezeTicks > 0 then
 		ears.lerpRate = math.max(ears.lerpRate * (1 - (previous.freezeTicks / 140)), 0)
 	end
+	if modules.emotes.isEmoting() and modules.emotes.emote == "sad" then
+		ears.lerpRate = ears.lerpRate / 2
+	end
 
 	-- Set intended ear positions
 	local lower = 0.85 - (math.min(previous.healthPercent, previous.food / 20) * 0.85)
 	if previous.wet then
 		lower = 1 -- Same as no health
+	elseif modules.emotes.isEmoting() and modules.emotes.emote == "sad" then
+		lower = 1
 	elseif previous.freezeTicks > 0 then
 		lower = math.max(lower, lower + ((1 - lower) * previous.freezeTicks / 140))
 	end
