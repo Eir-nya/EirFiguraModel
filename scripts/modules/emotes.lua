@@ -89,13 +89,17 @@ function emotes.hurtEvent()
 		if math.random() < settings.sound.damage.chance then
 			modules.util.soundAtPlayer(modules.util.pickFrom({
 				settings.sound.damage.hurt and "minecraft:entity.cat.hurt" or nil,
-				settings.sound.damage.hiss and "minecraft:entity.cat.hiss" or nil
+				settings.sound.damage.hiss and "minecraft:entity.cat.hiss" or nil,
+				(settings.sound.damage.squeak and math.random() < settings.sound.damage.squeakChance) and "squeak" or nil,
 			}))
 		end
 	-- Play death sound
 	else
 		if math.random() < settings.sound.death.chance then
-			modules.util.soundAtPlayer("minecraft:entity.cat.death")
+			modules.util.soundAtPlayer(modules.util.pickFrom({
+				settings.sound.death.death and "minecraft:entity.cat.death" or nil,
+				(settings.sound.death.squeak and math.random() < settings.sound.death.squeakChance) and "squeak" or nil,
+			}))
 		end
 	end
 end

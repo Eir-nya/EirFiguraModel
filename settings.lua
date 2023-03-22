@@ -23,10 +23,15 @@ settings = {
 		damage = {
 			chance = 0.1,			-- Chance to play a sound on damage
 			hurt = true,			-- Use minecraft:entity.cat.hurt
-			hiss = true				-- Use minecraft:entity.cat.hiss
+			hiss = true,			-- Use minecraft:entity.cat.hiss
+			squeak = true,			-- Use squeak (custom sound)
+			squeakChance = 0.2,		-- Chance to play squeak
 		},
 		death = {
-			chance = 1				-- Chance to play a sound on death
+			chance = 1,				-- Chance to play a sound on death
+			death = true,			-- Use minecraft:entity.cat.death
+			squeak = true,			-- Use squeak (custom sound)
+			squeakChance = 0.2,		-- Chance to play squeak
 		},
 		emotes = {					-- Settings for emote actions
 			love = {

@@ -23,4 +23,3 @@ TODO:
 - fix animations stuck on death (namely blocking)
 - wave emote?
 - cry emote?
-- add funny cartoon squeak sfx when taking fall damage and when dying
