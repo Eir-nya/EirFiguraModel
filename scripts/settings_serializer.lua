@@ -43,6 +43,7 @@ return function(aw)
 						aw.playClickSound()
 						pageTable[name] = newValue
 						update(self, realAction)
+						pings.settingSync(path, newValue)
 					end
 					newAction.color = vec(0, 1, 0)
 					newAction.colorOff = vec(0.7, 0, 0)
@@ -63,6 +64,7 @@ return function(aw)
 						aw.playClickSound()
 						pageTable[name] = pageTable[name] + (scrollAmount / 10)
 						update(self, realAction)
+						pings.settingSync(path, pageTable[name])
 					end
 					newAction.color = vec(0.6, 0.6, 0.6)
 					update(newAction)

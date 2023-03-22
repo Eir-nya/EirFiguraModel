@@ -117,6 +117,17 @@ settings = {
 }
 
 
+-- Settings sync (host -> other players)
+function pings.settingSync(path, newValue)
+	local found = _G
+	for key in path:gmatch("([^.]+)%.") do
+		found = found[key]
+	end
+	local dotFound, lastDot = path:find(".*%.")
+	local finalKey = path:sub(dotFound and lastDot + 1 or 0)
+	found[finalKey] = newValue
+end
+
 -- Settings verification
 
 if not avatar:canEditVanillaModel() then
