@@ -41,42 +41,9 @@ if host:isHost() then
 		local checkPos1 = player:getPos() + (direction * 0.4) + vec(0, -0.01, 0)
 		local checkPos2 = player:getPos() + (direction * 1.5) + vec(0, -0.24, 0)
 
-		local raycastClean = true
-
-		local block1 = world.getBlockState(checkPos1)
-		if block1:hasCollision() then
-			if block1:isFullCube() then
-				raycastClean = false
-			else
-				local collision1 = block1:getCollisionShape()
-				local pos1Floor = vec(math.floor(checkPos1.x), math.floor(checkPos1.y), math.floor(checkPos1.z))
-
-				for i = 1, #collision1 do
-					if checkPos1 >= collision1[i][1] + pos1Floor and checkPos1 < collision1[i][2] + pos1Floor then
-						raycastClean = false
-						break
-					end
-				end
-			end
-		end
-
+		local raycastClean = not modules.util.collisionAt(checkPos1)
 		if raycastClean then
-			local block2 = world.getBlockState(checkPos2)
-			if block2:hasCollision() then
-				if block2:isFullCube() then
-					raycastClean = false
-				else
-					local collision2 = block2:getCollisionShape()
-					local pos2Floor = vec(math.floor(checkPos2.x), math.floor(checkPos2.y), math.floor(checkPos2.z))
-
-					for i = 1, #collision2 do
-						if checkPos2 >= collision2[i][1] + pos2Floor and checkPos2 < collision2[i][2] + pos2Floor then
-							raycastClean = false
-							break
-						end
-					end
-				end
-			end
+			raycastClean = not modules.util.collisionAt(checkPos2)
 		end
 
 		sit.facingDir = bodyYaw

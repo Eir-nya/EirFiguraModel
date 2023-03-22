@@ -196,8 +196,11 @@ modules.events.TICK:register(exAnims.tick)
 
 function exAnims.fallEvent()
 	if exAnims.isFalling() then
-		modules.animations.fall:play()
-		modules.animations.fall:fade(modules.animations.fadeModes.FADE_IN_SMOOTH, 0.4)
+		-- Check collision of the space immediately below the player
+		if not modules.util.collisionAt(player:getPos(0) + vec(0, -1.6, 0)) then
+			modules.animations.fall:play()
+			modules.animations.fall:fade(modules.animations.fadeModes.FADE_IN_SMOOTH, 0.4)
+		end
 	else
 		-- modules.animations.fall:stop()
 		if modules.animations.fall.fadeMode ~= modules.animations.fadeModes.FADE_OUT_SMOOTH then

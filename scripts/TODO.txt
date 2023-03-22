@@ -21,8 +21,6 @@ TODO:
 - fix sleep camera, first and third person
 - fix hair while sleeping
 - fix animations stuck on death (namely blocking)
-- check collision just below player when starting fall animation, cancel if close
-- try and reduce lag when playing, might be exclusive to first person?
 - use pain expression while blocking
 - wave emote?
 - cry emote?

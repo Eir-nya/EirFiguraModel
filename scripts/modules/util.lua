@@ -24,6 +24,25 @@ function util.vecLerp(vecIn, vecTarget, delta)
 	return vec(math.lerp(vecIn.x, vecTarget.x, delta), math.lerp(vecIn.y, vecTarget.y, delta), math.lerp(vecIn.z, vecTarget.z, delta))
 end
 
+function util.collisionAt(pos)
+	local block = world.getBlockState(pos)
+	if block:hasCollision() then
+		if block:isFullCube() then
+			return true
+		else
+			local collision = block:getCollisionShape()
+			local posFloor = vec(math.floor(pos.x), math.floor(pos.y), math.floor(pos.z))
+
+			for i = 1, #collision do
+				if pos >= collision[i][1] + posFloor and pos < collision[i][2] + posFloor then
+					return true
+				end
+			end
+		end
+	end
+	return false
+end
+
 function util.setChildrenVisible(part, visible)
 	for _, child in pairs(part:getChildren()) do
 		child:setVisible(nil)

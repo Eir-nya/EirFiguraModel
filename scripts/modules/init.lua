@@ -16,7 +16,6 @@ end
 events.ENTITY_INIT:register(init)
 
 -- Disable rendering of vanilla model, because figura tries to render both it and custom models
--- NOTE: When changing the "else" here, also update the complexity limit handler in scripts/complexity
 if avatar:canEditVanillaModel() then
 	vanilla_model.PLAYER:setVisible(false)
 else
