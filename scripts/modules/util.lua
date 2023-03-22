@@ -13,10 +13,15 @@ function util.endsWith(s1, s2)
 end
 
 function util.soundAtPlayer(sound, vol)
-	sounds:playSound(sound, player:getPos(), vol or nil)
+	if sound then
+		sounds:playSound(sound, player:getPos(), vol or nil)
+	end
 end
 
 function util.pickFrom(array)
+	if array == nil or #array == 0 then
+		return nil
+	end
 	return array[math.random(#array)]
 end
 
