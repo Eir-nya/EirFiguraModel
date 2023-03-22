@@ -5,6 +5,7 @@ return function(aw)
 
 	local createPage
 	createPage = function(pageTable, suffix)
+		local itemsCount = 0
 		for name, value in pairs(pageTable) do
 			local newAction = {
 				title = name
@@ -16,6 +17,8 @@ return function(aw)
 			if type(value) == "table" then
 				newAction.texture = { u = 69, v = 8, w = 10, h = 10, s = 2 }
 				newAction.leftClick = function(self) aw.playClickSound() aw.setPage(path) end
+				newAction.color = vectors.hsvToRGB((itemsCount / 7) % 1, 0.4, 0.6)
+				newAction.hoverColor = vectors.hsvToRGB((itemsCount / 7) % 1, 0.6, 1)
 				aw.getPage("settings" .. suffix)[name] = {
 					title = name
 				}
@@ -69,7 +72,10 @@ return function(aw)
 				end
 			end
 
-			table.insert(aw.getPage("settings" .. suffix), newAction)
+			if newAction ~= nil then
+				itemsCount = itemsCount + 1
+				table.insert(aw.getPage("settings" .. suffix), newAction)
+			end
 		end
 	end
 
