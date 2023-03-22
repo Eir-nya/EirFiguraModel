@@ -6,7 +6,6 @@ TODO:
 - make back of shirt a bit more apparent (big hair?)
 - raycasting for sleeping
 - angel wings elytra + events for elytra flying
-- distinction between "swords" (incl. axes) and other "weapons" (bows, shields)
 - "better first person"
 	models.cat.RightArm.RIGHT_ITEM_PIVOT:newItem("rightItem"):item("minecraft:stone_pickaxe"):renderType("THIRD_PERSON_RIGHT_HAND"):rot(vec(-90+11.25, 0, 0)):pos(vec(0, 2, 0))
 	then rotate right arm somewhat while holding an item
@@ -22,8 +21,6 @@ TODO:
 - fix sleep camera, first and third person
 - fix hair while sleeping
 - fix animations stuck on death (namely blocking)
-- fix rapid blinking (reproducible with paradise lost mod by wearing a cloud hare on head and emoting)
-	- can't reproduce in singleplayer
 - check collision just below player when starting fall animation, cancel if close
 - try and reduce lag when playing, might be exclusive to first person?
 - use pain expression while blocking
