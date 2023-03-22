@@ -29,7 +29,8 @@ end
 modules.events.RENDER:register(vt.render)
 
 function vt.postRender(delta, ctx)
-	if ctx == "RENDER" then
+	-- figura rc14: when your avatar is being rendered by other players, ctx is "OTHER".
+	if ctx == "RENDER" or ctx == "OTHER" then
         vt.restorePart(models.cat.Head, vanilla_model.HEAD, vanilla_model.HAT)
         vt.restorePart(models.cat.Body, vanilla_model.BODY, vanilla_model.JACKET)
         vt.restorePart(models.cat.LeftArm, vanilla_model.LEFT_ARM, vanilla_model.LEFT_SLEEVE)
