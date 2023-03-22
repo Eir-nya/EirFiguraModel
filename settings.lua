@@ -91,6 +91,12 @@ settings = {
 		}
 	},
 
+	-- Action wheel settings
+	actionWheel = {
+		openToDefault = true,		-- When action wheel is opened, always open to the same page (defined below)
+		defaultPage = "emotes",		-- Default page to open action wheel to when actionWheel.openToDefault is true
+	},
+
 	-- Misc settings
 	misc = {
 		useCustomName = true,		-- Changes nameplates to a custom name (set below)

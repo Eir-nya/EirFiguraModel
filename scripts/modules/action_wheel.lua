@@ -1,6 +1,6 @@
 -- Action wheel setup script
 local aw = {
-	default = "emotes",
+	default = settings.actionWheel.defaultPage,
 
 	lastEnabled = false,
 }
@@ -16,26 +16,27 @@ aw.pages = {
 			title = '{"text":"Back"}',
 			color = vec(0.3, 0.3, 0.3),
 			texture = { u = 69, v = 18, w = 9, h = 7, s = 2 },
-			leftClick = function() aw.back() end,
+			leftClick = function() aw.playClickSound() aw.back() end,
 		}
 	},
 
 	main = {
 		title = "Main",
+		noBack = true,
 		{
 			title = '{"text":"Emotes..."}',
 			texture = { u = 0, v = 17, w = 11, h = 13, s = 2 },
-			leftClick = function() aw.setPage("emotes") end,
+			leftClick = function() aw.playClickSound() aw.setPage("emotes") end,
 		},
 		{
 			title = '{"text":"Camera..."}',
 			texture = { u = 15, v = 8, w = 10, h = 6, s = 2 },
-			leftClick = function() aw.setPage("camera") end,
+			leftClick = function() aw.playClickSound() aw.setPage("camera") end,
 		},
 		{
 			title = '{"text":"Settings..."}',
 			texture = { u = 69, v = 8, w = 10, h = 10, s = 2 },
-			leftClick = function() aw.setPage("settings") end,
+			leftClick = function() aw.playClickSound() aw.setPage("settings") end,
 		},
 	},
 	emotes = {
@@ -113,6 +114,9 @@ aw.pages = {
 			enabledFunc = function() return not renderer:isFirstPerson() end,
 		}
 	},
+	settings = {
+		title = "Settings",
+	},
 }
 
 local actionsPage = action_wheel:newPage("main")
@@ -134,11 +138,27 @@ end
 aw.stopEmoteMethod = function() pings.stopEmote(true) end
 aw.enableEmoteMethod = function(emote) return (not modules.emotes.isEmoting() or modules.emotes.emote == emote) and not previous.invisible end
 -- "Back" method
-aw.back = function() aw.setPage("main") end
+aw.back = function()
+	local pageName = action_wheel:getCurrentPage():getTitle()
+	local dotFound, lastDot = pageName:find(".*%.")
+	if dotFound then
+		aw.setPage(pageName:sub(0, lastDot - 1))
+	else
+		aw.setPage("main")
+	end
+end
 -- Page setting
 aw.setPage = function(pageName)
 	action_wheel:setPage(pageName)
-	host:setActionbar(aw.pages[pageName].title)
+	host:setActionbar(aw.getPage(pageName).title)
+end
+-- Retrieve page by name (with .)
+aw.getPage = function(pageName)
+	local found = aw.pages
+	for key in pageName:gmatch("([^.]+)") do
+		found = found[key]
+	end
+	return found
 end
 
 -- Icon texture
@@ -150,72 +170,144 @@ end
 -- Disabled color
 local disabledColor = vec(0.2, 0.2, 0.2)
 
--- Create pages
-for pageName, pageTable in pairs(aw.pages) do
-	if pageName ~= "special" and type(pageName) == "string" then
-		local page = action_wheel:newPage(pageName)
 
-		local actionList = {}
-		local actions = 0
-		for _, actionTable in pairs(pageTable) do
-			if type(actionTable) == "table" then
-				if pageName ~= "main" then
-					if actions % 8 == 7 then
-						actions = actions + 1
-						actionList[actions] = aw.pages.special.back
-					end
+
+-- Automatically generate "Settings" page and content
+local settingsGenerator = require("scripts/settings_serializer")
+settingsGenerator(aw)
+
+-- Create pages and actions
+local createPage, createAction, isAction
+createPage = function(pageName, pageTable)
+	if type(pageTable) ~= "table" or isAction(pageTable) then
+		return
+	end
+
+	local page = action_wheel:newPage(pageName)
+
+	local actionList = {}
+	local actions = 0
+	for _, actionTable in pairs(pageTable) do
+		-- Action: create action
+		if isAction(actionTable) then
+			if not pageTable.noBack then
+				if actions % 8 == 7 then
+					actions = actions + 1
+					actionList[actions] = aw.pages.special.back
 				end
+			end
 
-				actions = actions + 1
-				actionList[actions] = actionTable
+			actions = actions + 1
+			actionList[actions] = actionTable
+		-- Not action - just add if not already in table
+		elseif not actionList[_] then
+			actionList[_] = actionTable
+		end
+	end
+
+	-- Add final "back" option, if possible
+	if not pageTable.noBack then
+		actions = actions + 1
+		actionList[actions] = aw.pages.special.back
+	end
+
+	-- Update pageTable to actionList - preserves indexes for runtime
+	actionList.title = pageTable.title
+	aw.pages[pageName] = actionList
+	pageTable = actionList
+
+	-- Create actions
+	for i = 1, actions do
+		createAction(actionList[i], page, i)
+	end
+
+	-- Store created page for runtime indexing
+	aw.pages[page] = pageTable
+end
+
+createAction = function(actionTable, page, i)
+	local action = page:newAction(i)
+	action:title(actionTable.title)
+	action:color(actionTable.color)
+	action:hoverColor(actionTable.hoverColor)
+	if actionTable.texture then
+		action:texture(iconTex, actionTable.texture.u, actionTable.texture.v, actionTable.texture.w, actionTable.texture.h, actionTable.texture.s)
+	end
+	if actionTable.leftClick then
+		action.leftClick = function() actionTable.leftClick(actionTable) end
+	end
+	if actionTable.rightClick then
+		action.rightClick = function() actionTable.rightClick(actionTable) end
+	end
+	if actionTable.toggle then
+		action:setToggled(action.isToggled)
+		action.toggle = function(newValue)
+			actionTable.toggle(actionTable, newValue)
+
+			-- Set colors ("color" for on, "colorOff" for off)
+			if actionTable.color and actionTable.colorOff then
+				if newValue then
+					action:color(actionTable.color)
+				else
+					action:color(actionTable.colorOff)
+				end
+			end
+			-- Set hover colors ("hoverColor" for on, "hoverColorOff" for off)
+			if actionTable.hoverColor and actionTable.hoverColorOff then
+				if newValue then
+					action:hoverColor(actionTable.hoverColor)
+				else
+					action:hoverColor(actionTable.hoverColorOff)
+				end
 			end
 		end
+		if action.color and action.colorOff and not action.isToggled then
+			action:color(action.colorOff)
+		end
+	end
 
-		-- Add final "back" option, if possible
-		if pageName ~= "main" then
-			if actions % 8 < 7 then
-				actions = actions + 1
-				actionList[actions] = aw.pages.special.back
+	actionTable.originalLeftClick = action.leftClick
+	actionTable.originalRightClick = action.rightClick
+end
+
+isAction = function(t)
+	if type(t) ~= "table" then
+		return false
+	end
+	return t.color or t.texture or t.leftClick or t.toggle
+end
+
+
+-- Generate pages
+local recurse
+recurse = function(t, prefix)
+	if type(t) == "table" then
+		for pageName, pageTable in pairs(t) do
+			if pageName ~= "special" and type(pageName) == "string" and not isAction(t) then
+				createPage(prefix .. pageName, pageTable)
+				recurse(pageTable, prefix .. pageName .. ".")
 			end
 		end
-
-		-- Update pageTable to actionList - preserves indexes for runtime
-		actionList.title = pageTable.title
-		aw.pages[pageName] = actionList
-		pageTable = actionList
-
-		-- Create page, actions
-		for i = 1, #pageTable do
-			local actionTable = actionList[i]
-			local action = page:newAction(i)
-			action:title(actionTable.title)
-			action:color(actionTable.color)
-			action:hoverColor(actionTable.hoverColor)
-			if actionTable.texture then
-				action:texture(iconTex, actionTable.texture.u, actionTable.texture.v, actionTable.texture.w, actionTable.texture.h, actionTable.texture.s)
-			end
-			if actionTable.leftClick then
-				action.leftClick = function() actionTable.leftClick(actionTable) end
-			end
-			if actionTable.rightClick then
-				action.rightClick = function() actionTable.rightClick(actionTable) end
-			end
-
-			actionTable.originalLeftClick = action.leftClick
-			actionTable.originalRightClick = action.rightClick
-		end
-
-		-- Store created page for runtime indexing
-		aw.pages[page] = pageTable
 	end
 end
+
+-- Make a copy of the initial table, since it gets modified during action
+local pagesTableCopy = {}
+for k, v in pairs(aw.pages) do
+	pagesTableCopy[k] = v
+end
+recurse(pagesTableCopy, "")
 
 -- Watch action wheel
 modules.events.TICK:register(function()
 	if action_wheel:isEnabled() ~= aw.lastEnabled then
 		aw.lastEnabled = action_wheel:isEnabled()
+
 		-- Reset to default page, show action bar text
-		aw.setPage(aw.default)
+		if settings.actionWheel.openToDefault then
+			aw.setPage(aw.default)
+		end
+
 		-- When action wheel closed, reset actionbar
 		if not aw.lastEnabled then
 			host:setActionbar("")
@@ -251,18 +343,6 @@ end)
 
 -- Initial page
 action_wheel:setPage(aw.default)
-
--- -- Action 6: Camera
--- local cameraAction = actionsPage:newAction()
--- 	:title("Camera")
--- 	:color(32/255, 32/255, 32/255)
--- 	:hoverColor(72/255, 72/255, 72/255)
--- 	:texture(iconTex, 15, 8, 10, 6, 2)
--- cameraAction.leftClick = function()
--- 	playClickSound()
--- 	-- TODO
--- 	modules.camera.toggleFreeze()
--- end
 
 -- TODO: third person sleep animation whatever
 return aw
