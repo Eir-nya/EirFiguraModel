@@ -123,10 +123,11 @@ function hair.helmetEvent()
 				-- TODO: set limits on Left and Right wavey hair
 			end
 			-- TODO
-		-- Default helmet model: disable Back2, move down Frilly
+		-- Default helmet model: disable Back2 and 3DHair, move down Frilly
 		elseif modules.armor.knownMaterial(modules.armor.getItemMaterial(previous.helmet)) then
 			hair.ropes.Back2:setVisible(false)
 			models.cat.Head.Frilly:setPos(vec(0, -1.5, -1))
+			modules.util.setChildrenVisible(models.cat.Head["3DHair"], false)
 		-- Generic block or item: disable all
 		else
 			hair.ropes.Left:setVisible(false)
