@@ -250,7 +250,7 @@ function exAnims.render(tickProgress, context)
 	local velY = math.lerp(exAnims.lastVelY, exAnims.newVelY, tickProgress)
 
 	-- Only blend animations once per render event
-	if context == "FIRST_PERSON" or context == "RENDER" then
+	if context == "FIRST_PERSON" or modules.util.renderedInWorld(context) then
 		if modules.animations.jump.anim:getPlayState() == "PLAYING" then
 			modules.animations.jump:blend(math.clamp(velY, 0, 1))
 		end

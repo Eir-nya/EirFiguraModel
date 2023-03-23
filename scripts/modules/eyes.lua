@@ -273,7 +273,7 @@ end
 
 -- Hide overlay eyes when not in RENDER context
 function eyes.hideOverlayEyesNotRender(delta, ctx)
-	models.cat.Head.EyesGlint:setVisible(ctx == "RENDER")
+	models.cat.Head.EyesGlint:setVisible(modules.util.renderedInWorld(context))
 end
 if settings.eyes.glow.enabled then
 	modules.events.RENDER:register(eyes.hideOverlayEyesNotRender)

@@ -49,7 +49,7 @@ end
 
 -- Makes the nameplate follow the model head
 function name.renderNameplate(delta, context)
-	if context ~= "RENDER" then
+	if not modules.util.renderedInWorld(context) then
 		return
 	end
 

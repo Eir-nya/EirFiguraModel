@@ -29,6 +29,15 @@ function util.vecLerp(vecIn, vecTarget, delta)
 	return vec(math.lerp(vecIn.x, vecTarget.x, delta), math.lerp(vecIn.y, vecTarget.y, delta), math.lerp(vecIn.z, vecTarget.z, delta))
 end
 
+-- figura rc14: when your avatar is being rendered by other players, ctx is either "RENDER" OR "OTHER".
+function util.renderedInWorld(context)
+	if host:isHost() then
+		return context == "RENDER"
+	else
+		return context == "RENDER" or context == "OTHER"
+	end
+end
+
 function util.collisionAt(pos)
 	local block = world.getBlockState(pos)
 	if block:hasCollision() then

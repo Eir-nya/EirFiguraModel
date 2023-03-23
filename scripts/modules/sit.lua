@@ -80,7 +80,7 @@ pings.stopSitting = sit.stopSitting
 --TODO: Restore once a vanilla model-compatible method for this exists
 if not settings.model.vanillaMatch then
 	function sit.faceSameDirection(delta, ctx)
-		if ctx ~= "RENDER" then
+		if not modules.util.renderedInWorld(ctx) then
 			return
 		end
 

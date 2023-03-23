@@ -378,7 +378,7 @@ modules.events.TICK:register(anims.fadeInOut)
 -- Render event
 function anims.render(delta, context)
 	-- Don't apply part rot needlessly on other render modes
-	if context ~= "FIRST_PERSON" and context ~= "RENDER" then
+	if context ~= "FIRST_PERSON" and not modules.util.renderedInWorld(context) then
 		return
 	end
 
