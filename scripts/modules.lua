@@ -12,6 +12,7 @@ modules = {
 	"sleep",
 	"emotes",
 	"elytra",
+	"clothes",
 	"armor",
 	"ears",
 	"tail",

@@ -31,6 +31,13 @@ aw.pages = {
 			leftClick = function() aw.setPage("emotes") end,
 		},
 		{
+			title = '{"text":"Wardrobe..."}',
+			color = vectors.hsvToRGB(0.55, 1, 0.8),
+			hoverColor = vectors.hsvToRGB(0.55, 1, 1),
+			item = world.newItem("minecraft:armor_stand"),
+			leftClick = function() aw.setPage("wardrobe") end,
+		},
+		{
 			title = '{"text":"Camera..."}',
 			color = vectors.hexToRGB("c9a363"),
 			hoverColor = vectors.hexToRGB("f4e295"),
@@ -110,6 +117,93 @@ aw.pages = {
 				aw.emoteMethod(self, "sit")
 			end,
 			enabledFunc = function() return avatar:canEditVanillaModel() and not previous.invisible and modules.sit.canSit() and not (modules.emotes.isEmoting() and modules.emotes.emote == "hug") end,
+		},
+	},
+	wardrobe = {
+		title = "Wardrobe",
+		{
+			disabledTitle = '[{"text":"* ","font":"figura:ui"},{"text":"Head","color":"gray","font":"default"}]',
+			item = world.newItem("minecraft:leather_helmet"),
+			onShow = function(self, realAction)
+				self.title = '[{"text":"Head\n"},' .. aw.listDisplay(modules.clothes.head, modules.clothes.get("head")) .. ']'
+				realAction:title(self.title)
+			end,
+			scroll = function(self, dir, realAction)
+				local current = modules.clothes.get("head")
+				current = current - dir
+				current = ((current - 1) % #modules.clothes.head) + 1
+				modules.clothes.equip("head", modules.clothes.head[current])
+				self:onShow(realAction)
+				pings.setClothes("head", modules.clothes.head[current])
+			end,
+			enabledFunc = function() return not modules.armor.display end,
+		},
+		{
+			disabledTitle = '[{"text":"* ","font":"figura:ui"},{"text":"Top","color":"gray","font":"default"}]',
+			item = world.newItem("minecraft:leather_chestplate"),
+			onShow = function(self, realAction)
+				self.title = '[{"text":"Top\n"},' .. aw.listDisplay(modules.clothes.top, modules.clothes.get("top")) .. ']'
+				realAction:title(self.title)
+			end,
+			scroll = function(self, dir, realAction)
+				local current = modules.clothes.get("top")
+				current = current - dir
+				current = ((current - 1) % #modules.clothes.top) + 1
+				modules.clothes.equip("top", modules.clothes.top[current])
+				self:onShow(realAction)
+				pings.setClothes("top", modules.clothes.top[current])
+			end,
+			enabledFunc = function() return not modules.armor.display end,
+		},
+		{
+			disabledTitle = '[{"text":"* ","font":"figura:ui"},{"text":"Bottom","color":"gray","font":"default"}]',
+			item = world.newItem("minecraft:leather_leggings"),
+			onShow = function(self, realAction)
+				self.title = '[{"text":"Bottom\n"},' .. aw.listDisplay(modules.clothes.bottom, modules.clothes.get("bottom")) .. ']'
+				realAction:title(self.title)
+			end,
+			scroll = function(self, dir, realAction)
+				local current = modules.clothes.get("bottom")
+				current = current - dir
+				current = ((current - 1) % #modules.clothes.bottom) + 1
+				modules.clothes.equip("bottom", modules.clothes.bottom[current])
+				self:onShow(realAction)
+				pings.setClothes("bottom", modules.clothes.bottom[current])
+			end,
+			enabledFunc = function() return not modules.armor.display end,
+		},
+		{
+			disabledTitle = '[{"text":"* ","font":"figura:ui"},{"text":"Feet","color":"gray","font":"default"}]',
+			item = world.newItem("minecraft:leather_boots"),
+			onShow = function(self, realAction)
+				self.title = '[{"text":"Feet\n"},' .. aw.listDisplay(modules.clothes.feet, modules.clothes.get("feet")) .. ']'
+				realAction:title(self.title)
+			end,
+			scroll = function(self, dir, realAction)
+				local current = modules.clothes.get("feet")
+				current = current - dir
+				current = ((current - 1) % #modules.clothes.feet) + 1
+				modules.clothes.equip("feet", modules.clothes.feet[current])
+				self:onShow(realAction)
+				pings.setClothes("feet", modules.clothes.feet[current])
+			end,
+			enabledFunc = function() return not modules.armor.display end,
+		},
+		{
+			isToggled = modules.armor.display,
+			item = world.newItem("minecraft:ender_pearl"),
+			toggleItem = world.newItem("minecraft:ender_eye"),
+			color = vec(0, 1, 0),
+			colorOff = vec(0.7, 0, 0),
+			hoverColor = vec(0.25, 0.8, 0.25),
+			hoverColorOff = vec(0.6, 0.25, 0.25),
+			onShow = function(self, realAction)
+				realAction:title('[{"text":"Armor visible"},{"text":"\n  (' .. (modules.armor.display and "Yes" or "No").. ')","color":"gray"}]')
+			end,
+			toggle = function(self, newValue, realAction)
+				modules.armor.setVisible(newValue)
+				self:onShow(realAction)
+			end,
 		},
 	},
 	camera = {
@@ -430,6 +524,22 @@ end)
 
 -- Initial page
 action_wheel:setPage(aw.default)
+
+
+-- Utility
+function aw.listDisplay(list, selected)
+	local s = ""
+	for i, value in ipairs(list) do
+		if i > 1 then
+			s = s .. ',{"text":"\n"},'
+		end
+
+		local isSelected = i == selected
+		s = s .. '{"text":"  ' .. (isSelected and '"},{"text":"★","font":"figura:ui"},{"text":"' or '-') .. ' ' .. tostring(value) .. '","color":"' .. (isSelected and 'white' or 'gray') .. '","font":"default"}'
+	end
+	return s
+end
+
 
 -- TODO: third person sleep animation whatever
 return aw
