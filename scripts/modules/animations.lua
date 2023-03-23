@@ -144,6 +144,16 @@ local anims = {
 			LeftLeg = overrideModes.OVERRIDE,
 		}
 	},
+	kneel = {
+		rank = animRanks.SECONDARY,
+		overrideVanillaModes = {
+			Body = overrideModes.OVERRIDE,
+			RightArm = overrideModes.OVERRIDE,
+			LeftArm = overrideModes.OVERRIDE,
+			RightLeg = overrideModes.OVERRIDE,
+			LeftLeg = overrideModes.OVERRIDE,
+		},
+	},
 
 	-- Landing animations
 	landHard = { overrideVanillaModes = allBlendOut, blendWeight = 1, blendWeightMode = blendWeightModes.BLEND_OUT, },

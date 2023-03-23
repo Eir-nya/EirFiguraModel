@@ -13,6 +13,7 @@ local exAnims = {
 	lastFlying = false,
 	-- lastSprinting = false,
 	lastBlocking = false,
+	lastKneeling = false,
 
 	-- sprintMult = 0,
 	-- sprintLastMult = 0,
@@ -233,6 +234,22 @@ function exAnims.blockEvent()
 end
 modules.events.block:register(exAnims.blockEvent)
 
+-- Runs when crouching on the ground
+function exAnims.kneel()
+	local kneeling = exAnims.isKneeling()
+
+	if kneeling ~= exAnims.lastKneeling then
+		if kneeling then
+			modules.animations.kneel:play()
+		else
+			modules.animations.kneel:stop()
+		end
+	end
+
+	exAnims.lastKneeling = kneeling
+end
+modules.events.TICK:register(exAnims.kneel)
+
 -- Controls swim idle animation
 function exAnims.underwaterEvent()
 	if previous.underwater and not player:isOnGround() and (previous.pose == "STANDING" or previous.pose == "CROUCHING") then
@@ -289,6 +306,10 @@ end
 modules.events.RENDER:register(exAnims.render)
 
 
+
+function exAnims.isKneeling()
+	return previous.pose == "CROUCHING" and player:isCrouching() and player:isOnGround()
+end
 
 function exAnims.isFalling()
 	return exAnims.newVelY <= exAnims.fallThreshold and not player:isOnGround() and not previous.flying and not previous.vehicle
