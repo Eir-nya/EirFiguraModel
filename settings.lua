@@ -115,6 +115,7 @@ settings = {
 		customNameChat = '[{"text":":cat_face:Eir","color":"#8ecbea"}]',
 
 		disableGetNbt = false,		-- Disables uses of entity:getNbt() for compatibility with Requiem/Locki mod. Disables vanity aror.
+		customCrosshair = true,		-- Use custom crosshair
 	}
 }
 

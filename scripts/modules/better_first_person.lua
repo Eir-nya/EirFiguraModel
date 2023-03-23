@@ -6,11 +6,10 @@ local bfp = {
 }
 
 function bfp.init()
-	-- TODO: if custom crosshair/better first person view is disabled, just hide custom croshair
 	renderer.renderCrosshair = false
 	models.firstPerson.crosshair:setParentType("Gui")
 
-	bfp.setCrosshair(true) -- TODO
+	bfp.setCrosshair(settings.misc.customCrosshair)
 end
 modules.events.ENTITY_INIT:register(bfp.init)
 
