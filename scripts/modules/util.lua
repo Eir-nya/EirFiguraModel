@@ -19,10 +19,20 @@ function util.soundAtPlayer(sound, vol)
 end
 
 function util.pickFrom(array)
-	if array == nil or #array == 0 then
+	if type(array) ~= "table" then
 		return nil
 	end
-	return array[math.random(#array)]
+
+	-- There might be inconsistent indexes in the table. Sort them.
+	local indexes = {}
+	for key in pairs(array) do
+		table.insert(indexes, key)
+	end
+
+	if #indexes == 0 then
+		return nil
+	end
+	return array[indexes[math.random(#indexes)]]
 end
 
 function util.vecLerp(vecIn, vecTarget, delta)
