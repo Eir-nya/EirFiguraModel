@@ -125,7 +125,6 @@ aw.pages = {
 	wardrobe = {
 		title = '{"text":"Wardrobe","color":"aqua"}',
 		{
-			disabledTitle = '[{"text":"* ","font":"figura:ui"},{"text":"Head","color":"gray","font":"default"}]',
 			color = vectors.hexToRGB("aca06a"),
 			hoverColor = vectors.hexToRGB("f6e597"),
 			item = world.newItem("minecraft:leather_helmet"),
@@ -141,10 +140,8 @@ aw.pages = {
 				self:onShow(realAction)
 				pings.setClothes("head", modules.clothes.head[current])
 			end,
-			enabledFunc = function() return not modules.armor.display end,
 		},
 		{
-			disabledTitle = '[{"text":"* ","font":"figura:ui"},{"text":"Top","color":"gray","font":"default"}]',
 			color = vectors.hexToRGB("faaaab"),
 			hoverColor = vec(1, 0.5, 0.5),
 			item = world.newItem("minecraft:leather_chestplate"),
@@ -160,10 +157,8 @@ aw.pages = {
 				self:onShow(realAction)
 				pings.setClothes("top", modules.clothes.top[current])
 			end,
-			enabledFunc = function() return not modules.armor.display end,
 		},
 		{
-			disabledTitle = '[{"text":"* ","font":"figura:ui"},{"text":"Bottom","color":"gray","font":"default"}]',
 			color = vectors.hexToRGB("9382c3"),
 			hoverColor = vectors.hexToRGB("ab98e3"),
 			item = world.newItem("minecraft:leather_leggings"),
@@ -179,10 +174,8 @@ aw.pages = {
 				self:onShow(realAction)
 				pings.setClothes("bottom", modules.clothes.bottom[current])
 			end,
-			enabledFunc = function() return not modules.armor.display end,
 		},
 		{
-			disabledTitle = '[{"text":"* ","font":"figura:ui"},{"text":"Feet","color":"gray","font":"default"}]',
 			color = vectors.hexToRGB("5e4a64"),
 			hoverColor = vectors.hexToRGB("8b6d93"),
 			item = world.newItem("minecraft:leather_boots"),
@@ -198,7 +191,6 @@ aw.pages = {
 				self:onShow(realAction)
 				pings.setClothes("feet", modules.clothes.feet[current])
 			end,
-			enabledFunc = function() return not modules.armor.display end,
 		},
 		{
 			isToggled = modules.armor.display,

@@ -193,14 +193,11 @@ function armor.genericEquip(item)
 			models.cat.Head.RightEar.Ear:setVisible(false)
 		end
 	elseif slot == "chestplate" then
-		models.cat.Body["3DShirt"]:setVisible(false)
+		modules.clothes.setVisible("top", false)
 	elseif slot == "leggings" then
-		models.cat.Body["3DShorts"]:setVisible(false)
-		models.cat.LeftLeg["3DShorts"]:setVisible(false)
-		models.cat.RightLeg["3DShorts"]:setVisible(false)
+		modules.clothes.setVisible("bottom", false)
 	elseif slot == "boots" then
-		models.cat.LeftLeg["3DEnbySocks"]:setVisible(false)
-		models.cat.RightLeg["3DEnbySocks"]:setVisible(false)
+		modules.clothes.setVisible("feet", false)
 	end
 end
 
@@ -397,8 +394,9 @@ function armor.unequipHelmet()
 end
 
 function armor.unequipChestplate()
+	modules.clothes.setVisible("top", true)
+
 	models.cat.Body["Body Layer Down"]:setVisible(true)
-	models.cat.Body["3DShirt"]:setVisible(true)
 	models.cat.Body.Boobs:setVisible(true)
 	models.cat.Body["3DHairBoobs"]:setVisible(true)
 	models.cat.Body.Boobs.Armor:setVisible(false)
@@ -416,9 +414,7 @@ function armor.unequipChestplate()
 end
 
 function armor.unequipLeggings()
-	models.cat.Body["3DShorts"]:setVisible(true)
-	models.cat.LeftLeg["3DShorts"]:setVisible(true)
-	models.cat.RightLeg["3DShorts"]:setVisible(true)
+	modules.clothes.setVisible("bottom", true)
 
 	vanilla_model.LEGGINGS:setVisible(false)
 
@@ -428,8 +424,7 @@ function armor.unequipLeggings()
 end
 
 function armor.unequipBoots()
-	models.cat.LeftLeg["3DEnbySocks"]:setVisible(true)
-	models.cat.RightLeg["3DEnbySocks"]:setVisible(true)
+	modules.clothes.setVisible("feet", true)
 
 	vanilla_model.BOOTS:setVisible(false)
 

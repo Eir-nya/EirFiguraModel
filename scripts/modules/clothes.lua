@@ -22,7 +22,7 @@ local clothes = {
 	},
 }
 
-function clothes.equip(slot, clothing)
+function clothes.showClothes(slot, clothing)
 	if slot == "head" then
 		-- TODO
 	elseif slot == "top" then
@@ -41,6 +41,21 @@ function clothes.equip(slot, clothing)
 		models.cat.LeftLeg["3DEnbySocks"]:setVisible(clothing == "Enby socks")
 		models.cat.RightLeg["3DEnbySocks"]:setVisible(clothing == "Enby socks")
 	end
+end
+
+function clothes.equip(slot, clothing)
+	local shouldChangeClothes = not modules.armor.display
+	if not shouldChangeClothes then
+		local itemToCheck = ({ head = previous.helmet, top = previous.chestplate, bottom = previous.leggings, feet = previous.boots })[slot]
+		if slot == "top" and previous.elytra then
+			shouldChangeClothes = true
+		else
+			shouldChangeClothes = not modules.armor.checkItemVisible(itemToCheck)
+		end
+	end
+	if shouldChangeClothes then
+		clothes.showClothes(slot, clothing)
+	end
 
 	-- Find value in array
 	for i, clothesName in ipairs(clothes[slot]) do
@@ -51,6 +66,10 @@ function clothes.equip(slot, clothing)
 	end
 end
 pings.setClothes = clothes.equip
+
+function clothes.setVisible(slot, visible)
+	clothes.showClothes(slot, visible and clothes[slot][clothes[slot].current] or 1)
+end
 
 function clothes.get(slot)
 	return clothes[slot].current
