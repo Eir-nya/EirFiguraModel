@@ -263,7 +263,7 @@ function emotes.isEmoting()
 end
 
 function emotes.canBlink()
-	return previous.pose ~= "SLEEPING" and emotes.emote ~= "hurt"
+	return previous.pose ~= "SLEEPING" and previous.expression ~= "hurt"
 end
 
 function emotes.update(emote)
