@@ -16,7 +16,7 @@ return function(aw)
 			-- New page
 			if type(value) == "table" then
 				newAction.texture = { u = 69, v = 8, w = 10, h = 10, s = 2 }
-				newAction.leftClick = function(self) aw.playClickSound() aw.setPage(path) end
+				newAction.leftClick = function(self) aw.setPage(path) end
 				newAction.color = vectors.hsvToRGB((itemsCount / 7) % 1, 0.4, 0.6)
 				newAction.hoverColor = vectors.hsvToRGB((itemsCount / 7) % 1, 0.6, 1)
 				aw.getPage("settings" .. suffix)[name] = {
@@ -40,7 +40,6 @@ return function(aw)
 					newAction.texture = off_uv
 					newAction.toggleTexture = on_uv
 					newAction.toggle = function(self, newValue, realAction)
-						aw.playClickSound()
 						pageTable[name] = newValue
 						update(self, realAction)
 						pings.settingSync(path, newValue)
@@ -61,7 +60,6 @@ return function(aw)
 
 					newAction.texture = scroll_uv
 					newAction.scroll = function(self, scrollAmount, realAction)
-						aw.playClickSound()
 						pageTable[name] = pageTable[name] + (scrollAmount / 10)
 						update(self, realAction)
 						pings.settingSync(path, pageTable[name])

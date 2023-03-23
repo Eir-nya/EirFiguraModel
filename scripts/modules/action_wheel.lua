@@ -16,7 +16,7 @@ aw.pages = {
 			title = '{"text":"Back"}',
 			color = vec(0.3, 0.3, 0.3),
 			texture = { u = 69, v = 18, w = 9, h = 7, s = 2 },
-			leftClick = function() aw.playClickSound() aw.back() end,
+			leftClick = function() aw.back() end,
 		}
 	},
 
@@ -28,20 +28,20 @@ aw.pages = {
 			color = vectors.hexToRGB("faaaab"),
 			hoverColor = vec(1, 0.5, 0.5),
 			texture = { u = 0, v = 17, w = 11, h = 13, s = 2 },
-			leftClick = function() aw.playClickSound() aw.setPage("emotes") end,
+			leftClick = function() aw.setPage("emotes") end,
 		},
 		{
 			title = '{"text":"Camera..."}',
 			color = vectors.hexToRGB("c9a363"),
 			hoverColor = vectors.hexToRGB("f4e295"),
 			texture = { u = 15, v = 8, w = 10, h = 6, s = 2 },
-			leftClick = function() aw.playClickSound() aw.setPage("camera") end,
+			leftClick = function() aw.setPage("camera") end,
 		},
 		{
 			title = '{"text":"Settings..."}',
 			color = vec(0.3, 0.3, 0.3),
 			texture = { u = 69, v = 8, w = 10, h = 10, s = 2 },
-			leftClick = function() aw.playClickSound() aw.setPage("settings") end,
+			leftClick = function() aw.setPage("settings") end,
 		},
 	},
 	emotes = {
@@ -102,7 +102,6 @@ aw.pages = {
 			hoverColor = vec(127 / 255, 101 / 255, 182 / 255),
 			texture = { u = 11, v = 15, w = 16, h = 15, s = 1.5 },
 			leftClick = function(self)
-				aw.playClickSound()
 				if modules.sit.isSitting then
 					pings.stopSitting(false)
 				elseif self.enabledFunc() then
@@ -122,7 +121,6 @@ aw.pages = {
 			hoverColor = vectors.hexToRGB("f4e295"),
 			texture = { u = 15, v = 8, w = 10, h = 6, s = 2 },
 			leftClick = function(self)
-				aw.playClickSound()
 				-- TODO
 				modules.camera.toggleFreeze()
 			end,
@@ -138,12 +136,33 @@ local actionsPage = action_wheel:newPage("main")
 action_wheel:setPage(actionsPage)
 
 -- Function used to play a client-side click sound upon clicking a button
-aw.playClickSound = function()
-	sounds:playSound("minecraft:ui.button.click", player:getPos(), 0.0625, 1)
+aw.playClickSound = function(self, isRight)
+	if self.clickSound then
+		if isRight and self.rightClickSound then
+			sounds:playSound(self.rightClickSound, player:getPos(), 0.75, 1)
+		else
+			sounds:playSound(self.clickSound, player:getPos(), 0.75, 1)
+		end
+	elseif settings.actionWheel.sounds then
+		sounds:playSound("minecraft:ui.button.click", player:getPos(), 0.125, 1)
+	end
+end
+aw.playToggleSound = function(self, on)
+	if self.toggleSound and self.toggleSoundOff then
+		sounds:playSound(on and self.toggleSound or self.toggleSoundOff, player:getPos(), 0.75, 1)
+	elseif settings.actionWheel.sounds then
+		sounds:playSound("minecraft:block.wooden_button.click_on", player:getPos(), 0.5, on and 1 or 0.8)
+	end
+end
+aw.playScrollSound = function(self, dir)
+	if self.scrollSound then
+		sounds:playSound(self.scrollSound, player:getPos(), 0.75, dir == 1 and 1.5 or 0.75)
+	elseif settings.actionWheel.sounds then
+		sounds:playSound("minecraft:item.spyglass.use", player:getPos(), 0.5, dir == 1 and 1.5 or 0.75)
+	end
 end
 -- Generic emote methods
 aw.emoteMethod = function(self, emoteName, infinite)
-	aw.playClickSound()
 	if modules.emotes.isEmoting() and modules.emotes.emote == emoteName then
 		pings.stopEmote(true)
 	elseif self.enabledFunc and self.enabledFunc() or true then
@@ -257,14 +276,15 @@ createAction = function(actionTable, page, i)
 		action:item(actionTable.item)
 	end
 	if actionTable.leftClick then
-		action.leftClick = function(realAction) actionTable.leftClick(actionTable, realAction) end
+		action.leftClick = function(realAction) aw.playClickSound(actionTable, false) actionTable.leftClick(actionTable, realAction) end
 	end
 	if actionTable.rightClick then
-		action.rightClick = function(realAction) actionTable.rightClick(actionTable, realAction) end
+		action.rightClick = function(realAction) aw.playClickSound(actionTable, true) actionTable.rightClick(actionTable, realAction) end
 	end
 	if actionTable.toggle then
 		action:setToggled(actionTable.isToggled)
 		action.toggle = function(newValue, realAction)
+			aw.playToggleSound(actionTable, newValue)
 			actionTable.toggle(actionTable, newValue, realAction)
 
 			-- Set colors ("color" for on, "colorOff" for off)
@@ -295,7 +315,7 @@ createAction = function(actionTable, page, i)
 		end
 	end
 	if actionTable.scroll then
-		action.scroll = function(scrollAmount, realAction) actionTable.scroll(actionTable, scrollAmount, realAction) end
+		action.scroll = function(scrollAmount, realAction) aw.playScrollSound(actionTable, scrollAmount) actionTable.scroll(actionTable, scrollAmount, realAction) end
 	end
 
 	actionTable.originalLeftClick = action.leftClick

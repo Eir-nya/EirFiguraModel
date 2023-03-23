@@ -104,6 +104,7 @@ settings = {
 	actionWheel = {
 		openToDefault = true,		-- When action wheel is opened, always open to the same page (defined below)
 		defaultPage = "emotes",		-- Default page to open action wheel to when actionWheel.openToDefault is true
+		sounds = true,				-- Adds default sounds to Actions
 	},
 
 	-- Misc settings
