@@ -24,17 +24,17 @@ aw.pages = {
 	},
 
 	main = {
-		title = "Main",
+		title = '{"text":"Main","bold":"true","color":"yellow"}',
 		noBack = true,
 		{
-			title = '{"text":"Emotes..."}',
+			title = '{"text":"Emotes...","color":"yellow"}',
 			color = vectors.hexToRGB("faaaab"),
 			hoverColor = vec(1, 0.5, 0.5),
 			texture = { u = 0, v = 17, w = 11, h = 13, s = 2 },
 			leftClick = function() aw.setPage("emotes") end,
 		},
 		{
-			title = '{"text":"Wardrobe..."}',
+			title = '{"text":"Wardrobe...","color":"aqua"}',
 			color = vectors.hsvToRGB(0.55, 1, 0.8),
 			hoverColor = vectors.hsvToRGB(0.55, 1, 1),
 			item = world.newItem("minecraft:armor_stand"),
@@ -55,9 +55,9 @@ aw.pages = {
 		},
 	},
 	emotes = {
-		title = "Emotes",
+		title = '{"text":"Emotes","color":"yellow"}',
 		{
-			title = '{"text":"Love"}',
+			title = '[{"text":"Love","color":"#faaaab"},{"text":"\n  <:feet:","color":"gray","font":"figura:ui"},{"text":": 3 seconds","color":"gray"},{"text":"\n  :feet:>","color":"gray","font":"figura:ui"},{"text":": Infinite","color":"gray"}]',
 			disabledTitle = '[{"text":"* ","font":"figura:ui"},{"text":"Love","color":"gray","font":"default"}]',
 			color = vec(1, 0.5, 0.5),
 			hoverColor = vec(250 / 255, 170 / 255, 171 / 255),
@@ -67,7 +67,7 @@ aw.pages = {
 			enabledFunc = function() return aw.enableEmoteMethod("love") end,
 		},
 		{
-			title = '{"text":"Blush"}',
+			title = '[{"text":"Blush","color":"#cc3333"},{"text":"\n  <:feet:","color":"gray","font":"figura:ui"},{"text":": 5 seconds","color":"gray"},{"text":"\n  :feet:>","color":"gray","font":"figura:ui"},{"text":": Infinite","color":"gray"}]',
 			disabledTitle = '[{"text":"* ","font":"figura:ui"},{"text":"Blush","color":"gray","font":"default"}]',
 			color = vec(0.8, 0.2, 0.2),
 			hoverColor = vec(0.8, 0.3, 0.3),
@@ -77,7 +77,7 @@ aw.pages = {
 			enabledFunc = function() return aw.enableEmoteMethod("blush") end,
 		},
 		{
-			title = '{"text":"Rage"}',
+			title = '[{"text":"Rage","color":"#991919"},{"text":"\n  <:feet:","color":"gray","font":"figura:ui"},{"text":": 2.5 seconds","color":"gray"},{"text":"\n  :feet:>","color":"gray","font":"figura:ui"},{"text":": Infinite","color":"gray"}]',
 			disabledTitle = '[{"text":"* ","font":"figura:ui"},{"text":"Rage","color":"gray","font":"default"}]',
 			color = vec(0.6, 0.1, 0.1),
 			hoverColor = vec(0.7, 0.2, 0.1),
@@ -87,17 +87,17 @@ aw.pages = {
 			enabledFunc = function() return aw.enableEmoteMethod("rage") end,
 		},
 		{
-			title = '{"text":"Sad"}',
+			title = '[{"text":"Sad","color":"blue"},{"text":"\n  <:feet:","color":"gray","font":"figura:ui"},{"text":": 7 seconds","color":"gray"},{"text":"\n  :feet:>","color":"gray","font":"figura:ui"},{"text":": Infinite","color":"gray"}]',
 			disabledTitle = '[{"text":"* ","font":"figura:ui"},{"text":"Sad","color":"gray","font":"default"}]',
-			color = vec(0.6, 0.1, 0.1),
-			hoverColor = vec(0.7, 0.2, 0.1),
+			color = vec(0.1, 0.1, 0.4),
+			hoverColor = vec(0.3, 0.3, 0.5),
 			texture = { u = 69, v = 0, w = 8, h = 8, s = 2 },
 			leftClick = function(self) aw.emoteMethod(self, "sad") end,
 			rightClick = function(self) aw.emoteMethod(self, "sad", true) end,
 			enabledFunc = function() return aw.enableEmoteMethod("sad") end,
 		},
 		{
-			title = '{"text":"Hug"}',
+			title = '{"text":"Hug","color":"yellow"}',
 			disabledTitle = '[{"text":"* ","font":"figura:ui"},{"text":"Hug","color":"gray","font":"default"}]',
 			color = vec(226 / 255, 189 / 255, 110 / 255),
 			hoverColor = vec(246 /255, 229 / 255, 151 / 255),
@@ -106,7 +106,7 @@ aw.pages = {
 			enabledFunc = function() return avatar:canEditVanillaModel() and aw.enableEmoteMethod("hug") and modules.emotes.canHug() and not modules.sit.isSitting end,
 		},
 		{
-			title = '{"text":"Sit"}',
+			title = '{"text":"Sit","color":"#7f65b6"}',
 			disabledTitle = '[{"text":"* ","font":"figura:ui"},{"text":"Sit","color":"gray","font":"default"}]',
 			color = vec(87 / 255, 61 / 255, 142 / 255),
 			hoverColor = vec(127 / 255, 101 / 255, 182 / 255),
@@ -123,12 +123,14 @@ aw.pages = {
 		},
 	},
 	wardrobe = {
-		title = "Wardrobe",
+		title = '{"text":"Wardrobe","color":"aqua"}',
 		{
 			disabledTitle = '[{"text":"* ","font":"figura:ui"},{"text":"Head","color":"gray","font":"default"}]',
+			color = vectors.hexToRGB("aca06a"),
+			hoverColor = vectors.hexToRGB("f6e597"),
 			item = world.newItem("minecraft:leather_helmet"),
 			onShow = function(self, realAction)
-				self.title = '[{"text":"Head\n"},' .. aw.listDisplay(modules.clothes.head, modules.clothes.get("head")) .. ']'
+				self.title = '[{"text":"Head\n","color":"yellow"},' .. aw.listDisplay(modules.clothes.head, modules.clothes.get("head")) .. ']'
 				realAction:title(self.title)
 			end,
 			scroll = function(self, dir, realAction)
@@ -143,9 +145,11 @@ aw.pages = {
 		},
 		{
 			disabledTitle = '[{"text":"* ","font":"figura:ui"},{"text":"Top","color":"gray","font":"default"}]',
+			color = vectors.hexToRGB("faaaab"),
+			hoverColor = vec(1, 0.5, 0.5),
 			item = world.newItem("minecraft:leather_chestplate"),
 			onShow = function(self, realAction)
-				self.title = '[{"text":"Top\n"},' .. aw.listDisplay(modules.clothes.top, modules.clothes.get("top")) .. ']'
+				self.title = '[{"text":"Top\n","color":"yellow"},' .. aw.listDisplay(modules.clothes.top, modules.clothes.get("top")) .. ']'
 				realAction:title(self.title)
 			end,
 			scroll = function(self, dir, realAction)
@@ -160,9 +164,11 @@ aw.pages = {
 		},
 		{
 			disabledTitle = '[{"text":"* ","font":"figura:ui"},{"text":"Bottom","color":"gray","font":"default"}]',
+			color = vectors.hexToRGB("9382c3"),
+			hoverColor = vectors.hexToRGB("ab98e3"),
 			item = world.newItem("minecraft:leather_leggings"),
 			onShow = function(self, realAction)
-				self.title = '[{"text":"Bottom\n"},' .. aw.listDisplay(modules.clothes.bottom, modules.clothes.get("bottom")) .. ']'
+				self.title = '[{"text":"Bottom\n","color":"yellow"},' .. aw.listDisplay(modules.clothes.bottom, modules.clothes.get("bottom")) .. ']'
 				realAction:title(self.title)
 			end,
 			scroll = function(self, dir, realAction)
@@ -177,9 +183,11 @@ aw.pages = {
 		},
 		{
 			disabledTitle = '[{"text":"* ","font":"figura:ui"},{"text":"Feet","color":"gray","font":"default"}]',
+			color = vectors.hexToRGB("5e4a64"),
+			hoverColor = vectors.hexToRGB("8b6d93"),
 			item = world.newItem("minecraft:leather_boots"),
 			onShow = function(self, realAction)
-				self.title = '[{"text":"Feet\n"},' .. aw.listDisplay(modules.clothes.feet, modules.clothes.get("feet")) .. ']'
+				self.title = '[{"text":"Feet\n","color":"yellow"},' .. aw.listDisplay(modules.clothes.feet, modules.clothes.get("feet")) .. ']'
 				realAction:title(self.title)
 			end,
 			scroll = function(self, dir, realAction)
@@ -201,7 +209,7 @@ aw.pages = {
 			hoverColor = vec(0.25, 0.8, 0.25),
 			hoverColorOff = vec(0.6, 0.25, 0.25),
 			onShow = function(self, realAction)
-				realAction:title('[{"text":"Armor visible"},{"text":"\n  (' .. (modules.armor.display and "Yes" or "No").. ')","color":"gray"}]')
+				realAction:title('[{"text":"Armor visible","color":"green"},{"text":"\n  (' .. (modules.armor.display and "Yes" or "No").. ')","color":"gray"}]')
 			end,
 			toggle = function(self, newValue, realAction)
 				modules.armor.setVisible(newValue)
