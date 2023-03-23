@@ -3,6 +3,9 @@ local aw = {
 	default = settings.actionWheel.defaultPage,
 
 	lastEnabled = false,
+
+	-- Disabled color
+	disabledColor = vec(0.2, 0.2, 0.2)
 }
 
 if not host:isHost() then
@@ -245,6 +248,30 @@ aw.pages = {
 local actionsPage = action_wheel:newPage("main")
 action_wheel:setPage(actionsPage)
 
+-- Enables or disables an action based on its enabledFunc
+local updateAction = function(actionTable, action)
+	if actionTable.enabledFunc then
+		local shouldBeEnabled = actionTable.enabledFunc(actionTable)
+		if shouldBeEnabled then
+			action:title(actionTable.title)
+			action:color(actionTable.color)
+			action:hoverColor(actionTable.hoverColor)
+			action.leftClick = actionTable.originalLeftClick
+			action.rightClick = actionTable.originalRightClick
+			action.toggle = actionTable.originalToggle
+			action.scroll = actionTable.originalScroll
+		else
+			action:title(actionTable.disabledTitle)
+			action:color(aw.disabledColor)
+			action:hoverColor(aw.disabledColor)
+			action.leftClick = nil
+			action.rightClick = nil
+			action.toggle = nil
+			action.scroll = nil
+		end
+	end
+end
+
 -- Function used to play a client-side click sound upon clicking a button
 aw.playClickSound = function(self, isRight)
 	if self.clickSound then
@@ -304,6 +331,7 @@ aw.setPage = function(pageName)
 		if actionTable.onShow then
 			actionTable.onShow(actionTable, action)
 		end
+		updateAction(actionTable, action)
 	end
 end
 -- Retrieve page by name (with .)
@@ -320,9 +348,6 @@ local iconTex = textures["models.firstPerson.models.ui"]
 if not iconTex then
 	iconTex = textures["textures.ui"]
 end
-
--- Disabled color
-local disabledColor = vec(0.2, 0.2, 0.2)
 
 
 
@@ -498,26 +523,7 @@ modules.events.TICK:register(function()
 		for i, action in pairs(page:getActions()) do
 			local actionTable = aw.pages[page][i]
 
-			if actionTable.enabledFunc then
-				local shouldBeEnabled = actionTable.enabledFunc(self)
-				if shouldBeEnabled then
-					action:title(actionTable.title)
-					action:color(actionTable.color)
-					action:hoverColor(actionTable.hoverColor)
-					action.leftClick = actionTable.originalLeftClick
-					action.rightClick = actionTable.originalRightClick
-					action.toggle = actionTable.originalToggle
-					action.scroll = actionTable.originalScroll
-				else
-					action:title(actionTable.disabledTitle)
-					action:color(disabledColor)
-					action:hoverColor(disabledColor)
-					action.leftClick = nil
-					action.rightClick = nil
-					action.toggle = nil
-					action.scroll = nil
-				end
-			end
+			updateAction(actionTable, action)
 		end
 	end
 end)
