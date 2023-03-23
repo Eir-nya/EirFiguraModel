@@ -26,3 +26,5 @@ else
 	models.cat.RightArm["Right Arm"]:setVisible(false)
 	models.cat.LeftArm["Left Arm"]:setVisible(false)
 end
+
+models.cat:setPrimaryRenderType("CUTOUT_CULL")

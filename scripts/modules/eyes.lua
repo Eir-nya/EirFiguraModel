@@ -84,6 +84,8 @@ local eyes = {
 
 	-- (Set by script)
 	rainbowSpeed = 0,
+	hasNightVision = false,
+	glowColor = vectors.hexToRGB("7965b1"),
 
 	-- Player will be scared and pupils will shrink when at low health or food, freezing, drowning, or having the darkness or wither effects
 	scared = false,
@@ -212,11 +214,12 @@ end
 -- Sets initial render settings on glowing eyes
 if settings.eyes.glow.enabled then
 	function eyes.setupGlow()
-		if settings.eyes.glow.xpGlint then
-			models.cat.Head.EyesGlint:setSecondaryRenderType("TRANSLUCENT")
+		models.cat.Head.EyesGlint:setPrimaryRenderType("TRANSLUCENT_CULL")
 		-- If other settings are disabled, use fullbright eyes
-		elseif not settings.eyes.glow.nightVision then
+		if not settings.eyes.glow.xpGlint and not settings.eyes.glow.nightVision then
+			models.cat.Head.EyesGlint:setOpacity(1)
 			models.cat.Head.EyesGlint:setLight(15)
+			models.cat.Head.EyesGlint:setColor(eyes.glowColor)
 		end
 	end
 	modules.events.ENTITY_INIT:register(eyes.setupGlow)
@@ -225,7 +228,7 @@ end
 -- Toggle eyes
 function eyes.init()
 	models.cat.Head.eyesBack:setVisible(settings.eyes.dynamic.enabled or settings.eyes.glow.enabled)
-	models.cat.Head.Eyes:setVisible(settings.eyes.dynamic.enabled)
+	models.cat.Head.Eyes:setVisible(settings.eyes.dynamic.enabled or settings.eyes.glow.enabled)
 	models.cat.Head.EyesGlint:setVisible(settings.eyes.glow.enabled)
 end
 modules.events.ENTITY_INIT:register(eyes.init)
@@ -235,11 +238,10 @@ function eyes.decorateEyes()
 	models.cat.Head.EyesGlint:setLight(nil)
 
 	-- Prioritize night vision glow over xp glint rainbow
-	-- TODO: use host to sync night vision effects or not
-	if settings.eyes.glow.nightVision and modules.util.getEffect("effect.minecraft.night_vision") then
+	if settings.eyes.glow.nightVision and eyes.hasNightVision then
 		models.cat.Head.EyesGlint:setOpacity(1)
 		models.cat.Head.EyesGlint:setLight(15)
-		models.cat.Head.EyesGlint:setColor(1, 1, 1)
+		models.cat.Head.EyesGlint:setColor(eyes.glowColor)
 	elseif settings.eyes.glow.xpGlint then
 		eyes.rainbowSpeed = math.min(previous.xp / 9, 3 + (1 / 3))
 		models.cat.Head.EyesGlint:setOpacity(math.min(previous.xp / 30, 1) * 0.625)
@@ -248,23 +250,32 @@ function eyes.decorateEyes()
 
 	-- Enchantment sheen on eyes if applicable
 	if settings.eyes.glow.xpGlint then
-		models.cat.Head.EyesGlint:setSecondaryRenderType(previous.xp >= 30 and "GLINT" or "TRANSLUCENT")
+		models.cat.Head.EyesGlint:setSecondaryRenderType(previous.xp >= 30 and "GLINT" or "TRANSLUCENT_CULL")
 	end
 end
 -- Use a ping because only the host has access to current effects
-if host:isHost() and settings.eyes.glow.nightVision then
-	function pings.decorateEyes()
-		eyes.decorateEyes()
-	end
-	modules.events.effects:register(pings.decorateEyes)
+function pings.setNightVision(hasNightVision)
+	eyes.hasNightVision = hasNightVision
+	eyes.decorateEyes()
 end
-if settings.eyes.glow.xpGlint then
-	modules.events.xp:register(eyes.decorateEyes)
+if host:isHost() then
+	modules.events.effects:register(function()
+		if settings.eyes.glow.nightVision then
+			if modules.util.getEffect("effect.minecraft.night_vision") then
+				pings.setNightVision(true)
+			else
+				pings.setNightVision(false)
+			end
+		end
+	end)
 end
+modules.events.xp:register(eyes.decorateEyes)
 
 -- Rainbow animation on eyes with xp
 function eyes.rainbow(tickProgress)
-	models.cat.Head.EyesGlint:setColor(modules.util.rainbow(eyes.rainbowSpeed)) -- vectors.rainbow(eyes.rainbowSpeed)
+	if not (settings.eyes.glow.nightVision and eyes.hasNightVision) then
+		models.cat.Head.EyesGlint:setColor(modules.util.rainbow(eyes.rainbowSpeed))
+	end
 end
 if settings.eyes.glow.xpGlint then
 	modules.events.RENDER:register(eyes.rainbow)
@@ -272,7 +283,7 @@ end
 
 -- Hide overlay eyes when not in RENDER context
 function eyes.hideOverlayEyesNotRender(delta, ctx)
-	models.cat.Head.EyesGlint:setVisible(modules.util.renderedInWorld(context))
+	models.cat.Head.EyesGlint:setVisible(modules.util.renderedInWorld(ctx))
 end
 if settings.eyes.glow.enabled then
 	modules.events.RENDER:register(eyes.hideOverlayEyesNotRender)
