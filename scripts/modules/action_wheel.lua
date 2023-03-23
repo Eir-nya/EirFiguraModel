@@ -115,7 +115,7 @@ aw.pages = {
 	camera = {
 		title = "Camera",
 		{
-			title = '{"text":"Freeze Camera"}',
+			title = '{"text":"Freeze camera"}',
 			disabledTitle = '[{"text":"* ","font":"figura:ui"},{"text":"Freeze Camera","color":"gray","font":"default"}]',
 			color = vectors.hexToRGB("c9a363"),
 			hoverColor = vectors.hexToRGB("f4e295"),
@@ -129,6 +129,22 @@ aw.pages = {
 	},
 	settings = {
 		title = "Settings",
+		{
+			title = '{"text":"Save settings"}',
+			color = vec(0.2, 0.8, 0.2),
+			hoverColor = vec(0.4, 0.8, 0.4),
+			item = world.newItem("minecraft:writable_book"),
+			clickSound = "minecraft:ui.cartography_table.take_result",
+			leftClick = function(self) saveSettings() end,
+		},
+		{
+			title = '{"text":"Reset settings"}',
+			color = vec(0.8, 0.2, 0.2),
+			hoverColor = vec(0.8, 0.4, 0.4),
+			item = world.newItem("minecraft:barrier"),
+			clickSound = "minecraft:ui.loom.take_result",
+			leftClick = function(self) resetSettings() end,
+		},
 	},
 }
 

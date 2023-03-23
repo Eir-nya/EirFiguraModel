@@ -130,6 +130,31 @@ function pings.settingSync(path, newValue)
 	found[finalKey] = newValue
 end
 
+-- Load settings
+if host:isHost() then
+	function saveSettings()
+		config:save("settings", settings)
+	end
+
+	function resetSettings()
+		config:save("reset", true)
+		print("Please reload!")
+	end
+
+	if config:load("reset") then
+		saveSettings()
+		pings.settingSync("settings", settings)
+		config:save("reset", nil)
+	else
+		local newSettings = config:load("settings")
+		if type(newSettings) == "table" then
+			-- Ping instruction is delayed by a tick on avatar load. Running this now will sync settings for others.
+			pings.settingSync("settings", newSettings)
+			settings = newSettings
+		end
+	end
+end
+
 -- Settings verification
 
 if not avatar:canEditVanillaModel() then
