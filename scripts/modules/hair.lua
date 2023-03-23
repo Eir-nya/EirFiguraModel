@@ -99,7 +99,7 @@ modules.events.ENTITY_INIT:register(hair.init)
 -- Runs on helmet equip/unequip. Decides which pieces of hair should be visible.
 function hair.helmetEvent()
 	-- Only visible items count
-	if modules.armor.checkItemVisible(previous.helmet) then
+	if modules.armor.checkItemVisible(previous.helmet) and modules.armor.visible then
 		hair.ropes.Top:setVisible(false) -- Always hidden
 
 		-- Custom helmets: varies

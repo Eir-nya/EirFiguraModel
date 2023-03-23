@@ -8,6 +8,8 @@ local allowEarRotationEnum = {
 }
 
 local armor = {
+	-- Display armor
+	display = true,
 	-- Is ear armor visible?
 	earArmorVisible = false,
 	-- Whether ears may be rotate or not (only available on leather/chainmail/turtle, or on all helmets if settings.armor.earArmorMovement is enabled)
@@ -86,19 +88,27 @@ modules.events.ENTITY_INIT:register(armor.init)
 
 function armor.helmetEvent()
 	armor.unequipHelmet()
-	armor.equipEvent(previous.helmet, "helmet")
+	if armor.display then
+		armor.equipEvent(previous.helmet, "helmet")
+	end
 end
 function armor.chestplateEvent()
 	armor.unequipChestplate()
-	armor.equipEvent(previous.chestplate, "chestplate")
+	if armor.display then
+		armor.equipEvent(previous.chestplate, "chestplate")
+	end
 end
 function armor.leggingsEvent()
 	armor.unequipLeggings()
-	armor.equipEvent(previous.leggings, "leggings")
+	if armor.display then
+		armor.equipEvent(previous.leggings, "leggings")
+	end
 end
 function armor.bootsEvent()
 	armor.unequipBoots()
-	armor.equipEvent(previous.boots, "boots")
+	if armor.display then
+		armor.equipEvent(previous.boots, "boots")
+	end
 end
 modules.events.helmet:register(armor.helmetEvent)
 modules.events.chestplate:register(armor.chestplateEvent)
@@ -530,6 +540,14 @@ function armor.getPartsToEdit(item, mode)
 	end
 
 	return parts
+end
+
+function armor.setVisible(visible)
+	armor.display = visible
+	armor.helmetEvent()
+	armor.chestplateEvent()
+	armor.leggingsEvent()
+	armor.bootsEvent()
 end
 
 
