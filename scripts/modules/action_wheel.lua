@@ -201,6 +201,16 @@ end
 aw.setPage = function(pageName)
 	action_wheel:setPage(pageName)
 	host:setActionbar(aw.getPage(pageName).title)
+
+	-- Run onShow
+	local page = action_wheel:getCurrentPage()
+	for i, action in pairs(page:getActions()) do
+		local actionTable = aw.pages[page][i]
+
+		if actionTable.onShow then
+			actionTable.onShow(actionTable, action)
+		end
+	end
 end
 -- Retrieve page by name (with .)
 aw.getPage = function(pageName)
@@ -290,6 +300,9 @@ createAction = function(actionTable, page, i)
 	end
 	if actionTable.item then
 		action:item(actionTable.item)
+	end
+	if actionTable.toggleItem then
+		action:toggleItem(actionTable.toggleItem)
 	end
 	if actionTable.leftClick then
 		action.leftClick = function(realAction) aw.playClickSound(actionTable, false) actionTable.leftClick(actionTable, realAction) end
@@ -392,7 +405,7 @@ modules.events.TICK:register(function()
 			local actionTable = aw.pages[page][i]
 
 			if actionTable.enabledFunc then
-				local shouldBeEnabled = actionTable.enabledFunc()
+				local shouldBeEnabled = actionTable.enabledFunc(self)
 				if shouldBeEnabled then
 					action:title(actionTable.title)
 					action:color(actionTable.color)
