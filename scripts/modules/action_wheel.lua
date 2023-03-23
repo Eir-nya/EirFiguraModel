@@ -336,6 +336,8 @@ createAction = function(actionTable, page, i)
 
 	actionTable.originalLeftClick = action.leftClick
 	actionTable.originalRightClick = action.rightClick
+	actionTable.originalToggle = action.toggle
+	actionTable.originalScroll = action.scroll
 end
 
 isAction = function(t)
@@ -397,12 +399,16 @@ modules.events.TICK:register(function()
 					action:hoverColor(actionTable.hoverColor)
 					action.leftClick = actionTable.originalLeftClick
 					action.rightClick = actionTable.originalRightClick
+					action.toggle = actionTable.originalToggle
+					action.scroll = actionTable.originalScroll
 				else
 					action:title(actionTable.disabledTitle)
 					action:color(disabledColor)
 					action:hoverColor(disabledColor)
 					action.leftClick = nil
 					action.rightClick = nil
+					action.toggle = nil
+					action.scroll = nil
 				end
 			end
 		end
