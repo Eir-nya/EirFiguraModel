@@ -227,15 +227,6 @@ function emotes.setExpression(expression)
 	if settings.eyes.dynamic.enabled or settings.eyes.glow.enabled then
 		if emotes.parts[expression .. "Hole"] ~= nil then
 			expression = expression .. "Hole"
-			-- TODO
-			-- models.cat.Head.eyesBack:setVisible(true)
-			-- models.cat.Head.Eyes:setVisible(settings.eyes.dynamic.enabled)
-			-- models.cat.Head.EyesGlint:setVisible(settings.eyes.glow.enabled)
-		else
-			-- models.cat.Head.eyesBack:setVisible(false)
-			-- TODO
-			-- models.cat.Head.Eyes:setVisible(false)
-			-- models.cat.Head.EyesGlint:setVisible(false)
 		end
 	end
 
@@ -251,11 +242,6 @@ function emotes.setExpression(expression)
 
 	previous.expression = expression
 	modules.events.expression:run(expression)
-	-- TODO
-	-- -- Update dynamic eyes if applicable
-	-- if settings.eyes or settings.eyesGlint then
-		-- moveEyes()
-	-- end
 end
 
 function emotes.isEmoting()

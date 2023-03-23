@@ -74,7 +74,6 @@ local eyes = {
 	},
 	-- Nearby entities to be tracked by eye movement
 	nearbyEntities = {},
-	nearestEntity = nil,
 	lastEntityRaycast = nil,
 	highestPriority = 0,
 

@@ -8,8 +8,6 @@ local allowEarRotationEnum = {
 }
 
 local armor = {
-	-- Original rotation of ear armor
-	earArmorRot = vec(-3, 3, 3.75), -- vec(0, 5, 0)
 	-- Is ear armor visible?
 	earArmorVisible = false,
 	-- Whether ears may be rotate or not (only available on leather/chainmail/turtle, or on all helmets if settings.armor.earArmorMovement is enabled)
@@ -106,10 +104,6 @@ modules.events.helmet:register(armor.helmetEvent)
 modules.events.chestplate:register(armor.chestplateEvent)
 modules.events.leggings:register(armor.leggingsEvent)
 modules.events.boots:register(armor.bootsEvent)
--- modules.events.invisible:register(armor.helmetEvent)
--- modules.events.invisible:register(armor.chestplateEvent)
--- modules.events.invisible:register(armor.leggingsEvent)
--- modules.events.invisible:register(armor.bootsEvent)
 
 
 
