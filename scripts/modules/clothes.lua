@@ -16,9 +16,10 @@ local clothes = {
 		"Bikini (bottom)"
 	},
 	feet = {
-		current = 2,
+		current = 3,
 		"None",
-		"Enby socks"
+		"Enby socks",
+		"Cat socks"
 	},
 }
 
@@ -39,7 +40,9 @@ function clothes.showClothes(slot, clothing)
 		models.cat.RightLeg["3DBikiniBottom"]:setVisible(clothing == "Bikini (bottom)")
 	elseif slot == "feet" then
 		models.cat.LeftLeg["3DEnbySocks"]:setVisible(clothing == "Enby socks")
+		models.cat.LeftLeg["3DCatSocks"]:setVisible(clothing == "Cat socks")
 		models.cat.RightLeg["3DEnbySocks"]:setVisible(clothing == "Enby socks")
+		models.cat.RightLeg["3DCatSocks"]:setVisible(clothing == "Cat socks")
 	end
 end
 
