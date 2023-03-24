@@ -156,11 +156,12 @@ if host:isHost() then
 	-- Sync settings value-by-value, one tick at a time
 	local lastKey = nil
 	events.TICK:register(function()
-		local key, value = next(settings, lastKey)
-		if not key then
+		local value
+		lastKey, value = next(settings, lastKey)
+		if not lastKey then
 			events.TICK:remove("settings sync")
 		else
-			pings.settingSync("settings." .. key, value)
+			pings.settingSync("settings." .. lastKey, value)
 		end
 	end, "settings sync")
 end
