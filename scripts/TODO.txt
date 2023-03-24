@@ -20,5 +20,4 @@ TODO:
 	- netherite armor
 - fix sleep camera, first and third person
 - fix hair while sleeping
-- fix animations stuck on death (namely blocking)
 - wave emote?

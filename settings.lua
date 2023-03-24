@@ -144,16 +144,25 @@ if host:isHost() then
 
 	if config:load("reset") then
 		saveSettings()
-		pings.settingSync("settings", settings)
 		config:save("reset", nil)
 	else
 		local newSettings = config:load("settings")
 		if type(newSettings) == "table" then
 			-- Ping instruction is delayed by a tick on avatar load. Running this now will sync settings for others.
-			pings.settingSync("settings", newSettings)
 			settings = newSettings
 		end
 	end
+
+	-- Sync settings value-by-value, one tick at a time
+	local lastKey = nil
+	events.TICK:register(function()
+		local key, value = next(settings, lastKey)
+		if not key then
+			events.TICK:remove("settings sync")
+		else
+			pings.settingSync("settings." .. key, value)
+		end
+	end, "settings sync")
 end
 
 -- Settings verification
