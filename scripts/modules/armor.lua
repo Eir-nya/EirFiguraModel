@@ -544,6 +544,7 @@ function armor.setVisible(visible)
 	armor.leggingsEvent()
 	armor.bootsEvent()
 end
+pings.setArmorVisible = armor.setVisible
 
 
 -- Utility functions

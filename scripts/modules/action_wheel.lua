@@ -206,6 +206,7 @@ aw.pages = {
 			toggle = function(self, newValue, realAction)
 				modules.armor.setVisible(newValue)
 				self:onShow(realAction)
+				pings.setArmorVisible(newValue)
 			end,
 		},
 	},
