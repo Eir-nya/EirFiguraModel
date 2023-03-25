@@ -337,11 +337,7 @@ aw.setPage = function(pageName)
 end
 -- Retrieve page by name (with .)
 aw.getPage = function(pageName)
-	local found = aw.pages
-	for key in pageName:gmatch("([^.]+)") do
-		found = found[key]
-	end
-	return found
+	return modules.util.getByPath(pageName, aw.pages)
 end
 
 -- Icon texture

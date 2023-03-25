@@ -122,13 +122,20 @@ settings = {
 
 -- Settings sync (host -> other players)
 function pings.settingSync(path, newValue)
-	local found = _G
-	for key in path:gmatch("([^.]+)%.") do
-		found = found[key]
-	end
+	local tableToSetIn = _G
 	local dotFound, lastDot = path:find(".*%.")
-	local finalKey = path:sub(dotFound and lastDot + 1 or 0)
-	found[finalKey] = newValue
+	if dotFound then
+		tableToSetIn = modules.util.getByPath(path:sub(0, lastDot - 1))
+		tableToSetIn[path:sub(lastDot + 1)] = newValue
+	else
+		_G[path] = newValue
+	end
+end
+
+function pings.requestSettings()
+	if host:isHost() then
+		syncSettingsToAll()
+	end
 end
 
 -- Load settings
@@ -153,17 +160,31 @@ if host:isHost() then
 		end
 	end
 
-	-- Sync settings value-by-value, one tick at a time
-	local lastKey = nil
-	events.TICK:register(function()
-		local value
-		lastKey, value = next(settings, lastKey)
-		if not lastKey then
-			events.TICK:remove("settings sync")
-		else
-			pings.settingSync("settings." .. lastKey, value)
+	-- Creates a list of all key-value pairs in the settings table
+	local pathsToSet = {}
+	local recurse
+	function recurse(tableToSearch, path)
+		for k, v in pairs(tableToSearch) do
+			if type(v) == "table" then
+				recurse(v, path .. "." .. k)
+			else
+				table.insert(pathsToSet, 1, { k = path .. "." .. k, v = v })
+			end
 		end
-	end, "settings sync")
+	end
+	recurse(settings, "settings")
+
+	-- Sends settings data to all other clients using pings
+	function syncSettingsToAll()
+		events.TICK:register(function()
+			local nextPair = table.remove(pathsToSet)
+			if nextPair then
+				pings.settingSync(nextPair.k, nextPair.v)
+			else
+				events.TICK:remove("settings sync")
+			end
+		end, "settings sync")
+	end
 end
 
 -- Settings verification

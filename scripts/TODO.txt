@@ -21,3 +21,5 @@ TODO:
 - fix sleep camera, first and third person
 - fix hair while sleeping
 - wave emote?
+
+- list of methods to run on initialize for pings

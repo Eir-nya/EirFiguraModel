@@ -18,6 +18,14 @@ function util.soundAtPlayer(sound, vol)
 	end
 end
 
+function util.getByPath(path, startingTable)
+	local searchIn = startingTable or _G
+	for key in path:gmatch("([^.]+)") do
+		searchIn = searchIn[key]
+	end
+	return searchIn
+end
+
 function util.pickFrom(array)
 	if type(array) ~= "table" then
 		return nil
