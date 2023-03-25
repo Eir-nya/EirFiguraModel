@@ -134,7 +134,22 @@ end
 
 function pings.requestSettings()
 	if host:isHost() then
+		-- Sync settings table
 		syncSettingsToAll()
+		-- Sync other data
+		pings.setArmorVisible(modules.armor.display)
+		pings.setClothes("head", modules.clothes.head[modules.clothes.get("head")])
+		pings.setClothes("top", modules.clothes.top[modules.clothes.get("top")])
+		pings.setClothes("bottom", modules.clothes.bottom[modules.clothes.get("bottom")])
+		pings.setClothes("feet", modules.clothes.feet[modules.clothes.get("feet")])
+		pings.setEffects(previous.effects)
+		pings.setFlying(previous.flying)
+		pings.setAir(previous.air)
+		modules.eyes.checkNightVision()
+		modules.eyes.checkScaredEffects()
+		if modules.sit.isSitting then
+			pings.startSitting(modules.sit.anim.anim:getName())
+		end
 	end
 end
 

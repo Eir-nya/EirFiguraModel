@@ -259,7 +259,7 @@ function pings.setNightVision(hasNightVision)
 	eyes.decorateEyes()
 end
 if host:isHost() then
-	modules.events.effects:register(function()
+	function eyes.checkNightVision()
 		if settings.eyes.glow.nightVision then
 			if modules.util.getEffect("effect.minecraft.night_vision") then
 				pings.setNightVision(true)
@@ -267,7 +267,8 @@ if host:isHost() then
 				pings.setNightVision(false)
 			end
 		end
-	end)
+	end
+	modules.events.effects:register(eyes.checkNightVision)
 end
 modules.events.xp:register(eyes.decorateEyes)
 
