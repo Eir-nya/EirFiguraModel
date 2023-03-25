@@ -15,6 +15,7 @@ function elytra.initEvent()
 	vanilla_model.ELYTRA:setVisible(not settings.model.elytra.custom)
 	models.cat.Body.Elytra.left.default:setPrimaryTexture("ELYTRA")
 	models.cat.Body.Elytra.right.default:setPrimaryTexture("ELYTRA")
+	models.cat.Body.Elytra:setPrimaryRenderType("CUTOUT")
 
 	elytra.reset()
 end
