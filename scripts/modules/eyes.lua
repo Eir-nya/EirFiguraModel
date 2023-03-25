@@ -298,7 +298,7 @@ function eyes.setScared()
 		or previous.airPercent <= 0.2
 		or previous.fire
 		or eyes.scaredEffects
-		or modules.extra_animations.isFalling()
+		or (modules.extra_animations.isFalling() and (modules.animations.fall:isFading() and modules.animations.fall.fadeMode == modules.animations.fadeModes.FADE_IN_SMOOTH))
 
 	-- Update eyes
 	if eyes.scared ~= lastScared then
