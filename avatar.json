@@ -7,6 +7,13 @@
 	"autoScripts": ["settings", "scripts/modules"],
 	"description": "❤",
 	"customizations": {
+		"models.firstPerson": {
+			"parentType": "Gui",
+			"visible": false
+		},
+		"models.cat.Skull": {
+			"visible": true
+		},
 		"models.armor.Head.LeftEar.Armor": {
 			"moveTo": "models.cat.Head.LeftEar",
 			"visible": false
@@ -19,12 +26,12 @@
 			"moveTo": "models.cat.Head",
 			"visible": false
 		},
-		"models.armor.Body.Armor": {
-			"moveTo": "models.cat.Body",
-			"visible": false
-		},
 		"models.armor.Body.Boobs.Armor": {
 			"moveTo": "models.cat.Body.Boobs",
+			"visible": false
+		},
+		"models.armor.Body.Armor": {
+			"moveTo": "models.cat.Body",
 			"visible": false
 		},
 		"models.armor.Body.ArmorBottom": {
@@ -65,13 +72,6 @@
 		},
 		"models.cat.RightArm.swipe": {
 			"visible": false
-		},
-		"models.firstPerson": {
-			"parentType": "Gui",
-			"visible": false
-		},
-		"models.cat.Skull": {
-			"visible": true
 		}
 	}
 }

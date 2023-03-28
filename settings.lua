@@ -4,17 +4,8 @@ settings = {
 	-- Armor settings
 	armor = {
 		earArmor = true,			-- Ear armor replaces ears when wearing any vanilla helmet
-		earArmorMovement = false,	-- Should all ear armor allow ear movements? (Otherwise, only leather and chainmail helmets will)
+		earArmorMovement = false,	-- Should all ear armor allow ear movements? (Otherwise, only leather, chainmail, and turtle helmets will)
 		boobArmor = true,			-- Boob armor when wearing any vanilla chestplate
-		customModel = {				-- Custom armor models and textures for each type of armor
-			turtle = false,
-			leather = true,
-			chainmail = false,
-			iron = false,
-			golden = false,
-			diamond = false,
-			netherite = false,
-		},
 		vanitySlots = true,			-- Compatibility with VanitySlots fabric mod
 	},
 

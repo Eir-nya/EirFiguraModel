@@ -102,29 +102,29 @@ function hair.helmetEvent()
 	if modules.armor.checkItemVisible(previous.helmet) and modules.armor.display then
 		hair.ropes.Top:setVisible(false) -- Always hidden
 
-		-- Custom helmets: varies
-		if modules.armor.useCustomModel(previous.helmet) then
-			-- Leather helmet: hide all rope physics hair
-			if previous.helmet.id == "minecraft:leather_helmet" then
-				hair.ropes.Left:setVisible(false)
-				hair.ropes.Right:setVisible(false)
-				hair.ropes.Back1:setVisible(false)
-				hair.ropes.Back2:setVisible(false)
-				hair.ropes.Back3:setVisible(false)
+		-- -- Custom helmets: varies
+		-- if modules.armor.useCustomModel(previous.helmet) then
+		-- 	-- Leather helmet: hide all rope physics hair
+		-- 	if previous.helmet.id == "minecraft:leather_helmet" then
+		-- 		hair.ropes.Left:setVisible(false)
+		-- 		hair.ropes.Right:setVisible(false)
+		-- 		hair.ropes.Back1:setVisible(false)
+		-- 		hair.ropes.Back2:setVisible(false)
+		-- 		hair.ropes.Back3:setVisible(false)
 
-				-- 3DHair: Hide all except North
-				modules.util.setChildrenVisible(models.cat.Head["3DHair"], false)
-				models.cat.Head["3DHair"].north:setVisible(true)
-				-- Frilly: Hide
-				models.cat.Head.Frilly:setVisible(false)
+		-- 		-- 3DHair: Hide all except North
+		-- 		modules.util.setChildrenVisible(models.cat.Head["3DHair"], false)
+		-- 		models.cat.Head["3DHair"].north:setVisible(true)
+		-- 		-- Frilly: Hide
+		-- 		models.cat.Head.Frilly:setVisible(false)
 
-				-- TODO: hide hat layer but only if it's being used instead of 3d hair
+		-- 		-- TODO: hide hat layer but only if it's being used instead of 3d hair
 
-				-- TODO: set limits on Left and Right wavey hair
-			end
-			-- TODO
+		-- 		-- TODO: set limits on Left and Right wavey hair
+		-- 	end
+		-- 	-- TODO
 		-- Default helmet model: disable Back2 and 3DHair, move down Frilly
-		elseif modules.armor.knownMaterial(modules.armor.getItemMaterial(previous.helmet)) then
+		if modules.armor.knownMaterial(modules.armor.getItemMaterial(previous.helmet)) then
 			hair.ropes.Back2:setVisible(false)
 			models.cat.Head.Frilly:setPos(vec(0, -1.5, -1))
 			modules.util.setChildrenVisible(models.cat.Head["3DHair"], false)

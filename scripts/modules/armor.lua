@@ -1,12 +1,5 @@
 -- Armor module
 
--- Enum defining which states a helmet may be in to allow ear rotation while worn.
-local allowEarRotationEnum = {
-	ALWAYS = 1,
-	ONLY_DEFAULT = 2,
-	ONLY_CUSTOM = 3
-}
-
 local armor = {
 	-- Display armor
 	display = true,
@@ -18,7 +11,7 @@ local armor = {
 	leatherColor = vec(160/255, 101/255, 64/255),
 
 	-- Size of armor.png
-	armorTexOriginalSize = models.cat.Body.Armor.default:getTextureSize(),
+	armorTexOriginalSize = models.cat.Body.Armor:getTextureSize(),
 
 
 	-- Lookup tables
@@ -62,9 +55,9 @@ local armor = {
 	},
 	-- Which helmets allow ear rotation while worn?
 	earRotationHelmets = {
-		["minecraft:leather_helmet"] = allowEarRotationEnum.ALWAYS,
-		["minecraft:chainmail_helmet"] = allowEarRotationEnum.ONLY_DEFAULT,
-		["minecraft:turtle_helmet"] = allowEarRotationEnum.ONLY_CUSTOM,
+		["minecraft:leather_helmet"] = true,
+		["minecraft:chainmail_helmet"] = true,
+		["minecraft:turtle_helmet"] = true,
 	},
 }
 
@@ -117,15 +110,6 @@ modules.events.boots:register(armor.bootsEvent)
 
 
 
--- Custom armor model functions
-
-armor["custom model minecraft:leather_chestplate"] = function()
-	models.cat.Body["Body Layer Down"]:setVisible(false)
-	models.cat.LeftArm.FurUp:setVisible(false)
-	models.cat.RightArm.FurUp:setVisible(false)
-end
-
-
 -- Armor equip helpers
 
 function armor.equipEvent(item, slot)
@@ -135,47 +119,30 @@ function armor.equipEvent(item, slot)
 
 		armor.genericEquip(item)
 
-		if not armor.useCustomModel(item) then
-			-- Is material recognized?
-			if armor.knownMaterial(material) or (slot == "chestplate" and previous.elytra) then
-				armor.defaultEquip(item)
-			-- If not, assume it's a modded armor, and try to equip that
-			else
-				local isModdedArmor = armor.useDefaultTexture(item, slot)
-				if not isModdedArmor then
-					-- If all else fails, assume that an unrecognized helmet is, in fact, an item or block
-					if slot == "helmet" and not modules.util.asItemStack(item, 2):isArmor() then
-						-- item/block render tasks
-						armor.equipHelmetItem(item)
-					-- Use vanilla armor piece if applicable
-					elseif settings.model.vanillaMatch then
-						vanilla_model[slot]:setVisible(true)
-						if slot == "chestplate" then
-							models.cat.Body.Boobs:setVisible(false)
-							models.cat.Body["3DHairBoobs"]:setVisible(false)
-						end
+		-- Is material recognized?
+		if armor.knownMaterial(material) or (slot == "chestplate" and previous.elytra) then
+			armor.defaultEquip(item)
+		-- If not, assume it's a modded armor, and try to equip that
+		else
+			local isModdedArmor = armor.useDefaultTexture(item, slot)
+			if not isModdedArmor then
+				-- If all else fails, assume that an unrecognized helmet is, in fact, an item or block
+				if slot == "helmet" and not modules.util.asItemStack(item, 2):isArmor() then
+					-- item/block render tasks
+					armor.equipHelmetItem(item)
+				-- Use vanilla armor piece if applicable
+				elseif settings.model.vanillaMatch then
+					vanilla_model[slot]:setVisible(true)
+					if slot == "chestplate" then
+						models.cat.Body.Boobs:setVisible(false)
+						models.cat.Body["3DHairBoobs"]:setVisible(false)
 					end
 				end
-			end
-		else
-			-- Custom model displaying
-
-			-- Display all parts defined in getPartsToEdit
-			local parts = armor.getPartsToEdit({id = item.id}, "VISIBLE")
-			for _, part in pairs(parts) do
-				part:setVisible(true)
-			end
-
-			-- Function to run on custom model display
-			if armor["custom model " .. item.id] ~= nil then
-				armor["custom model " .. item.id]()
 			end
 		end
 
 		-- Colorize if leather armor
-		if material == "leather" then
-			armor.colorizeLeather(item)
-		end
+		armor.colorizeLeather(item, material == "leather")
 		armor.setGlint(item)
 		if slot == "helmet" then
 			models.cat.Head.Bow:setPos(vec(0, 0, -0.5))
@@ -207,16 +174,16 @@ function armor.defaultEquip(item)
 
 	if slot == "helmet" then
 		if settings.armor.earArmor and armor.knownMaterial(material) then
-			models.cat.Head.LeftEar.Armor.default:setVisible(true)
-			models.cat.Head.RightEar.Armor.default:setVisible(true)
+			models.cat.Head.LeftEar.Armor:setVisible(true)
+			models.cat.Head.RightEar.Armor:setVisible(true)
 
 			armor.earArmorVisible = true
 			armor.canRotateEars = armor.checkCanRotateEars(item)
 
 			-- Set UVs
 			local uv = armor.getUVOffset(item, "earArmor")
-			models.cat.Head.LeftEar.Armor.default:setUVPixels(uv)
-			models.cat.Head.RightEar.Armor.default:setUVPixels(uv)
+			models.cat.Head.LeftEar.Armor:setUVPixels(uv)
+			models.cat.Head.RightEar.Armor:setUVPixels(uv)
 		end
 
 		models.cat.Head:getTask("headItem"):enabled(false)
@@ -227,21 +194,21 @@ function armor.defaultEquip(item)
 		local uv = armor.getUVOffset(item, "chestplate")
 
 		if settings.armor.boobArmor and armor.knownMaterial(material) then
-			models.cat.Body.Boobs.Armor.default:setVisible(true)
-			models.cat.Body.Boobs.Armor.default:setPrimaryTexture("PRIMARY")
-			models.cat.Body.Boobs.Armor.default:setUVPixels(uv)
+			models.cat.Body.Boobs.Armor:setVisible(true)
+			models.cat.Body.Boobs.Armor:setPrimaryTexture("PRIMARY")
+			models.cat.Body.Boobs.Armor:setUVPixels(uv)
 		end
-		models.cat.Body.Armor.default:setVisible(true)
-		models.cat.Body.Armor.default:setPrimaryTexture("PRIMARY")
-		models.cat.Body.Armor.default:getUVMatrix():reset()
-		models.cat.Body.Armor.default:setUVPixels(uv)
+		models.cat.Body.Armor:setVisible(true)
+		models.cat.Body.Armor:setPrimaryTexture("PRIMARY")
+		models.cat.Body.Armor:getUVMatrix():reset()
+		models.cat.Body.Armor:setUVPixels(uv)
 
 		-- Get array of ModelParts to apply operations to
 		local armArmorParts = {
-			[models.cat.LeftArm.Armor.default] = true,
-			[models.cat.LeftArm.Forearm.Armor.default] = true,
-			[models.cat.RightArm.Armor.default] = true,
-			[models.cat.RightArm.Forearm.Armor.default] = true,
+			[models.cat.LeftArm.Armor] = true,
+			[models.cat.LeftArm.Forearm.Armor] = true,
+			[models.cat.RightArm.Armor] = true,
+			[models.cat.RightArm.Forearm.Armor] = true,
 		}
 
 		for modelPart in pairs(armArmorParts) do
@@ -255,20 +222,20 @@ function armor.defaultEquip(item)
 			modelPart:setUVPixels(uv)
 		end
 	elseif slot == "leggings" then
-		models.cat.Body.ArmorBottom.default:setVisible(true)
-		models.cat.Body.ArmorBottom.default:setPrimaryTexture("PRIMARY")
-		models.cat.Body.ArmorBottom.default:getUVMatrix():reset()
-		models.cat.LeftLeg.ArmorLeggings.default:setVisible(true)
-		models.cat.LeftLeg.ArmorLeggings.default:setPrimaryTexture("PRIMARY")
-		models.cat.LeftLeg.ArmorLeggings.default:getUVMatrix():reset()
-		models.cat.RightLeg.ArmorLeggings.default:setVisible(true)
-		models.cat.RightLeg.ArmorLeggings.default:setPrimaryTexture("PRIMARY")
-		models.cat.RightLeg.ArmorLeggings.default:getUVMatrix():reset()
+		models.cat.Body.ArmorBottom:setVisible(true)
+		models.cat.Body.ArmorBottom:setPrimaryTexture("PRIMARY")
+		models.cat.Body.ArmorBottom:getUVMatrix():reset()
+		models.cat.LeftLeg.ArmorLeggings:setVisible(true)
+		models.cat.LeftLeg.ArmorLeggings:setPrimaryTexture("PRIMARY")
+		models.cat.LeftLeg.ArmorLeggings:getUVMatrix():reset()
+		models.cat.RightLeg.ArmorLeggings:setVisible(true)
+		models.cat.RightLeg.ArmorLeggings:setPrimaryTexture("PRIMARY")
+		models.cat.RightLeg.ArmorLeggings:getUVMatrix():reset()
 
 		local uv = armor.getUVOffset(item, "leggings")
-		models.cat.Body.ArmorBottom.default:setUVPixels(armor.getUVOffset(item, "chestplateBottom"))
-		models.cat.LeftLeg.ArmorLeggings.default:setUVPixels(uv)
-		models.cat.RightLeg.ArmorLeggings.default:setUVPixels(uv)
+		models.cat.Body.ArmorBottom:setUVPixels(armor.getUVOffset(item, "chestplateBottom"))
+		models.cat.LeftLeg.ArmorLeggings:setUVPixels(uv)
+		models.cat.RightLeg.ArmorLeggings:setUVPixels(uv)
 	elseif slot == "boots" then
 		armor.useDefaultTexture(item, slot)
 	end
@@ -326,16 +293,16 @@ function armor.useDefaultTexture(item, slot)
 	end
 
 	if slot == "chestplate" then
-		models.cat.Body.Boobs.Armor.default:setUVPixels(16, -6 + 20)
-		models.cat.Body.Armor.default:setUVPixels(16, -6 + 20)
-		models.cat.LeftArm.Armor.default:setUVPixels(40, -16 + 16)
-		models.cat.RightArm.Armor.default:setUVPixels(40, -16 + 16)
-		models.cat.LeftArm.Forearm.Armor.default:setUVPixels(40, -16 + 16)
-		models.cat.RightArm.Forearm.Armor.default:setUVPixels(40, -16 + 16)
+		models.cat.Body.Boobs.Armor:setUVPixels(16, -6 + 20)
+		models.cat.Body.Armor:setUVPixels(16, -6 + 20)
+		models.cat.LeftArm.Armor:setUVPixels(40, -16 + 16)
+		models.cat.RightArm.Armor:setUVPixels(40, -16 + 16)
+		models.cat.LeftArm.Forearm.Armor:setUVPixels(40, -16 + 16)
+		models.cat.RightArm.Forearm.Armor:setUVPixels(40, -16 + 16)
 	elseif slot == "leggings" then
-		models.cat.Body.ArmorBottom.default:setUVPixels(16, -32 + 16)
-		models.cat.LeftLeg.ArmorLeggings.default:setUVPixels(0, -48 + 16)
-		models.cat.RightLeg.ArmorLeggings.default:setUVPixels(0, -48 + 16)
+		models.cat.Body.ArmorBottom:setUVPixels(16, -32 + 16)
+		models.cat.LeftLeg.ArmorLeggings:setUVPixels(0, -48 + 16)
+		models.cat.RightLeg.ArmorLeggings:setUVPixels(0, -48 + 16)
 	end
 
 	-- Apply UV scale
@@ -432,10 +399,14 @@ function armor.unequipBoots()
 	modules.util.setChildrenVisible(models.cat.RightLeg.ArmorBoots, false)
 end
 
-function armor.colorizeLeather(item)
+function armor.colorizeLeather(item, shouldColorize)
 	local color = armor.leatherColor
-	if item.tag ~= nil and item.tag.display ~= nil then
-		color = vectors.intToRGB(item.tag.display.color)
+	if shouldColorize then
+		if item.tag ~= nil and item.tag.display ~= nil then
+			color = vectors.intToRGB(item.tag.display.color)
+		end
+	else
+		color = nil
 	end
 
 	local parts = armor.getPartsToEdit(item, "COLOR")
@@ -459,79 +430,26 @@ function armor.getPartsToEdit(item, mode)
 
 	local slot = armor.getItemSlot(item)
 
-	-- Custom models
-	if armor.useCustomModel(item) then
-		local material = armor.getItemMaterial(item)
-
-		if material == "leather" then
-			if slot == "helmet" then
-				if settings.armor.earArmor then
-					table.insert(parts, models.cat.Head.LeftEar.Armor.FluffyHood)
-					table.insert(parts, models.cat.Head.RightEar.Armor.FluffyHood)
-				end
-				if mode == "COLOR" then
-					table.insert(parts, models.cat.Head.Armor.FluffyHood.leather)
-				else
-					table.insert(parts, models.cat.Head.Armor.FluffyHood)
-				end
-			elseif slot == "chestplate" then
-				if mode == "COLOR" then
-					table.insert(parts, models.cat.Body.Boobs.Armor.FluffyJacket.leather)
-					table.insert(parts, models.cat.Body.Armor.FluffyJacket.leather)
-					table.insert(parts, models.cat.LeftArm.Armor.FluffyJacket.leather)
-					table.insert(parts, models.cat.RightArm.Armor.FluffyJacket.leather)
-					table.insert(parts, models.cat.LeftArm.Forearm.Armor.FluffyJacket.leather)
-					table.insert(parts, models.cat.RightArm.Forearm.Armor.FluffyJacket.leather)
-				else
-					table.insert(parts, models.cat.Body.Boobs.Armor.FluffyJacket)
-					table.insert(parts, models.cat.Body.Armor.FluffyJacket)
-					table.insert(parts, models.cat.LeftArm.Armor.FluffyJacket)
-					table.insert(parts, models.cat.RightArm.Armor.FluffyJacket)
-					table.insert(parts, models.cat.LeftArm.Forearm.Armor.FluffyJacket)
-					table.insert(parts, models.cat.RightArm.Forearm.Armor.FluffyJacket)
-				end
-			elseif slot == "leggings" then
-				table.insert(parts, models.cat.Body.ArmorBottom.FluffyLeggings)
-				if mode == "COLOR" then
-					table.insert(parts, models.cat.LeftLeg.ArmorLeggings.FluffyLeggings.leather)
-					table.insert(parts, models.cat.RightLeg.ArmorLeggings.FluffyLeggings.leather)
-				else
-					table.insert(parts, models.cat.LeftLeg.ArmorLeggings.FluffyLeggings)
-					table.insert(parts, models.cat.RightLeg.ArmorLeggings.FluffyLeggings)
-				end
-			elseif slot == "boots" then
-				if mode == "COLOR" then
-					table.insert(parts, models.cat.LeftLeg.ArmorBoots.FluffyBoots.leather)
-					table.insert(parts, models.cat.RightLeg.ArmorBoots.FluffyBoots.leather)
-				else
-					table.insert(parts, models.cat.LeftLeg.ArmorBoots.FluffyBoots)
-					table.insert(parts, models.cat.RightLeg.ArmorBoots.FluffyBoots)
-				end
-			end
+	if slot == "helmet" then
+		if armor.knownMaterial(armor.getItemMaterial(item)) and mode ~= "EXCLUDE_EARS" then
+			table.insert(parts, models.cat.Head.LeftEar.Armor)
+			table.insert(parts, models.cat.Head.RightEar.Armor)
 		end
-	-- Default
-	else
-		if slot == "helmet" then
-			if armor.knownMaterial(armor.getItemMaterial(item)) and mode ~= "EXCLUDE_EARS" then
-				table.insert(parts, models.cat.Head.LeftEar.Armor.default)
-				table.insert(parts, models.cat.Head.RightEar.Armor.default)
-			end
-			table.insert(parts, models.cat.Head.Armor.default)
-		elseif slot == "chestplate" then
-			table.insert(parts, models.cat.Body.Boobs.Armor.default)
-			table.insert(parts, models.cat.Body.Armor.default)
-			table.insert(parts, models.cat.LeftArm.Armor.default)
-			table.insert(parts, models.cat.RightArm.Armor.default)
-			table.insert(parts, models.cat.LeftArm.Forearm.Armor.default)
-			table.insert(parts, models.cat.RightArm.Forearm.Armor.default)
-		elseif slot == "leggings" then
-			table.insert(parts, models.cat.Body.ArmorBottom.default)
-			table.insert(parts, models.cat.LeftLeg.ArmorLeggings.default)
-			table.insert(parts, models.cat.RightLeg.ArmorLeggings.default)
-		elseif slot == "boots" then
-			table.insert(parts, models.cat.LeftLeg.ArmorBoots.default)
-			table.insert(parts, models.cat.RightLeg.ArmorBoots.default)
-		end
+		table.insert(parts, models.cat.Head.Armor)
+	elseif slot == "chestplate" then
+		table.insert(parts, models.cat.Body.Boobs.Armor)
+		table.insert(parts, models.cat.Body.Armor)
+		table.insert(parts, models.cat.LeftArm.Armor)
+		table.insert(parts, models.cat.RightArm.Armor)
+		table.insert(parts, models.cat.LeftArm.Forearm.Armor)
+		table.insert(parts, models.cat.RightArm.Forearm.Armor)
+	elseif slot == "leggings" then
+		table.insert(parts, models.cat.Body.ArmorBottom)
+		table.insert(parts, models.cat.LeftLeg.ArmorLeggings)
+		table.insert(parts, models.cat.RightLeg.ArmorLeggings)
+	elseif slot == "boots" then
+		table.insert(parts, models.cat.LeftLeg.ArmorBoots)
+		table.insert(parts, models.cat.RightLeg.ArmorBoots)
 	end
 
 	return parts
@@ -548,10 +466,6 @@ pings.setArmorVisible = armor.setVisible
 
 
 -- Utility functions
-
-function armor.useCustomModel(item)
-	return settings.armor.customModel[armor.getItemMaterial(item)]
-end
 
 function armor.getUVOffset(item, armorPiece)
 	return armor.uvMults[armor.getItemMaterial(item)] * armor.uvWidths[armorPiece]
@@ -585,16 +499,11 @@ function armor.checkSkull(helmet)
 end
 
 function armor.checkCanRotateEars(item)
-	local canRotateEarSettings = armor.earRotationHelmets[item.id]
-
-	if canRotateEarSettings == allowEarRotationEnum.ALWAYS then
+	if settings.armor.earArmorMovement then
 		return true
-	elseif canRotateEarSettings == allowEarRotationEnum.ONLY_CUSTOM then
-		return armor.useCustomModel(item)
-	elseif canRotateEarSettings == allowEarRotationEnum.ONLY_DEFAULT then
-		return not armor.useCustomModel(item)
 	end
-	return false
+
+	return armor.earRotationHelmets[item.id] or false
 end
 
 return armor
