@@ -77,6 +77,13 @@ function sit.stopSitting(animFast)
 end
 pings.stopSitting = sit.stopSitting
 
+-- Host only: Camera offset when sitting
+if host:isHost() then
+	modules.events.sit:register(function()
+		modules.camera.yOffset = modules.sit.isSitting and -0.5 or 0
+	end)
+end
+
 --TODO: Restore once a vanilla model-compatible method for this exists
 if not settings.model.vanillaMatch then
 	function sit.faceSameDirection(delta, ctx)
