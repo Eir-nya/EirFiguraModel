@@ -72,6 +72,62 @@
 		},
 		"models.cat.RightArm.swipe": {
 			"visible": false
+		},
+		"models.fluffyOutfit.Head.LeftEar.FluffyHood": {
+			"moveTo": "models.cat.Head.LeftEar",
+			"visible": false
+		},
+		"models.fluffyOutfit.Head.RightEar.FluffyHood": {
+			"moveTo": "models.cat.Head.RightEar",
+			"visible": false
+		},
+		"models.fluffyOutfit.Head.FluffyHood": {
+			"moveTo": "models.cat.Head",
+			"visible": false
+		},
+		"models.fluffyOutfit.Body.Boobs.FluffyJacket": {
+			"moveTo": "models.cat.Body.Boobs",
+			"visible": false
+		},
+		"models.fluffyOutfit.Body.FluffyJacket": {
+			"moveTo": "models.cat.Body",
+			"visible": false
+		},
+		"models.fluffyOutfit.Body.FluffyLeggings": {
+			"moveTo": "models.cat.Body",
+			"visible": false
+		},
+		"models.fluffyOutfit.RightArm.FluffyJacket": {
+			"moveTo": "models.cat.RightArm",
+			"visible": false
+		},
+		"models.fluffyOutfit.RightArm.Forearm.FluffyJacket": {
+			"moveTo": "models.cat.RightArm.Forearm",
+			"visible": false
+		},
+		"models.fluffyOutfit.LeftArm.FluffyJacket": {
+			"moveTo": "models.cat.LeftArm",
+			"visible": false
+		},
+		"models.fluffyOutfit.LeftArm.Forearm.FluffyJacket": {
+			"moveTo": "models.cat.LeftArm.Forearm",
+			"visible": false
+		},
+		"models.fluffyOutfit.RightLeg.FluffyLeggings": {
+			"moveTo": "models.cat.RightLeg",
+			"visible": false
+		},
+		"models.fluffyOutfit.RightLeg.FluffyBoots": {
+			"moveTo": "models.cat.RightLeg",
+			"visible": false
+		},
+		"models.fluffyOutfit.LeftLeg.FluffyLeggings": {
+			"moveTo": "models.cat.LeftLeg",
+			"visible": false
+		},
+		"models.fluffyOutfit.LeftLeg.FluffyBoots": {
+			"moveTo": "models.cat.LeftLeg",
+			"visible": false
 		}
 	}
 }

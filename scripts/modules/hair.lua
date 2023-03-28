@@ -102,27 +102,6 @@ function hair.helmetEvent()
 	if modules.armor.checkItemVisible(previous.helmet) and modules.armor.display then
 		hair.ropes.Top:setVisible(false) -- Always hidden
 
-		-- -- Custom helmets: varies
-		-- if modules.armor.useCustomModel(previous.helmet) then
-		-- 	-- Leather helmet: hide all rope physics hair
-		-- 	if previous.helmet.id == "minecraft:leather_helmet" then
-		-- 		hair.ropes.Left:setVisible(false)
-		-- 		hair.ropes.Right:setVisible(false)
-		-- 		hair.ropes.Back1:setVisible(false)
-		-- 		hair.ropes.Back2:setVisible(false)
-		-- 		hair.ropes.Back3:setVisible(false)
-
-		-- 		-- 3DHair: Hide all except North
-		-- 		modules.util.setChildrenVisible(models.cat.Head["3DHair"], false)
-		-- 		models.cat.Head["3DHair"].north:setVisible(true)
-		-- 		-- Frilly: Hide
-		-- 		models.cat.Head.Frilly:setVisible(false)
-
-		-- 		-- TODO: hide hat layer but only if it's being used instead of 3d hair
-
-		-- 		-- TODO: set limits on Left and Right wavey hair
-		-- 	end
-		-- 	-- TODO
 		-- Default helmet model: disable Back2 and 3DHair, move down Frilly
 		if modules.armor.knownMaterial(modules.armor.getItemMaterial(previous.helmet)) then
 			hair.ropes.Back2:setVisible(false)
@@ -141,20 +120,52 @@ function hair.helmetEvent()
 		end
 	-- Restore all
 	else
-		hair.ropes.Left:setVisible(true)
-		hair.ropes.Right:setVisible(true)
-		hair.ropes.Back1:setVisible(true)
-		hair.ropes.Back2:setVisible(true)
-		hair.ropes.Back3:setVisible(true)
-		hair.ropes.Top:setVisible(true)
-
-		models.cat.Head.Frilly:setPos()
-		models.cat.Head.Frilly:setVisible(true)
-		modules.util.setChildrenVisible(models.cat.Head["3DHair"], true)
+		hair.clothesEvent("head", modules.clothes.getClothes("head"))
 	end
 end
 if settings.hair.physics then
 	modules.events.helmet:register(hair.helmetEvent)
+end
+
+function hair.clothesEvent(slot, clothing)
+	if slot ~= "head" then
+		return
+	end
+
+	if clothing == "Fluffy hood" then
+		-- Hide all rope physics hair
+		hair.ropes.Left:setVisible(false)
+		hair.ropes.Right:setVisible(false)
+		hair.ropes.Back1:setVisible(false)
+		hair.ropes.Back2:setVisible(false)
+		hair.ropes.Back3:setVisible(false)
+		hair.ropes.Top:setVisible(false)
+
+		-- 3DHair: Hide all except North
+		modules.util.setChildrenVisible(models.cat.Head["3DHair"], false)
+		models.cat.Head["3DHair"].north:setVisible(true)
+		-- Frilly: Hide
+		models.cat.Head.Frilly:setVisible(false)
+
+		-- TODO: set limits on Left and Right wavey hair?
+	else
+		hair.restore()
+	end
+end
+modules.events.clothes:register(hair.clothesEvent)
+
+
+function hair.restore()
+	hair.ropes.Left:setVisible(true)
+	hair.ropes.Right:setVisible(true)
+	hair.ropes.Back1:setVisible(true)
+	hair.ropes.Back2:setVisible(true)
+	hair.ropes.Back3:setVisible(true)
+	hair.ropes.Top:setVisible(true)
+
+	models.cat.Head.Frilly:setPos()
+	models.cat.Head.Frilly:setVisible(true)
+	modules.util.setChildrenVisible(models.cat.Head["3DHair"], true)
 end
 
 return hair

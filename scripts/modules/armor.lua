@@ -144,9 +144,6 @@ function armor.equipEvent(item, slot)
 		-- Colorize if leather armor
 		armor.colorizeLeather(item, material == "leather")
 		armor.setGlint(item)
-		if slot == "helmet" then
-			models.cat.Head.Bow:setPos(vec(0, 0, -0.5))
-		end
 	end
 end
 
@@ -155,6 +152,9 @@ function armor.genericEquip(item)
 	local slot = armor.getItemSlot(item)
 
 	if slot == "helmet" then
+		if modules.clothes.getClothes("head") == "Fluffy hood" then
+			modules.clothes.setVisible("head", false)
+		end
 		if settings.armor.earArmor and armor.knownMaterial(material) then
 			models.cat.Head.LeftEar.Ear:setVisible(false)
 			models.cat.Head.RightEar.Ear:setVisible(false)
@@ -344,19 +344,19 @@ function armor.unequipHelmet()
 	models.cat.Head.LeftEar.Ear:setVisible(true)
 	models.cat.Head.RightEar.Ear:setVisible(true)
 
-	modules.util.setChildrenVisible(models.cat.Head.LeftEar.Armor, false)
-	modules.util.setChildrenVisible(models.cat.Head.RightEar.Armor, false)
+	modules.clothes.setVisible("head", true)
+
+	models.cat.Head.LeftEar.Armor:setVisible(false)
+	models.cat.Head.RightEar.Armor:setVisible(false)
 
 	armor.earArmorVisible = false
 	armor.canRotateEars = false
 
-	modules.util.setChildrenVisible(models.cat.Head.Armor, false)
+	models.cat.Head.Armor:setVisible(false)
 
 	models.cat.Head:getTask("headItem"):enabled(false)
 	models.cat.Head:getTask("headBlock"):enabled(false)
 
-	models.cat.Head.Bow:setVisible(true)
-	models.cat.Head.Bow:setPos()
 	models.cat.Head.Snoot:setVisible(true)
 end
 
@@ -372,12 +372,12 @@ function armor.unequipChestplate()
 
 	vanilla_model.CHESTPLATE:setVisible(false)
 
-	modules.util.setChildrenVisible(models.cat.Body.Armor, false)
-	modules.util.setChildrenVisible(models.cat.Body.Boobs.Armor, false)
-	modules.util.setChildrenVisible(models.cat.LeftArm.Armor, false)
-	modules.util.setChildrenVisible(models.cat.RightArm.Armor, false)
-	modules.util.setChildrenVisible(models.cat.LeftArm.Forearm.Armor, false)
-	modules.util.setChildrenVisible(models.cat.RightArm.Forearm.Armor, false)
+	models.cat.Body.Boobs.Armor:setVisible(false)
+	models.cat.Body.Armor:setVisible(false)
+	models.cat.LeftArm.Armor:setVisible(false)
+	models.cat.LeftArm.Forearm.Armor:setVisible(false)
+	models.cat.RightArm.Armor:setVisible(false)
+	models.cat.RightArm.Forearm.Armor:setVisible(false)
 end
 
 function armor.unequipLeggings()
@@ -385,7 +385,8 @@ function armor.unequipLeggings()
 
 	vanilla_model.LEGGINGS:setVisible(false)
 
-	modules.util.setChildrenVisible(models.cat.Body.ArmorBottom, false)
+	models.cat.Body.ArmorBottom:setVisible(false)
+	models.cat.Body.ArmorBottom:setVisible(false)
 	modules.util.setChildrenVisible(models.cat.LeftLeg.ArmorLeggings, false)
 	modules.util.setChildrenVisible(models.cat.RightLeg.ArmorLeggings, false)
 end
