@@ -1,23 +1,13 @@
 TODO:
-- action wheel:
-	- camera actions page
-	- Third person sleep camera bullshit
-- meow keybind
+- wave emote?
 - make back of shirt a bit more apparent (big hair?)
-- raycasting for sleeping
-- angel wings elytra + events for elytra flying
-- "better first person"
-	models.cat.RightArm.RIGHT_ITEM_PIVOT:newItem("rightItem"):item("minecraft:stone_pickaxe"):renderType("THIRD_PERSON_RIGHT_HAND"):rot(vec(-90+11.25, 0, 0)):pos(vec(0, 2, 0))
-	then rotate right arm somewhat while holding an item
-	and hide vanilla_model.HELD_ITEMS while in first person
-	use host:getAttackCharge()
-- armor and boots replacements
-	- turtle helmet
-	- iron armor
-	- chainmail armor
-	- gold armor
-	- diamond armor
-	- netherite armor
-- fix sleep camera, first and third person
+- re-add camera variants to sleep animation
+- add camera options to action wheel?
+- custom wings?
 - fix hair while sleeping
 - wave emote?
+- additional sit animations (laying on tummy, sitting on knees, curl up like a cat)
+- additional clothes
+- yawn idle animation
+- kneel crouch animation
+- fix isue - when joining world, camera is hugely displaced, crashes

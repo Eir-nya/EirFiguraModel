@@ -14,7 +14,9 @@ end
 
 function util.soundAtPlayer(sound, vol)
 	if sound then
-		sounds:playSound(sound, player:getPos(), vol or nil)
+		if player:isLoaded() then
+			sounds:playSound(sound, player:getPos(), vol or nil)
+		end
 	end
 end
 
