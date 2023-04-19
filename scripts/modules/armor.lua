@@ -5,7 +5,7 @@ local armor = {
 	display = true,
 	-- Is ear armor visible?
 	earArmorVisible = false,
-	-- Whether ears may be rotate or not (only available on leather/chainmail/turtle, or on all helmets if settings.armor.earArmorMovement is enabled)
+	-- Whether ears may be rotate or not (only available on leather/chainmail, or on all helmets if settings.armor.earArmorMovement is enabled)
 	canRotateEars = false,
 	-- Default color for leather armor
 	leatherColor = vec(160/255, 101/255, 64/255),
@@ -56,8 +56,7 @@ local armor = {
 	-- Which helmets allow ear rotation while worn?
 	earRotationHelmets = {
 		["minecraft:leather_helmet"] = true,
-		["minecraft:chainmail_helmet"] = true,
-		["minecraft:turtle_helmet"] = true,
+		["minecraft:chainmail_helmet"] = true
 	},
 }
 
