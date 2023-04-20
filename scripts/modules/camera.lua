@@ -21,17 +21,19 @@ function camera.render(delta, context)
 end
 modules.events.RENDER:register(camera.render)
 
-function camera.renderOffsetPivot(delta, context)
-	-- Handle camera offset
-	local camOffset = renderer:getCameraOffsetPivot()
-	if not camOffset then
-		camOffset = 0
-	else
-		camOffset = camOffset.y
+modules.events.ENTITY_INIT:register(function()
+	function camera.renderOffsetPivot(delta, context)
+		-- Handle camera offset
+		local camOffset = renderer:getCameraOffsetPivot()
+		if not camOffset then
+			camOffset = 0
+		else
+			camOffset = camOffset.y
+		end
+		renderer:offsetCameraPivot(0, math.lerp(camOffset, camera.yOffset, 5 / client:getFPS()), 0)
 	end
-	renderer:offsetCameraPivot(0, math.lerp(camOffset, camera.yOffset, 5 / client:getFPS()), 0)
-end
-modules.events.RENDER:register(camera.renderOffsetPivot)
+	modules.events.RENDER:register(camera.renderOffsetPivot)
+end)
 
 
 

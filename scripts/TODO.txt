@@ -10,4 +10,3 @@ TODO:
 - additional clothes
 - yawn idle animation
 - kneel crouch animation
-- fix isue - when joining world, camera is hugely displaced, crashes
