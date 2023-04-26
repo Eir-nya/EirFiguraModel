@@ -1,12 +1,13 @@
 TODO:
-- wave emote?
 - make back of shirt a bit more apparent (big hair?)
 - re-add camera variants to sleep animation
 - add camera options to action wheel?
 - custom wings?
 - fix hair while sleeping
 - wave emote?
+- point emote?
 - additional sit animations (laying on tummy, sitting on knees, curl up like a cat)
 - additional clothes
 - yawn idle animation
 - kneel crouch animation
+- flower crown

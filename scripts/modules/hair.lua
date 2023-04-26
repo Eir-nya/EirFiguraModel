@@ -126,6 +126,7 @@ end
 if settings.hair.physics then
 	modules.events.helmet:register(hair.helmetEvent)
 end
+modules.events.armorVisible:register(hair.helmetEvent)
 
 function hair.clothesEvent(slot, clothing)
 	if slot ~= "head" then

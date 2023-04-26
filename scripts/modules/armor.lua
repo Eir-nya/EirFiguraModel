@@ -60,6 +60,10 @@ local armor = {
 	},
 }
 
+-- Subscriable events
+
+modules.events.armorVisible = modules.events:new()
+
 -- Events
 
 function armor.init()
@@ -457,12 +461,17 @@ end
 
 function armor.setVisible(visible)
 	armor.display = visible
+	modules.events.armorVisible:run(visible)
+end
+pings.setArmorVisible = armor.setVisible
+
+function armor.armorVisibleEvent(newVisible)
 	armor.helmetEvent()
 	armor.chestplateEvent()
 	armor.leggingsEvent()
 	armor.bootsEvent()
 end
-pings.setArmorVisible = armor.setVisible
+modules.events.armorVisible:register(armor.armorVisibleEvent)
 
 
 -- Utility functions
