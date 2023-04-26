@@ -209,6 +209,25 @@ aw.pages = {
 				pings.setArmorVisible(newValue)
 			end,
 		},
+		nil,
+		nil,
+		{
+			color = vectors.hexToRGB("faaaab"),
+			hoverColor = vec(1, 0.5, 0.5),
+			texture = { u = 1, v = 22, w = 8, h = 6, s = 2.5 },
+			onShow = function(self, realAction)
+				self.title = '[{"text":"Bow\n","color":"#faaaab"},' .. aw.listDisplay(modules.clothes.bow, modules.clothes.get("bow")) .. ']'
+				realAction:title(self.title)
+			end,
+			scroll = function(self, dir, realAction)
+				local current = modules.clothes.get("bow")
+				current = current - dir
+				current = ((current - 1) % #modules.clothes.bow) + 1
+				modules.clothes.equip("bow", modules.clothes.bow[current])
+				self:onShow(realAction)
+				pings.setClothes("bow", modules.clothes.bow[current])
+			end,
+		},
 	},
 	camera = {
 		title = "Camera",

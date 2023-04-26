@@ -4,6 +4,12 @@ local clothes = {
 		"None",
 		"Fluffy hood"
 	},
+	bow = {
+		current = 2,
+		"None",
+		"Bow",
+		"Flower crown"
+	},
 	top = {
 		current = 2,
 		"None",
@@ -40,6 +46,9 @@ function clothes.showClothes(slot, clothing)
 		models.cat.Head.LeftEar.FluffyHood:setVisible(clothing == "Fluffy hood")
 		models.cat.Head.RightEar.FluffyHood:setVisible(clothing == "Fluffy hood")
 		models.cat.Head.FluffyHood:setVisible(clothing == "Fluffy hood")
+	elseif slot == "bow" then
+		models.cat.Head.Bow:setVisible(clothing == "Bow")
+		models.cat.Head.FlowerCrown:setVisible(clothing == "Flower crown")
 	elseif slot == "top" then
 		models.cat.Body.Boobs.Shirt:setVisible(clothing == "Shirt")
 		models.cat.Body.Boobs.BikiniTop:setVisible(clothing == "Bikini (top)")
@@ -77,7 +86,7 @@ end
 function clothes.equip(slot, clothing)
 	local shouldChangeClothes = not modules.armor.display
 	if not shouldChangeClothes then
-		local itemToCheck = ({ head = previous.helmet, top = previous.chestplate, bottom = previous.leggings, feet = previous.boots })[slot]
+		local itemToCheck = ({ head = previous.helmet, bow = previous.helmet, top = previous.chestplate, bottom = previous.leggings, feet = previous.boots })[slot]
 		if slot == "top" and previous.elytra then
 			shouldChangeClothes = true
 		else
@@ -105,9 +114,17 @@ pings.setClothes = clothes.equip
 function clothes.bowFunction()
 	if (modules.armor.display and modules.armor.checkItemVisible(previous.helmet))
 		or clothes.head[clothes.get("head")] == "Fluffy hood" then
-		models.cat.Head.Bow:setPos(vec(0, 0, -0.5))
+		if clothes.getClothes("bow") == "Bow" then
+			models.cat.Head.Bow:setPos(vec(0, 0, -0.5))
+		else
+			models.cat.Head.FlowerCrown:setVisible(false)
+		end
 	else
-		models.cat.Head.Bow:setPos()
+		if clothes.getClothes("bow") == "Bow" then
+			models.cat.Head.Bow:setPos()
+		else
+			models.cat.Head.FlowerCrown:setVisible(clothes.getClothes("bow") == "Flower crown")
+		end
 	end
 end
 modules.events.helmet:register(clothes.bowFunction)

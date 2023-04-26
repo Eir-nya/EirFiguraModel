@@ -10,4 +10,3 @@ TODO:
 - additional clothes
 - yawn idle animation
 - kneel crouch animation
-- flower crown
