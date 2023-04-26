@@ -4,7 +4,7 @@ local sleep = {
 	-- Stored rotation of the 3rd person camera to rotate over time when enabled
 	cameraRotation = vec(0, 0, 0),
 	-- Bool to determine if the 3rd person camera should rotate while sleeping
-	cameraRotate = true,
+	cameraRotate = false,
 }
 
 -- Subscribable events
@@ -176,8 +176,7 @@ function sleep.resetCamera()
 		return
 	end
 
-	renderer:offsetCameraPivot(0, 0, 0)
-	renderer:offsetCameraRot(0, 0, 0)
+	modules.camera.setFreeze(false)
 end
 
 return sleep

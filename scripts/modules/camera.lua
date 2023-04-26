@@ -21,24 +21,26 @@ function camera.render(delta, context)
 end
 modules.events.RENDER:register(camera.render)
 
-modules.events.ENTITY_INIT:register(function()
-	function camera.renderOffsetPivot(delta, context)
-		-- Handle camera offset
-		local camOffset = renderer:getCameraOffsetPivot()
-		if not camOffset then
-			camOffset = 0
-		else
-			camOffset = camOffset.y
-		end
-		renderer:offsetCameraPivot(0, math.lerp(camOffset, camera.yOffset, 5 / client:getFPS()), 0)
+function camera.renderOffsetPivot(delta, context)
+	if not client.getCameraPos() or not world.exists() or not player:isLoaded() then
+		return
 	end
-	modules.events.RENDER:register(camera.renderOffsetPivot)
-end)
+
+	-- Handle camera offset
+	local camOffset = renderer:getCameraOffsetPivot()
+	if not camOffset then
+		camOffset = 0
+	else
+		camOffset = camOffset.y
+	end
+	renderer:offsetCameraPivot(0, math.lerp(camOffset, camera.yOffset, 5 / client:getFPS()), 0)
+end
+modules.events.POST_RENDER:register(camera.renderOffsetPivot)
 
 
 
-function camera.toggleFreeze()
-	camera.frozen = not camera.frozen
+function camera.setFreeze(newFrozen)
+	camera.frozen = newFrozen
 	if camera.frozen then
 		renderer:setCameraPivot(client:getCameraPos() + (player:getLookDir() * 4 * (renderer:isCameraBackwards() and -1 or 1)))
 		renderer:setFOV(1)

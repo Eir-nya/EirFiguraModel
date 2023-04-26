@@ -239,7 +239,7 @@ aw.pages = {
 			texture = { u = 15, v = 8, w = 10, h = 6, s = 2 },
 			leftClick = function(self)
 				-- TODO
-				modules.camera.toggleFreeze()
+				modules.camera.setFreeze(not modules.camera.frozen)
 			end,
 			enabledFunc = function() return not renderer:isFirstPerson() end,
 		}
