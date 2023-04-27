@@ -10,3 +10,4 @@ TODO:
 - additional clothes
 - yawn idle animation
 - kneel crouch animation
+- fix vanillaMatch making animations not show at all with shaders on

@@ -39,6 +39,11 @@ modules.events.clothes = modules.events:new()
 
 -- Events
 
+function clothes.init()
+	models.cat.Head.FlowerCrown:setPrimaryRenderType("CUTOUT")
+end
+modules.events.ENTITY_INIT:register(clothes.init)
+
 function clothes.showClothes(slot, clothing)
 	if slot == "head" then
 		models.cat.Head.LeftEar.Ear:setVisible(clothing ~= "Fluffy hood")
