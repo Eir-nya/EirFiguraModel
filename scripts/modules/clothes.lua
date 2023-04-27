@@ -10,6 +10,11 @@ local clothes = {
 		"Bow",
 		"Flower crown"
 	},
+	mask = {
+		current = 1,
+		"None",
+		"Cat mask"
+	},
 	top = {
 		current = 2,
 		"None",
@@ -41,6 +46,17 @@ modules.events.clothes = modules.events:new()
 
 function clothes.init()
 	models.cat.Head.FlowerCrown:setPrimaryRenderType("CUTOUT")
+	local maskIndexes = {
+		{[1] = vec(-0.375, 0, 0), [2] = vec(0.375, 0, 0), [3] = vec(0, 0, -0.25), [4] = vec(0, 0, -0.25)},
+		{[1] = vec(-0.5, 0, 0.5), [2] = vec(-0.5, -0.5, 0), [3] = vec(0, 0, -0.25), [4] = vec(0, 0, 0.5)},
+		{[1] = vec(0.5, -0.5, 0), [2] = vec(0.5, 0, 0.5), [3] = vec(0, 0, 0.5), [4] = vec(0, 0, -0.25)}
+	}
+	for i, maskPart in pairs(models.cat.Head.Mask:getChildren()) do
+		local _, vertexes = next(maskPart:getAllVertices())
+		for j, offset in pairs(maskIndexes[i]) do
+			vertexes[j]:pos(vertexes[j]:getPos() + offset)
+		end
+	end
 end
 modules.events.ENTITY_INIT:register(clothes.init)
 
@@ -54,6 +70,8 @@ function clothes.showClothes(slot, clothing)
 	elseif slot == "bow" then
 		models.cat.Head.Bow:setVisible(clothing == "Bow")
 		models.cat.Head.FlowerCrown:setVisible(clothing == "Flower crown")
+	elseif slot == "mask" then
+		models.cat.Head.Mask:setVisible(clothing == "Cat mask")
 	elseif slot == "top" then
 		models.cat.Body.Boobs.Shirt:setVisible(clothing == "Shirt")
 		models.cat.Body.Boobs.BikiniTop:setVisible(clothing == "Bikini (top)")
@@ -91,7 +109,14 @@ end
 function clothes.equip(slot, clothing)
 	local shouldChangeClothes = not modules.armor.display
 	if not shouldChangeClothes then
-		local itemToCheck = ({ head = previous.helmet, bow = previous.helmet, top = previous.chestplate, bottom = previous.leggings, feet = previous.boots })[slot]
+		local itemToCheck = ({
+			head = previous.helmet,
+			bow = previous.helmet,
+			mask = previous.helmet,
+			top = previous.chestplate,
+			bottom = previous.leggings,
+			feet = previous.boots
+		})[slot]
 		if slot == "top" and previous.elytra then
 			shouldChangeClothes = true
 		else

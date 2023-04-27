@@ -228,6 +228,23 @@ aw.pages = {
 				pings.setClothes("bow", modules.clothes.bow[current])
 			end,
 		},
+		{
+			color = vectors.hexToRGB("aca06a"),
+			hoverColor = vectors.hexToRGB("f6e597"),
+			texture = { u = 13, v = 15, w = 8, h = 7, s = 2.5 },
+			onShow = function(self, realAction)
+				self.title = '[{"text":"Mask\n","color":"#ffcede"},' .. aw.listDisplay(modules.clothes.mask, modules.clothes.get("mask")) .. ']'
+				realAction:title(self.title)
+			end,
+			scroll = function(self, dir, realAction)
+				local current = modules.clothes.get("mask")
+				current = current - dir
+				current = ((current - 1) % #modules.clothes.mask) + 1
+				modules.clothes.equip("mask", modules.clothes.mask[current])
+				self:onShow(realAction)
+				pings.setClothes("mask", modules.clothes.mask[current])
+			end,
+		},
 	},
 	camera = {
 		title = "Camera",
@@ -557,7 +574,7 @@ function aw.listDisplay(list, selected)
 		end
 
 		local isSelected = i == selected
-		s = s .. '{"text":"  ' .. (isSelected and '"},{"text":"★","font":"figura:ui"},{"text":"' or '-') .. ' ' .. tostring(value) .. '","color":"' .. (isSelected and 'white' or 'gray') .. '","font":"default"}'
+		s = s .. '{"text":"  ' .. (isSelected and '"},{"text":"★","font":"figura:ui","color":"white"},{"text":"' or '-') .. ' ' .. tostring(value) .. '","color":"' .. (isSelected and 'white' or 'gray') .. '","font":"default"}'
 	end
 	return s
 end
