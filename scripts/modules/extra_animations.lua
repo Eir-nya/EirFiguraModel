@@ -11,12 +11,7 @@ local exAnims = {
 	lastClimbing = false,
 	climbingFaceDir = nil,
 	lastFlying = false,
-	-- lastSprinting = false,
 	lastBlocking = false,
-
-	-- sprintMult = 0,
-	-- sprintLastMult = 0,
-	-- sprintMultLerpRate = 0.2,
 
 	-- One tick delay for attack anim check thing
 	oneTickDelayFunc = nil,
@@ -72,6 +67,12 @@ local exAnims = {
 			["swipeR"] = true, ["punchR"] = false, ["thrustR"] = true, ["jumpKick"] = true,
 		},
 	},
+	-- Anim time to start blending out swipe, if applicable
+	swipeBlendOutStart = {
+		swipeR = 0.08,
+		swipeD = 0.12,
+		punchR = 0.08,
+	},
 }
 
 -- Subscribable events
@@ -89,8 +90,6 @@ end
 -- Events
 
 function exAnims.init()
-	-- animations["models.cat"].run:play()
-
 	modules.animations.thrustR.anim:speed(1.1875)
 	modules.animations.blockR.anim:speed(1.1)
 	modules.animations.blockL.anim:speed(1.1)
@@ -101,7 +100,7 @@ function exAnims.init()
 	end
 
 	models.cat.RightArm.swipe:setVisible(false)
-	models.cat.RightArm.swipe:setLight(15, 15)
+	models.cat.RightArm.swipe:setPrimaryRenderType("TRANSLUCENT")
 end
 modules.events.ENTITY_INIT:register(exAnims.init)
 
@@ -159,7 +158,6 @@ function exAnims.tick()
 
 	-- Player just toggled flight
 	if previous.flying ~= exAnims.lastFlying then
-		-- modules.events.fall:run()
 		if modules.animations.jump.anim:getPlayState() == "PLAYING" then
 			modules.animations.jump:fade(modules.animations.fadeModes.FADE_OUT_FIXED, 0.4)
 		end
@@ -182,15 +180,6 @@ function exAnims.tick()
 		end
 	end
 	exAnims.lastClimbing = isClimbing
-
-	--[[
-	-- Player just toggled sprint
-	if player:isSprinting() ~= exAnims.lastSprinting then
-		exAnims.sprintMult = 0
-	end
-	exAnims.lastSprinting = player:isSprinting()
-	exAnims.sprintMult = math.lerp(exAnims.sprintMult, exAnims.lastSprinting and 1 or 0, exAnims.sprintMultLerpRate)
-	]]--
 end
 modules.events.TICK:register(exAnims.tick)
 
@@ -202,7 +191,6 @@ function exAnims.fallEvent()
 			modules.animations.fall:fade(modules.animations.fadeModes.FADE_IN_SMOOTH, 0.4)
 		end
 	else
-		-- modules.animations.fall:stop()
 		if modules.animations.fall.fadeMode ~= modules.animations.fadeModes.FADE_OUT_SMOOTH then
 			local _fadeProgress, _lastFadeProgress = modules.animations.fall.fadeProgress, modules.animations.fall.lastFadeProgress
 			modules.animations.fall:fade(modules.animations.fadeModes.FADE_OUT_SMOOTH, 0.3)
@@ -282,9 +270,6 @@ function exAnims.render(tickProgress, context)
 			end
 		end
 	end
-	-- animations["models.cat"].run:blend(exAnims.sprintMult
-	  -- * (1 - animations["models.cat"].jump:getBlend())
-	  -- * (1 - animations["models.cat"].fall:getBlend()))
 end
 modules.events.RENDER:register(exAnims.render)
 
@@ -368,7 +353,29 @@ end
 
 function pings.attackAnim(anim, forceStart)
 	modules.animations[anim]:play(forceStart)
+	if exAnims.showSwipe then
+		models.cat.RightArm.swipe:setVisible(true)
+		models.cat.RightArm.swipe:setOpacity(1)
+	end
 end
+
+function exAnims.renderSwipe(tickProgress, ctx)
+	if not modules.util.renderedInWorld(ctx) then
+		return
+	end
+
+	if models.cat.RightArm.swipe:getVisible() then
+		local animName = modules.animations[1].anim:getName()
+		if exAnims.swipeBlendOutStart[animName] then
+			local timeSince = math.max(modules.animations[1].anim:getTime() - exAnims.swipeBlendOutStart[animName], 0)
+			models.cat.RightArm.swipe:setOpacity(1 - (timeSince / 0.33))
+			if models.cat.RightArm.swipe:getOpacity() <= 0 then
+				models.cat.RightArm.swipe:setVisible(false)
+			end
+		end
+	end
+end
+modules.events.RENDER:register(exAnims.renderSwipe)
 
 -- Returns true if the animation should be played, based on the player's held main item.
 function exAnims.canAnim(anim)
