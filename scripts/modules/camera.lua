@@ -22,7 +22,7 @@ end
 modules.events.RENDER:register(camera.render)
 
 function camera.renderOffsetPivot(delta, context)
-	if not client.getCameraPos() or not world.exists() or not player:isLoaded() then
+	if camera.yOffset == 0 and (renderer:getCameraOffsetPivot() == nil or renderer:getCameraOffsetPivot().y == 0) then
 		return
 	end
 
