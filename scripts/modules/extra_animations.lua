@@ -361,6 +361,9 @@ end
 
 function exAnims.renderSwipe(tickProgress, ctx)
 	if not modules.util.renderedInWorld(ctx) then
+		if host:isHost() and renderer:isFirstPerson() then
+			models.cat.RightArm.swipe:setVisible(false)
+		end
 		return
 	end
 
