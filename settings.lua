@@ -129,10 +129,11 @@ function pings.requestSettings()
 		syncSettingsToAll()
 		-- Sync other data
 		pings.setArmorVisible(modules.armor.display)
-		pings.setClothes("head", modules.clothes.getClothes("head"))
-		pings.setClothes("top", modules.clothes.getClothes("top"))
-		pings.setClothes("bottom", modules.clothes.getClothes("bottom"))
-		pings.setClothes("feet", modules.clothes.getClothes("feet"))
+		for slot, clothes in pairs(modules.clothes) do
+			if type(clothes) == "table" then
+				pings.setClothes(slot, modules.clothes.getClothes(slot))
+			end
+		end
 		pings.setEffects(previous.effects)
 		pings.setFlying(previous.flying)
 		pings.setAir(previous.air)

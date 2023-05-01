@@ -112,13 +112,16 @@ function clothes.equip(slot, clothing)
 		local itemToCheck = ({
 			head = previous.helmet,
 			bow = previous.helmet,
-			mask = previous.helmet,
 			top = previous.chestplate,
 			bottom = previous.leggings,
 			feet = previous.boots
 		})[slot]
 		if slot == "top" and previous.elytra then
 			shouldChangeClothes = true
+		elseif slot == "bow" then
+			shouldChangeClothes = true
+		elseif slot == "mask" then
+			shouldChangeClothes = models.cat.Head.Snoot:getVisible()
 		else
 			shouldChangeClothes = not modules.armor.checkItemVisible(itemToCheck)
 		end
@@ -159,6 +162,16 @@ function clothes.bowFunction()
 end
 modules.events.helmet:register(clothes.bowFunction)
 modules.events.clothes:register(clothes.bowFunction)
+
+-- Register after armor's helmet event
+modules.events.ENTITY_INIT:register(function()
+	function clothes.maskFunction()
+		if clothes.getClothes("mask") == "Cat mask" then
+			models.cat.Head.Mask:setVisible(models.cat.Head.Snoot:getVisible())
+		end
+	end
+	modules.events.helmet:register(clothes.maskFunction)
+end)
 
 function clothes.setVisible(slot, visible)
 	clothes.showClothes(slot, visible and clothes.getClothes(slot) or clothes[slot][1])
