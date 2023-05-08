@@ -57,7 +57,7 @@ aw.pages = {
 	emotes = {
 		title = '{"text":"Emotes","color":"yellow"}',
 		{
-			title = '[{"text":"Love","color":"#faaaab"},{"text":"\n  <:feet:","color":"gray","font":"figura:ui"},{"text":": 3 seconds","color":"gray"},{"text":"\n  :feet:>","color":"gray","font":"figura:ui"},{"text":": Infinite","color":"gray"}]',
+			title = '[{"text":"Love","color":"#faaaab"},{"text":"\n  <:furry:","color":"gray","font":"figura:ui"},{"text":": 3 seconds","color":"gray"},{"text":"\n  :furry:>","color":"gray","font":"figura:ui"},{"text":": Infinite","color":"gray"}]',
 			disabledTitle = '[{"text":"* ","font":"figura:ui"},{"text":"Love","color":"gray","font":"default"}]',
 			color = vec(1, 0.5, 0.5),
 			hoverColor = vec(250 / 255, 170 / 255, 171 / 255),
@@ -67,7 +67,7 @@ aw.pages = {
 			enabledFunc = function() return aw.enableEmoteMethod("love") end,
 		},
 		{
-			title = '[{"text":"Blush","color":"#cc3333"},{"text":"\n  <:feet:","color":"gray","font":"figura:ui"},{"text":": 5 seconds","color":"gray"},{"text":"\n  :feet:>","color":"gray","font":"figura:ui"},{"text":": Infinite","color":"gray"}]',
+			title = '[{"text":"Blush","color":"#cc3333"},{"text":"\n  <:furry:","color":"gray","font":"figura:ui"},{"text":": 5 seconds","color":"gray"},{"text":"\n  :furry:>","color":"gray","font":"figura:ui"},{"text":": Infinite","color":"gray"}]',
 			disabledTitle = '[{"text":"* ","font":"figura:ui"},{"text":"Blush","color":"gray","font":"default"}]',
 			color = vec(0.8, 0.2, 0.2),
 			hoverColor = vec(0.8, 0.3, 0.3),
@@ -77,7 +77,7 @@ aw.pages = {
 			enabledFunc = function() return aw.enableEmoteMethod("blush") end,
 		},
 		{
-			title = '[{"text":"Rage","color":"#991919"},{"text":"\n  <:feet:","color":"gray","font":"figura:ui"},{"text":": 2.5 seconds","color":"gray"},{"text":"\n  :feet:>","color":"gray","font":"figura:ui"},{"text":": Infinite","color":"gray"}]',
+			title = '[{"text":"Rage","color":"#991919"},{"text":"\n  <:furry:","color":"gray","font":"figura:ui"},{"text":": 2.5 seconds","color":"gray"},{"text":"\n  :furry:>","color":"gray","font":"figura:ui"},{"text":": Infinite","color":"gray"}]',
 			disabledTitle = '[{"text":"* ","font":"figura:ui"},{"text":"Rage","color":"gray","font":"default"}]',
 			color = vec(0.6, 0.1, 0.1),
 			hoverColor = vec(0.7, 0.2, 0.1),
@@ -87,7 +87,7 @@ aw.pages = {
 			enabledFunc = function() return aw.enableEmoteMethod("rage") end,
 		},
 		{
-			title = '[{"text":"Sad","color":"blue"},{"text":"\n  <:feet:","color":"gray","font":"figura:ui"},{"text":": 7 seconds","color":"gray"},{"text":"\n  :feet:>","color":"gray","font":"figura:ui"},{"text":": Infinite","color":"gray"}]',
+			title = '[{"text":"Sad","color":"blue"},{"text":"\n  <:furry:","color":"gray","font":"figura:ui"},{"text":": 7 seconds","color":"gray"},{"text":"\n  :furry:>","color":"gray","font":"figura:ui"},{"text":": Infinite","color":"gray"}]',
 			disabledTitle = '[{"text":"* ","font":"figura:ui"},{"text":"Sad","color":"gray","font":"default"}]',
 			color = vec(0.1, 0.1, 0.4),
 			hoverColor = vec(0.3, 0.3, 0.5),
