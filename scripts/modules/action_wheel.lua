@@ -34,16 +34,16 @@ aw.pages = {
 			leftClick = function() aw.setPage("emotes") end,
 		},
 		{
-			title = '{"text":"Wardrobe...","color":"aqua"}',
-			color = vectors.hsvToRGB(0.55, 1, 0.8),
-			hoverColor = vectors.hsvToRGB(0.55, 1, 1),
+			title = '{"text":"Wardrobe...","color":"gold"}',
+			color = vectors.hexToRGB("ccb79c"),
+			hoverColor = vectors.hexToRGB("dfc7a7"),
 			item = world.newItem("minecraft:armor_stand"),
 			leftClick = function() aw.setPage("wardrobe") end,
 		},
 		{
-			title = '{"text":"Camera..."}',
-			color = vectors.hexToRGB("c9a363"),
-			hoverColor = vectors.hexToRGB("f4e295"),
+			title = '{"text":"Camera...","color":"gray"}',
+			color = vectors.hexToRGB("71a49b"),
+			hoverColor = vectors.hexToRGB("b2ddd4"),
 			texture = { u = 15, v = 8, w = 10, h = 6, s = 2 },
 			leftClick = function() aw.setPage("camera") end,
 		},
@@ -123,7 +123,7 @@ aw.pages = {
 		},
 	},
 	wardrobe = {
-		title = '{"text":"Wardrobe","color":"aqua"}',
+		title = '{"text":"Wardrobe","color":"gold"}',
 		{
 			color = vectors.hexToRGB("aca06a"),
 			hoverColor = vectors.hexToRGB("f6e597"),
@@ -247,7 +247,7 @@ aw.pages = {
 		},
 	},
 	camera = {
-		title = "Camera",
+		title = '{"text":"Camera","color":"gray"}',
 		{
 			title = '{"text":"Freeze camera"}',
 			disabledTitle = '[{"text":"* ","font":"figura:ui"},{"text":"Freeze Camera","color":"gray","font":"default"}]',
