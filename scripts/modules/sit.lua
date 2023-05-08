@@ -33,6 +33,10 @@ modules.events.TICK:register(sit.update)
 
 
 
+function pings.sitSetFacingDir(dir)
+	sit.facingDir = dir
+end
+
 if host:isHost() then
 	function sit.pickSitAnim()
 		-- "Raycast" a bit in front of the player to decide which animation to play
@@ -46,7 +50,7 @@ if host:isHost() then
 			raycastClean = not modules.util.collisionAt(checkPos2)
 		end
 
-		sit.facingDir = bodyYaw
+		pings.sitSetFacingDir(bodyYaw)
 
 		return raycastClean and "sit2" or "sit1"
 	end
