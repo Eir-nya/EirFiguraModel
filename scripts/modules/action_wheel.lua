@@ -18,7 +18,7 @@ aw.pages = {
 		back = {
 			title = '{"text":"Back"}',
 			color = vec(0.3, 0.3, 0.3),
-			texture = { u = 69, v = 18, w = 9, h = 7, s = 2 },
+			texture = { u = 15, v = 8, w = 9, h = 7, s = 2 },
 			leftClick = function() aw.back() end,
 		}
 	},
@@ -41,16 +41,24 @@ aw.pages = {
 			leftClick = function() aw.setPage("wardrobe") end,
 		},
 		{
-			title = '{"text":"Camera...","color":"gray"}',
-			color = vectors.hexToRGB("71a49b"),
-			hoverColor = vectors.hexToRGB("b2ddd4"),
-			texture = { u = 15, v = 8, w = 10, h = 6, s = 2 },
-			leftClick = function() aw.setPage("camera") end,
+			title = '{"text":"Freeze camera"}',
+			disabledTitle = '[{"text":"* ","font":"figura:ui"},{"text":"Freeze Camera","color":"gray","font":"default"}]',
+			isToggled = modules.camera.frozen,
+			color = vec(0, 1, 0),
+			colorOff = vec(0.7, 0, 0),
+			hoverColor = vec(0.25, 0.8, 0.25),
+			hoverColorOff = vec(0.6, 0.25, 0.25),
+			texture = { u = 39, v = 9, w = 10, h = 9, s = 2 },
+			textureOff = { u = 39, v = 0, w = 10, h = 9, s = 2 },
+			toggle = function(self, newValue, realAction)
+				modules.camera.setFreeze(not modules.camera.frozen)
+			end,
+			enabledFunc = function() return not renderer:isFirstPerson() end,
 		},
 		{
 			title = '{"text":"Settings..."}',
 			color = vec(0.3, 0.3, 0.3),
-			texture = { u = 69, v = 8, w = 10, h = 10, s = 2 },
+			texture = { u = 29, v = 20, w = 10, h = 10, s = 2 },
 			leftClick = function() aw.setPage("settings") end,
 		},
 	},
@@ -81,7 +89,7 @@ aw.pages = {
 			disabledTitle = '[{"text":"* ","font":"figura:ui"},{"text":"Rage","color":"gray","font":"default"}]',
 			color = vec(0.6, 0.1, 0.1),
 			hoverColor = vec(0.7, 0.2, 0.1),
-			texture = { u = 61, v = 22, w = 8, h = 8, s = 2 },
+			texture = { u = 31, v = 8, w = 8, h = 8, s = 2 },
 			leftClick = function(self) aw.emoteMethod(self, "rage") end,
 			rightClick = function(self) aw.emoteMethod(self, "rage", true) end,
 			enabledFunc = function() return aw.enableEmoteMethod("rage") end,
@@ -91,7 +99,7 @@ aw.pages = {
 			disabledTitle = '[{"text":"* ","font":"figura:ui"},{"text":"Sad","color":"gray","font":"default"}]',
 			color = vec(0.1, 0.1, 0.4),
 			hoverColor = vec(0.3, 0.3, 0.5),
-			texture = { u = 69, v = 0, w = 8, h = 8, s = 2 },
+			texture = { u = 31, v = 0, w = 8, h = 8, s = 2 },
 			leftClick = function(self) aw.emoteMethod(self, "sad") end,
 			rightClick = function(self) aw.emoteMethod(self, "sad", true) end,
 			enabledFunc = function() return aw.enableEmoteMethod("sad") end,
@@ -231,7 +239,7 @@ aw.pages = {
 		{
 			color = vectors.hexToRGB("aca06a"),
 			hoverColor = vectors.hexToRGB("f6e597"),
-			texture = { u = 13, v = 15, w = 8, h = 7, s = 2.5 },
+			texture = { u = 24, v = 8, w = 7, h = 6, s = 2.5 },
 			onShow = function(self, realAction)
 				self.title = '[{"text":"Mask\n","color":"#ffcede"},' .. aw.listDisplay(modules.clothes.mask, modules.clothes.get("mask")) .. ']'
 				realAction:title(self.title)
@@ -245,21 +253,6 @@ aw.pages = {
 				pings.setClothes("mask", modules.clothes.mask[current])
 			end,
 		},
-	},
-	camera = {
-		title = '{"text":"Camera","color":"gray"}',
-		{
-			title = '{"text":"Freeze camera"}',
-			disabledTitle = '[{"text":"* ","font":"figura:ui"},{"text":"Freeze Camera","color":"gray","font":"default"}]',
-			color = vectors.hexToRGB("c9a363"),
-			hoverColor = vectors.hexToRGB("f4e295"),
-			texture = { u = 15, v = 8, w = 10, h = 6, s = 2 },
-			leftClick = function(self)
-				-- TODO
-				modules.camera.setFreeze(not modules.camera.frozen)
-			end,
-			enabledFunc = function() return not renderer:isFirstPerson() end,
-		}
 	},
 	settings = {
 		title = "Settings",
@@ -484,6 +477,14 @@ createAction = function(actionTable, page, i)
 					action:hoverColor(actionTable.hoverColorOff)
 				end
 			end
+			-- Texture
+			if actionTable.texture and actionTable.textureOff then
+				if newValue then
+					action:texture(iconTex, actionTable.texture.u, actionTable.texture.v, actionTable.texture.w, actionTable.texture.h, actionTable.texture.s)
+				else
+					action:texture(iconTex, actionTable.textureOff.u, actionTable.textureOff.v, actionTable.textureOff.w, actionTable.textureOff.h, actionTable.textureOff.s)
+				end
+			end
 		end
 		-- Started as false
 		if not actionTable.isToggled then
@@ -492,6 +493,9 @@ createAction = function(actionTable, page, i)
 			end
 			if actionTable.hoverColor and actionTable.hoverColorOff then
 				action:hoverColor(actionTable.hoverColorOff)
+			end
+			if actionTable.color and actionTable.textureOff then
+				action:texture(iconTex, actionTable.textureOff.u, actionTable.textureOff.v, actionTable.textureOff.w, actionTable.textureOff.h, actionTable.textureOff.s)
 			end
 		end
 	end
