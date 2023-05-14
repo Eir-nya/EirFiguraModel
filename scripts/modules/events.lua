@@ -59,13 +59,6 @@ events.food.condition = function()
 	previous.food = food
 	return food ~= lastFood
 end
-events.xp = events:new(events.TICK)
-events.xp.condition = function()
-	local lastXP = previous.xp
-	local xp = player:getExperienceLevel() + player:getExperienceProgress()
-	previous.xp = xp
-	return xp ~= lastXP
-end
 
 -- Hurt event needs to exist immediately on model load. Condition is set below, after player init
 events.hurt = events:new(events.TICK)
@@ -282,6 +275,22 @@ end
 
 
 -- Host only events
+
+-- XP event
+function pings.setXP(newXP)
+	previous.xp = newXP
+end
+
+if host:isHost() then
+	events.xp = events:new(events.TICK)
+	events.xp.condition = function()
+		local lastXP = previous.xp
+		local xp = player:getExperienceLevel() + player:getExperienceProgress()
+		previous.xp = xp
+		return xp ~= lastXP
+	end
+	events.xp:register(function() pings.setXP(previous.xp) end)
+end
 
 -- Effects event
 function pings.setEffects(newEffects)
