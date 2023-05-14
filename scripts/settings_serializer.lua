@@ -1,7 +1,5 @@
 return function(aw)
-	local off_uv = { u = 32, v = 15, w = 4, h = 4, s = 3 }
-	local on_uv = { u = 27, v = 14, w = 5, h = 5, s = 3 }
-	local scroll_uv = { u = 69, v = 25, w = 9, h = 5, s = 3 }
+	local scroll_uv = { u = 40, v = 25, w = 9, h = 5, s = 3 }
 
 	local createPage
 	createPage = function(pageTable, suffix)
@@ -15,7 +13,7 @@ return function(aw)
 
 			-- New page
 			if type(value) == "table" then
-				newAction.texture = { u = 69, v = 8, w = 10, h = 10, s = 2 }
+				newAction.texture = { u = 29, v = 20, w = 10, h = 10, s = 2 }
 				newAction.leftClick = function(self) aw.setPage(path) end
 				newAction.color = vectors.hsvToRGB((itemsCount / 7) % 1, 0.4, 0.6)
 				newAction.hoverColor = vectors.hsvToRGB((itemsCount / 7) % 1, 0.6, 1)
@@ -37,8 +35,6 @@ return function(aw)
 					end
 
 					newAction.isToggled = value
-					newAction.texture = off_uv
-					newAction.toggleTexture = on_uv
 					newAction.toggle = function(self, newValue, realAction)
 						pageTable[name] = newValue
 						update(self, realAction)
