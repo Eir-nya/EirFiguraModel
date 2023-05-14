@@ -34,6 +34,9 @@ function camera.renderOffsetPivot(delta, context)
 		camOffset = camOffset.y
 	end
 	renderer:offsetCameraPivot(0, math.lerp(camOffset, camera.yOffset, 5 / client:getFPS()), 0)
+	if math.abs(renderer:getCameraOffsetPivot().y) < 0.01 then
+		renderer:offsetCameraPivot()
+	end
 end
 modules.events.POST_RENDER:register(camera.renderOffsetPivot)
 
