@@ -2,7 +2,6 @@
 
 local eyes = {
 	-- Locations of eyes when different facial expressions are used (set up with Blockbench!).
-	-- For use when settings.eyes.glow is enabled, but settings.eyes.dynamic isn't
 	eyePositions = {
 		normal = { r = vec(0, 0), l = vec(0, 0), },
 		angry = { r = vec(0, -0.5), l = vec(0, -0.5), },
@@ -162,7 +161,7 @@ function eyes.trackMobs()
 		end
 	end
 end
-if host:isHost() and settings.eyes.dynamic.followMobs then
+if host:isHost() then
 	modules.events.TICK:register(eyes.trackMobs)
 end
 
@@ -207,9 +206,7 @@ function eyes.watchEntity(tickProgress)
 		eyes.moveEyes(true)
 	end
 end
-if settings.eyes.dynamic.followMobs then
-	modules.events.RENDER:register(eyes.watchEntity)
-end
+modules.events.RENDER:register(eyes.watchEntity)
 
 -- Sets initial render settings on glowing eyes
 if settings.eyes.glow.enabled then
@@ -227,8 +224,6 @@ end
 
 -- Toggle eyes
 function eyes.init()
-	models.cat.Head.eyesBack:setVisible(settings.eyes.dynamic.enabled or settings.eyes.glow.enabled)
-	models.cat.Head.Eyes:setVisible(settings.eyes.dynamic.enabled or settings.eyes.glow.enabled)
 	models.cat.Head.EyesGlint:setVisible(settings.eyes.glow.enabled)
 end
 modules.events.ENTITY_INIT:register(eyes.init)
@@ -304,9 +299,7 @@ function eyes.setScared()
 	-- Update eyes
 	if eyes.scared ~= lastScared then
 		-- Change eye size
-		if settings.eyes.dynamic.enabled then
-			models.cat.Head.Eyes:setScale(eyes.scared and vec(0.75, 0.75, 1) or vec(1, 1, 1))
-		end
+		models.cat.Head.Eyes:setScale(eyes.scared and vec(0.75, 0.75, 1) or vec(1, 1, 1))
 		if settings.eyes.glow.enabled then
 			models.cat.Head.EyesGlint:setScale(eyes.scared and vec(0.75, 0.75, 1) or vec(1, 1, 1))
 		end
@@ -319,14 +312,12 @@ function eyes.setScared()
 		modules.emotes.stopEmote(true)
 	end
 end
-if settings.eyes.dynamic.fear then
-	modules.events.health:register(eyes.setScared)
-	modules.events.food:register(eyes.setScared)
-	modules.events.frozen:register(eyes.setScared)
-	modules.events.air:register(eyes.setScared)
-	modules.events.fire:register(eyes.setScared)
-	modules.events.fall:register(eyes.setScared)
-end
+modules.events.health:register(eyes.setScared)
+modules.events.food:register(eyes.setScared)
+modules.events.frozen:register(eyes.setScared)
+modules.events.air:register(eyes.setScared)
+modules.events.fire:register(eyes.setScared)
+modules.events.fall:register(eyes.setScared)
 
 function pings.setScaredEffects(x)
 	eyes.scaredEffects = x
@@ -381,16 +372,11 @@ function eyes.moveEyes(getHeadTilt)
 
 	-- Fetch player's head tilt instead of distance to target entity's eyes
 	if getHeadTilt then
-		if settings.eyes.dynamic.followHead then
-			local headRot = modules.util.getHeadRot() + vanilla_model.HEAD:getOriginRot()
-			local headRotationX = headRot.y
-			headRotationX = headRotationX / 100
-			eyes.xMove = -headRotationX
-			eyes.yMove = headRot.x / 180
-		else
-			eyes.xMove = 0
-			eyes.yMove = 0
-		end
+		local headRot = modules.util.getHeadRot() + vanilla_model.HEAD:getOriginRot()
+		local headRotationX = headRot.y
+		headRotationX = headRotationX / 100
+		eyes.xMove = -headRotationX
+		eyes.yMove = headRot.x / 180
 	end
 
 	local rightEyePos = vec(eyes.eyePositions[previous.expression].r.x, eyes.eyePositions[previous.expression].r.y, models.cat.Head.Eyes.right:getPos().z)
@@ -404,10 +390,9 @@ function eyes.moveEyes(getHeadTilt)
 
 
 	-- Only add eye offset if eyes are dynamic
-	if settings.eyes.dynamic.enabled and not (settings.eyes.dynamic.enabled and not settings.eyes.dynamic.followHead and getHeadTilt) then
-		rightEyePos.x = rightEyePos.x + eyes.eyeOffset
-		leftEyePos.x = leftEyePos.x - eyes.eyeOffset
-	end
+	-- if settings.eyes.dynamic.enabled and not (settings.eyes.dynamic.enabled and not settings.eyes.dynamic.followHead and getHeadTilt) then
+	rightEyePos.x = rightEyePos.x + eyes.eyeOffset
+	leftEyePos.x = leftEyePos.x - eyes.eyeOffset
 
 	rightEyePos.x = math.clamp(rightEyePos.x + eyes.xMove * 2, bounds.r.x1, bounds.r.x2)
 	rightEyePos.y = math.clamp(rightEyePos.y + eyes.yMove * 2, bounds.r.y1, bounds.r.y2)
@@ -422,10 +407,8 @@ function eyes.moveEyes(getHeadTilt)
 		leftEyePos.y = leftEyePos.y + 0.5
 	end
 
-	if settings.eyes.dynamic.enabled then
-		models.cat.Head.Eyes.right:setPos(rightEyePos)
-		models.cat.Head.Eyes.left:setPos(leftEyePos)
-	end
+	models.cat.Head.Eyes.right:setPos(rightEyePos)
+	models.cat.Head.Eyes.left:setPos(leftEyePos)
 	if settings.eyes.glow.enabled then
 		models.cat.Head.EyesGlint.right:setPos(rightEyePos)
 		models.cat.Head.EyesGlint.left:setPos(leftEyePos)

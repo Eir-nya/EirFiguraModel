@@ -52,12 +52,6 @@ settings = {
 
 	-- Eye settings
 	eyes = {
-		dynamic = {
-			enabled = true,			-- Enables dynamic eyes that slide gradually, independent of face texture
-			followHead = true,		-- When player head is rotated, eyes will follow head's rotation left/right and up/down
-			followMobs = true,		-- Tracks entities your cursor passes over using a priority system, watches them when nearby
-			fear = true				-- Pupils shrink when "scared" (low hp, low hunger, freezing, drowning, has darkness or wither effect)
-		},
 		glow = {
 			enabled = true,			-- Eyes glow somewhat in the dark
 			nightVision = true,		-- Eyes will glow at full brightness when player has night vision effect (always otherwise)
@@ -200,7 +194,6 @@ if not avatar:canEditVanillaModel() then
 	settings.sleep.enabled = false
 	settings.armor.boobArmor = false
 	settings.model.elytra.custom = false
-	settings.eyes.dynamic.enabled = false
 	settings.eyes.glow.enabled = false
 end
 
@@ -208,11 +201,6 @@ if not settings.rope.enabled then
 	settings.hair.physics = false
 end
 
-if not settings.eyes.dynamic.enabled then
-	settings.eyes.dynamic.followHead = false
-	settings.eyes.dynamic.followMobs = false
-	settings.eyes.dynamic.fear = false
-end
 if not settings.eyes.glow.enabled then
 	settings.eyes.glow.nightVision = false
 	settings.eyes.glow.xpGlint = false
