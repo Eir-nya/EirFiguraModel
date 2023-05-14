@@ -9,24 +9,24 @@ local eyes = {
 	},
 	eyeBoundaries = {
 		normal = {
-			r = { x1 = 0, y1 = -0.5, x2 = 1, y2 = 1 },
-			l = { x1 = -1, y1 = -0.5, x2 = 0, y2 = 1 },
+			r = { x = vec(0, 1), y = vec(-0.5, 1) },
+			l = { x = vec(-1, 0), y = vec(-0.5, 1) },
 		},
 		angry = {
-			r = { x1 = 0, y1 = -1, x2 = 1, y2 = 0 },
-			l = { x1 = -1, y1 = -1, x2 = 0, y2 = 0 },
+			r = { x = vec(0, 1), y = vec(-1, 0) },
+			l = { x = vec(-1, 0), y = vec(-1, 0) },
 		},
 		sad = {
-			r = { x1 = 0, y1 = -0.5, x2 = 1, y2 = 1 },
-			l = { x1 = -1, y1 = -0.5, x2 = 0, y2 = 1 },
+			r = { x = vec(0, 1), y = vec(-0.5, 1) },
+			l = { x = vec(-1, 0), y = vec(-0.5, 1) },
 		},
 	},
 	-- Distance added to left and right dynamic eyes so they won't appear as robotic
-	eyeOffset = 0.5,
+	eyeOffset = 0.43,
 
 	-- Priority of stuff to look at, in order of most to least importance
 	-- Entities not listed will be treated as if they were marked as 0
-	-- The numbers here decide which entities are higher priority (and how far away to still track them from)
+	-- The numbers here decide which entities are higher priority (and how far away to track them from)
 	eyePriorities = {
 		["minecraft:warden"] = 6,
 		["minecraft:ender_dragon"] = 6,
@@ -77,8 +77,7 @@ local eyes = {
 	highestPriority = 0,
 
 	-- Controls how much the dynamic eyes will move left or right. Set by other functions.
-	xMove = 0,
-	yMove = 0,
+	move = vec(0, 0),
 	lookTooFar = false,
 
 	-- (Set by script)
@@ -100,13 +99,13 @@ eyes.eyeBoundaries.rage = eyes.eyeBoundaries.angry
 
 function eyes.trackMobs()
 	-- Get entities the player has started to look at
-	eyes.lastEntityRaycast = { player:getTargetedEntity(20) }
-	local target = eyes.lastEntityRaycast[1]
-	if previous.vehicle then
-		if target == player:getVehicle():getUUID() then
-			target = nil
-		end
-	end
+	local target = ({ player:getTargetedEntity(20) })[1]
+	eyes.lastEntityRaycast = target
+	-- if previous.vehicle then
+	-- 	if target == player:getVehicle() then
+	-- 		target = nil
+	-- 	end
+	-- end
 
 	-- Hovering over an entity.
 	if target ~= nil then
@@ -117,8 +116,6 @@ function eyes.trackMobs()
 			pings.setNearest(target:getUUID())
 		end
 		eyes.highestPriority = math.max(priority, eyes.highestPriority)
-		-- eyes.xMove = 0
-		-- eyes.yMove = 0
 	-- Not hovering over any entity in particular
 	else
 		local nearestSet = false
@@ -128,8 +125,6 @@ function eyes.trackMobs()
 			if entity == nil then
 				goto continue
 			end
-
-			local distance = entity:getPos() - player:getPos()
 
 			-- Check if entity is loaded
 			if not entity:isLoaded() then
@@ -142,7 +137,7 @@ function eyes.trackMobs()
 			if eyes.eyePriorities[entity:getType()] ~= nil then
 				maxDist = maxDist + (eyes.eyePriorities[entity:getType()] * 30)
 			end
-			if distance:lengthSquared() > maxDist then
+			if (entity:getPos() - player:getPos()):lengthSquared() > maxDist then
 				eyes.nearbyEntities[i] = nil
 				goto continue
 			end
@@ -163,21 +158,25 @@ function eyes.trackMobs()
 end
 if host:isHost() then
 	modules.events.TICK:register(eyes.trackMobs)
-end
 
-function eyes.unwatchVehicle()
-	if previous.vehicle then
-		local vehicle = player:getVehicle()
-		-- Iterate through nearby entities in order of decreasing priority, remove ones which shouldn't be looked at
-		for i = eyes.highestPriority, 0, -1 do
-			if eyes.nearbyEntities[i] == vehicle then
-				eyes.nearbyEntities[i] = nil
-				break
+	-- Don't watch player's own vehicle
+	function eyes.unwatchVehicle()
+		if previous.vehicle then
+			local vehicle = player:getVehicle()
+			-- Iterate through nearby entities in order of decreasing priority, remove ones which shouldn't be looked at
+			for i = eyes.highestPriority, 0, -1 do
+				if eyes.nearbyEntities[i] == vehicle then
+					eyes.nearbyEntities[i] = nil
+					if eyes.nearest == vehicle:getUUID() then
+						pings.setNearest(nil)
+					end
+					break
+				end
 			end
 		end
 	end
+	modules.events.vehicle:register(eyes.unwatchVehicle)
 end
-modules.events.vehicle:register(eyes.unwatchVehicle)
 
 function eyes.watchEntity(tickProgress)
 	-- Look at nearest entity
@@ -187,13 +186,12 @@ function eyes.watchEntity(tickProgress)
 			local playerLook = player:getLookDir() -- Done here so the effect can be framerate independent, instead of using previous.lookDir
 			local targetEyesPos = target:getPos() + vec(0, target:getEyeHeight(), 0)
 			local distNormal = (targetEyesPos - modules.util.getEyePos()):normalized()
-			eyes.yMove = distNormal.y - playerLook.y
+			eyes.move.y = distNormal.y - playerLook.y
 
 			local ang1 = math.atan2(distNormal.x, distNormal.z)
 			local ang2 = math.atan2(playerLook.x, playerLook.z)
-			eyes.xMove = ang2 - ang1
+			eyes.move.x = ang2 - ang1
 
-			-- particles:addParticle("minecraft:crit", vec(target:getPos().x, target:getEyeY() + 1, target:getPos().z), 0)
 			eyes.moveEyes(false)
 		-- Entity doesn't exist anymore
 		else
@@ -354,7 +352,7 @@ function eyes.moveEyes(getHeadTilt)
 
 	-- If object is behind player, just face forward instead
 	local lastLookTooFar = eyes.lookTooFar
-	eyes.lookTooFar = math.abs(eyes.xMove) >= 1.75
+	eyes.lookTooFar = math.abs(eyes.move.x) >= 1.75
 	if eyes.lookTooFar then
 		getHeadTilt = true
 
@@ -373,45 +371,41 @@ function eyes.moveEyes(getHeadTilt)
 	-- Fetch player's head tilt instead of distance to target entity's eyes
 	if getHeadTilt then
 		local headRot = modules.util.getHeadRot() + vanilla_model.HEAD:getOriginRot()
-		local headRotationX = headRot.y
-		headRotationX = headRotationX / 100
-		eyes.xMove = -headRotationX
-		eyes.yMove = headRot.x / 180
+		eyes.move = vec(headRot.y / -100, headRot.x / 180)
 	end
 
-	local rightEyePos = vec(eyes.eyePositions[previous.expression].r.x, eyes.eyePositions[previous.expression].r.y, models.cat.Head.Eyes.right:getPos().z)
-	local leftEyePos = vec(eyes.eyePositions[previous.expression].l.x, eyes.eyePositions[previous.expression].l.y, models.cat.Head.Eyes.left:getPos().z)
+	local r = eyes.eyePositions[previous.expression].r:copy()
+	local l = eyes.eyePositions[previous.expression].l:copy()
 	local bounds = eyes.eyeBoundaries[previous.expression]
 
 	if eyes.scared then
-		eyes.xMove = 0
-		eyes.yMove = 0
+		eyes.move = vec(0, 0)
 	end
 
 
 	-- Only add eye offset if eyes are dynamic
 	-- if settings.eyes.dynamic.enabled and not (settings.eyes.dynamic.enabled and not settings.eyes.dynamic.followHead and getHeadTilt) then
-	rightEyePos.x = rightEyePos.x + eyes.eyeOffset
-	leftEyePos.x = leftEyePos.x - eyes.eyeOffset
+	r.x = r.x + eyes.eyeOffset
+	l.x = l.x - eyes.eyeOffset
 
-	rightEyePos.x = math.clamp(rightEyePos.x + eyes.xMove * 2, bounds.r.x1, bounds.r.x2)
-	rightEyePos.y = math.clamp(rightEyePos.y + eyes.yMove * 2, bounds.r.y1, bounds.r.y2)
-	leftEyePos.x = math.clamp(leftEyePos.x + eyes.xMove * 2, bounds.l.x1, bounds.l.x2)
-	leftEyePos.y = math.clamp(leftEyePos.y + eyes.yMove * 2, bounds.l.y1, bounds.l.y2)
+	r.x = math.clamp(r.x + eyes.move.x * 2, bounds.r.x:unpack())
+	r.y = math.clamp(r.y + eyes.move.y * 2, bounds.r.y:unpack())
+	l.x = math.clamp(l.x + eyes.move.x * 2, bounds.l.x:unpack())
+	l.y = math.clamp(l.y + eyes.move.y * 2, bounds.l.y:unpack())
 
 	-- Move eyes to specific position if scared
 	if eyes.scared then
-		rightEyePos.x = rightEyePos.x - 0.125
-		rightEyePos.y = rightEyePos.y + 0.5
-		leftEyePos.x = leftEyePos.x + 0.125
-		leftEyePos.y = leftEyePos.y + 0.5
+		r.x = r.x - 0.125
+		r.y = r.y + 0.5
+		l.x = l.x + 0.125
+		l.y = l.y + 0.5
 	end
 
-	models.cat.Head.Eyes.right:setPos(rightEyePos)
-	models.cat.Head.Eyes.left:setPos(leftEyePos)
+	models.cat.Head.Eyes.right:setPos(r.x, r.y, models.cat.Head.Eyes.right:getPos().z)
+	models.cat.Head.Eyes.left:setPos(l.x, l.y, models.cat.Head.Eyes.left:getPos().z)
 	if settings.eyes.glow.enabled then
-		models.cat.Head.EyesGlint.right:setPos(rightEyePos)
-		models.cat.Head.EyesGlint.left:setPos(leftEyePos)
+		models.cat.Head.EyesGlint.right:setPos(r.x, r.y, models.cat.Head.Eyes.right:getPos().z)
+		models.cat.Head.EyesGlint.left:setPos(l.x, l.y, models.cat.Head.Eyes.left:getPos().z)
 	end
 end
 
