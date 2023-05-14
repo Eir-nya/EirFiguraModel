@@ -11,3 +11,6 @@ TODO:
 - kneel crouch animation
 - fix vanillaMatch making animations not show at all with shaders on
 - fix blinking frame getting stuck when doing infinite emotes (crying)
+- make fluffy outfit display on top of default outfit
+- compress on unnecessary settings (eyes toggle)
+- sync XP amount

@@ -4,22 +4,18 @@ local emotes = {
 	-- Snout UV offsets
 	addUVs = {
 		normal = vec(0, 0),
-		normalHole = vec(0, 8),
-		blink = vec(32, 0),
-		hurt = vec(40, 0),
+		blink = vec(0, 8),
+		hurt = vec(8, 8),
 		love = vec(8, 0),
 		hug = vec(8, 0), -- uses love
 		blush = vec(16, 0),
 		sleep = vec(24, 0),
-		angry = vec(48, 0),
-		angryHole = vec(48, 8),
-		sad = vec(56, 0),
-		sadHole = vec(56, 8),
+		angry = vec(16, 8),
+		sad = vec(24, 8),
 	},
 	-- Name of expression model part to enable for each expression
 	parts = {
 		normal = "normal",
-		normalHole = "normalHole",
 		blink = "blink",
 		hurt = "hurt",
 		love = "love",
@@ -27,11 +23,8 @@ local emotes = {
 		blush = "blush",
 		sleep = "sleep",
 		angry = "angry",
-		angryHole = "angryHole",
 		rage = "angry", -- uses angry
-		rageHole = "angryHole",
 		sad = "sad",
-		sadHole = "sadHole",
 	},
 	-- Current emote type
 	emote = "normal",
@@ -221,13 +214,6 @@ pings.stopEmote = emotes.stopEmote
 function emotes.setExpression(expression)
 	if emotes.parts[expression] == nil then
 		return
-	end
-
-	-- If dynamic eyes is enabled, use overlaid eyes
-	if settings.eyes.dynamic.enabled or settings.eyes.glow.enabled then
-		if emotes.parts[expression .. "Hole"] ~= nil then
-			expression = expression .. "Hole"
-		end
 	end
 
 	-- Enable distinct head part (saves on texture size)

@@ -4,20 +4,20 @@ local eyes = {
 	-- Locations of eyes when different facial expressions are used (set up with Blockbench!).
 	-- For use when settings.eyes.glow is enabled, but settings.eyes.dynamic isn't
 	eyePositions = {
-		normalHole = { r = vec(0, 0), l = vec(0, 0), },
-		angryHole = { r = vec(0, -0.5), l = vec(0, -0.5), },
-		sadHole = { r = vec(0, 0), l = vec(0, 0), },
+		normal = { r = vec(0, 0), l = vec(0, 0), },
+		angry = { r = vec(0, -0.5), l = vec(0, -0.5), },
+		sad = { r = vec(0, 0), l = vec(0, 0), },
 	},
 	eyeBoundaries = {
-		normalHole = {
+		normal = {
 			r = { x1 = 0, y1 = -0.5, x2 = 1, y2 = 1 },
 			l = { x1 = -1, y1 = -0.5, x2 = 0, y2 = 1 },
 		},
-		angryHole = {
+		angry = {
 			r = { x1 = 0, y1 = -1, x2 = 1, y2 = 0 },
 			l = { x1 = -1, y1 = -1, x2 = 0, y2 = 0 },
 		},
-		sadHole = {
+		sad = {
 			r = { x1 = 0, y1 = -0.5, x2 = 1, y2 = 1 },
 			l = { x1 = -1, y1 = -0.5, x2 = 0, y2 = 1 },
 		},
@@ -94,8 +94,8 @@ local eyes = {
 	scaredUVOffset = vec(3, 0)
 }
 -- Aliases
-eyes.eyePositions.rageHole = eyes.eyePositions.angryHole
-eyes.eyeBoundaries.rageHole = eyes.eyeBoundaries.angryHole
+eyes.eyePositions.rage = eyes.eyePositions.angry
+eyes.eyeBoundaries.rage = eyes.eyeBoundaries.angry
 
 -- Events
 
