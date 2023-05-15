@@ -60,49 +60,60 @@ function clothes.init()
 end
 modules.events.ENTITY_INIT:register(clothes.init)
 
+local parts = {
+	head = {
+		["Head.FluffyHood"] = "Fluffy hood",
+		["Head.LeftEar.Ear"] = "*~Fluffy hood",
+		["Head.LeftEar.FluffyHood"] = "Fluffy hood",
+		["Head.RightEar.Ear"] = "*~Fluffy hood",
+		["Head.RightEar.FluffyHood"] = "Fluffy hood",
+	},
+	bow = {
+		["Head.Bow"] = "Bow",
+		["Head.FlowerCrown"] = "Flower crown"
+	},
+	mask = {
+		["Head.Mask"] = "Cat mask"
+	},
+	top = {
+		["Body.Boobs.Shirt"] = "ShirtFluffy jacket",
+		["Body.Boobs.BikiniTop"] = "Bikini (top)",
+		["Body.Boobs.FluffyJacket"] = "Fluffy jacket",
+		["Body.3DShirt"] = "ShirtFluffy jacket",
+		["Body.3DBikiniTop"] = "Bikini (top)",
+		["Body.FluffyJacket"] = "Fluffy jacket",
+		["Body.Body Layer Down"] = "~Fluffy jacket",
+		["LeftArm.FurUp"] = "~Fluffy jacket",
+		["LeftArm.FluffyJacket"] = "Fluffy jacket",
+		["LeftArm.Forearm.FluffyJacket"] = "Fluffy jacket",
+		["RightArm.FurUp"] = "~Fluffy jacket",
+		["RightArm.FluffyJacket"] = "Fluffy jacket",
+		["RightArm.Forearm.FluffyJacket"] = "Fluffy jacket",
+	},
+	bottom = {
+		["Body.3DShorts"] = "Purple shortsFluffy shorts",
+		["Body.3DBikiniBottom"] = "Bikini (bottom)",
+		["Body.FluffyLeggings"] = "Fluffy shorts",
+		["LeftLeg.3DShorts"] = "Purple shorts",
+		["LeftLeg.3DBikiniBottom"] = "Bikini (bottom)",
+		["LeftLeg.FluffyLeggings"] = "Fluffy shorts",
+		["RightLeg.3DShorts"] = "Purple shorts",
+		["RightLeg.3DBikiniBottom"] = "Bikini (bottom)",
+		["RightLeg.FluffyLeggings"] = "Fluffy shorts",
+	},
+	feet = {
+		["LeftLeg.3DEnbySocks"] = "Enby socks",
+		["LeftLeg.3DCatSocks"] = "Cat socks",
+		["LeftLeg.FluffyBoots"] = "Fluffy boots",
+		["RightLeg.3DEnbySocks"] = "Enby socks",
+		["RightLeg.3DCatSocks"] = "Cat socks",
+		["RightLeg.FluffyBoots"] = "Fluffy boots",
+	}
+}
+
 function clothes.showClothes(slot, clothing)
-	if slot == "head" then
-		models.cat.Head.LeftEar.Ear:setVisible(clothing ~= "Fluffy hood")
-		models.cat.Head.RightEar.Ear:setVisible(clothing ~= "Fluffy hood")
-		models.cat.Head.LeftEar.FluffyHood:setVisible(clothing == "Fluffy hood")
-		models.cat.Head.RightEar.FluffyHood:setVisible(clothing == "Fluffy hood")
-		models.cat.Head.FluffyHood:setVisible(clothing == "Fluffy hood")
-	elseif slot == "bow" then
-		models.cat.Head.Bow:setVisible(clothing == "Bow")
-		models.cat.Head.FlowerCrown:setVisible(clothing == "Flower crown")
-	elseif slot == "mask" then
-		models.cat.Head.Mask:setVisible(clothing == "Cat mask")
-	elseif slot == "top" then
-		models.cat.Body.Boobs.Shirt:setVisible(clothing == "Shirt" or clothing == "Fluffy jacket")
-		models.cat.Body.Boobs.BikiniTop:setVisible(clothing == "Bikini (top)")
-		models.cat.Body.Boobs.FluffyJacket:setVisible(clothing == "Fluffy jacket")
-		models.cat.Body["3DShirt"]:setVisible(clothing == "Shirt" or clothing == "Fluffy jacket")
-		models.cat.Body["3DBikiniTop"]:setVisible(clothing == "Bikini (top)")
-		models.cat.Body["FluffyJacket"]:setVisible(clothing == "Fluffy jacket")
-		models.cat.Body["Body Layer Down"]:setVisible(clothing ~= "Fluffy jacket")
-		models.cat.LeftArm.FurUp:setVisible(clothing ~= "Fluffy jacket")
-		models.cat.LeftArm.FluffyJacket:setVisible(clothing == "Fluffy jacket")
-		models.cat.LeftArm.Forearm.FluffyJacket:setVisible(clothing == "Fluffy jacket")
-		models.cat.RightArm.FurUp:setVisible(clothing ~= "Fluffy jacket")
-		models.cat.RightArm.FluffyJacket:setVisible(clothing == "Fluffy jacket")
-		models.cat.RightArm.Forearm.FluffyJacket:setVisible(clothing == "Fluffy jacket")
-	elseif slot == "bottom" then
-		models.cat.Body["3DShorts"]:setVisible(clothing == "Purple shorts" or clothing == "Fluffy shorts")
-		models.cat.Body["3DBikiniBottom"]:setVisible(clothing == "Bikini (bottom)")
-		models.cat.Body.FluffyLeggings:setVisible(clothing == "Fluffy shorts")
-		models.cat.LeftLeg["3DShorts"]:setVisible(clothing == "Purple shorts")
-		models.cat.LeftLeg["3DBikiniBottom"]:setVisible(clothing == "Bikini (bottom)")
-		models.cat.LeftLeg.FluffyLeggings:setVisible(clothing == "Fluffy shorts")
-		models.cat.RightLeg["3DShorts"]:setVisible(clothing == "Purple shorts")
-		models.cat.RightLeg["3DBikiniBottom"]:setVisible(clothing == "Bikini (bottom)")
-		models.cat.RightLeg.FluffyLeggings:setVisible(clothing == "Fluffy shorts")
-	elseif slot == "feet" then
-		models.cat.LeftLeg["3DEnbySocks"]:setVisible(clothing == "Enby socks")
-		models.cat.LeftLeg["3DCatSocks"]:setVisible(clothing == "Cat socks")
-		models.cat.LeftLeg.FluffyBoots:setVisible(clothing == "Fluffy boots")
-		models.cat.RightLeg["3DEnbySocks"]:setVisible(clothing == "Enby socks")
-		models.cat.RightLeg["3DCatSocks"]:setVisible(clothing == "Cat socks")
-		models.cat.RightLeg.FluffyBoots:setVisible(clothing == "Fluffy boots")
+	for path, s in pairs(parts[slot]) do
+		modules.util.getByPath("models.cat." .. path):setVisible((s:find(clothing, nil, true) ~= nil or s:find("*") ~= nil) and s:find("~" .. clothing, nil, true) == nil)
 	end
 end
 
