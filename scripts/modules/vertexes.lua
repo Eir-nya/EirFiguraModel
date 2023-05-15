@@ -24,10 +24,8 @@ local recurse
 recurse = function(parent)
 	for _, part in pairs(parent:getChildren()) do
 		recurse(part)
-		if part:getVisible() then
-			if part:getName():sub(0, 3) == "V__" then
-				vPoints[part] = true
-			end
+		if part:getName():sub(0, 3) == "V__" then
+			vPoints[part] = true
 		end
 	end
 end
@@ -55,7 +53,6 @@ modules.events.ENTITY_INIT:register(function()
 			num = tonumber(num)
 			local vertexToMove = vertexes[num]
 			local worldSpaceTarget = part:partToWorldMatrix():apply(part:getPositionMatrix():apply(vPoint:getPivot()))
-			particles.end_rod:pos(worldSpaceTarget):spawn()
 			vertexToMove:pos(part:partToWorldMatrix():inverted():apply(worldSpaceTarget))
 		end
 	end
