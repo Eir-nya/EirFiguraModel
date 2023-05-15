@@ -44,21 +44,19 @@ end
 
 -- Pre-configured events
 
+local simpleEvent = function(name, figuraEvent, previousVarName, newValueGetter)
+	events[name] = events:new(figuraEvent)
+	events[name].condition = function()
+		local lastVar = previous[previousVarName]
+		local newVar = newValueGetter()
+		previous[previousVarName] = newVar
+		return newVar ~= lastVar
+	end
+end
+
 -- Stat events
-events.health = events:new(events.TICK)
-events.health.condition = function()
-	local lastHealthPercent = previous.healthPercent
-	local healthPercent = player:getHealth() / player:getMaxHealth()
-	previous.healthPercent = healthPercent
-	return healthPercent ~= lastHealthPercent
-end
-events.food = events:new(events.TICK)
-events.food.condition = function()
-	local lastFood = previous.food
-	local food = player:getFood()
-	previous.food = food
-	return food ~= lastFood
-end
+simpleEvent("health", events.TICK, "healthPercent", function() return player:getHealth() / player:getMaxHealth() end)
+simpleEvent("food", events.TICK, "food", function() return player:getFood() end)
 
 -- Hurt event needs to exist immediately on model load. Condition is set below, after player init
 events.hurt = events:new(events.TICK)
@@ -98,48 +96,29 @@ events.frozen.condition = function()
 	previous.freezeTicks = freezeTicks
 	return (freezeTicks > lastFreezeTicks and (lastFreezeTicks == 0 or freezeTicks == 140)) or (freezeTicks < lastFreezeTicks and (freezeTicks == 0 or lastFreezeTicks == 140))
 end
-events.firstPerson = events:new(events.TICK)
-events.firstPerson.condition = function()
-	local lastFirstPerson = previous.firstPerson
-	local firstPerson = renderer:isFirstPerson()
-	previous.firstPerson = firstPerson
-	return firstPerson ~= lastFirstPerson
+if host:isHost() then
+	simpleEvent("firstPerson", events.TICK, "firstPerson", function() return renderer:isFirstPerson() end)
 end
 
--- Player movement events
-events.velocity = events:new(events.TICK)
-events.velocity.condition = function()
-	local lastVel = previous.vel
-	local vel = player:getVelocity()
-	previous.vel = vel
-	previous.velMagXZ = vel.x_z:length()
-	return vel ~= lastVel
-end
-events.lookDir = events:new(events.TICK)
-events.lookDir.condition = function()
-	local lastLookDir = previous.lookDir
-	local lookDir = player:getLookDir()
-	previous.lookDir = lookDir
-	return lookDir ~= lastLookDir
-end
+-- Player movement data
+events.TICK:register(function()
+	local newVel = player:getVelocity()
+	previous.vel = newVel
+	previous.velMagXZ = newVel.x_z:length()
+	previous.lookDir = player:getLookDir()
+end)
 
 -- Equipped item events
-events.mainItem = events:new(events.TICK)
-events.mainItem.condition = function()
-	local lastMainItemString = previous.mainItemString
-	local mainItem = player:getItem(1)
-	previous.mainItem = mainItem
-	previous.mainItemString = modules.util.asItemStack(mainItem):toStackString()
-	return previous.mainItemString ~= lastMainItemString
-end
-events.offItem = events:new(events.TICK)
-events.offItem.condition = function()
-	local lastOffItemString = previous.offItemString
-	local offItem = player:getItem(2)
-	previous.offItem = offItem
-	previous.offItemString = modules.util.asItemStack(offItem):toStackString()
-	return previous.offItemString ~= lastOffItemString
-end
+simpleEvent("mainItem", events.TICK, "mainItemString", function()
+	local newItem = player:getItem(1)
+	previous.mainItem = newItem
+	return modules.util.asItemStack(newItem):toStackString()
+end)
+simpleEvent("offItem", events.TICK, "offItemString", function()
+	local newItem = player:getItem(2)
+	previous.offItem = newItem
+	return modules.util.asItemStack(newItem):toStackString()
+end)
 events.helmet = events:new(events.TICK)
 events.helmet.condition = function()
 	local lastHelmetString = previous.helmetString
@@ -224,54 +203,18 @@ events.boots.condition = function()
 end
 
 -- Invisible event
-events.invisible = events:new(events.TICK)
-events.invisible.condition = function()
-	local lastInvisible = previous.invisible
-	local invisible = player:isInvisible()
-	previous.invisible = invisible
-	return invisible ~= lastInvisible
-end
+simpleEvent("invisible", events.TICK, "invisible", function() return player:isInvisible() end)
 
 -- Wet/fire events
-events.wet = events:new(events.TICK)
-events.wet.condition = function()
-	local lastWet = previous.wet
-	local wet = player:isWet()
-	previous.wet = wet
-	return wet ~= lastWet
-end
-events.underwater = events:new(events.TICK)
-events.underwater.condition = function()
-	local lastUnderwater = previous.underwater
-	local underwater = player:isUnderwater()
-	previous.underwater = underwater
-	return underwater ~= lastUnderwater
-end
-events.fire = events:new(events.TICK)
-events.fire.condition = function()
-	local lastFire = previous.fire
-	local fire = player:isOnFire()
-	previous.fire = fire
-	return fire ~= lastFire
-end
+simpleEvent("wet", events.TICK, "wet", function() return player:isWet() end)
+simpleEvent("underwater", events.TICK, "underwater", function() return player:isUnderwater() end)
+simpleEvent("fire", events.TICK, "fire", function() return player:isOnFire() end)
 
 -- Pose event
-events.pose = events:new(events.TICK)
-events.pose.condition = function()
-	local lastPose = previous.pose
-	local pose = player:getPose()
-	previous.pose = pose
-	return pose ~= lastPose
-end
+simpleEvent("pose", events.TICK, "pose", function() return player:getPose() end)
 
 -- Vehicle event
-events.vehicle = events:new(events.TICK)
-events.vehicle.condition = function()
-	local lastVehicle = previous.vehicle
-	local vehicle = player:getVehicle() ~= nil
-	previous.vehicle = vehicle
-	return vehicle ~= lastVehicle
-end
+simpleEvent("vehicle", events.TICK, "vehicle", function() return player:getVehicle() ~= nil end)
 
 
 -- Host only events
