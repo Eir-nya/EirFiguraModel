@@ -4,6 +4,7 @@ modules = {
 	"util",
 	"init",
 	"events",
+	"vertexes",
 
 	"nameplate",
 	"animations",
