@@ -97,7 +97,7 @@ events.frozen.condition = function()
 	return (freezeTicks > lastFreezeTicks and (lastFreezeTicks == 0 or freezeTicks == 140)) or (freezeTicks < lastFreezeTicks and (freezeTicks == 0 or lastFreezeTicks == 140))
 end
 if host:isHost() then
-	simpleEvent("firstPerson", events.TICK, "firstPerson", function() return renderer:isFirstPerson() end)
+	simpleEvent("firstPerson", events.RENDER, "firstPerson", function() return renderer:isFirstPerson() end)
 end
 
 -- Player movement data
