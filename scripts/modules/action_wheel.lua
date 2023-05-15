@@ -5,7 +5,11 @@ local aw = {
 	lastEnabled = false,
 
 	-- Disabled color
-	disabledColor = vec(0.2, 0.2, 0.2)
+	disabledColor = vec(0.2, 0.2, 0.2),
+	toggleColorOn = vec(0, 1, 0),
+	toggleColorOff = vec(0.7, 0, 0),
+	toggleHoverColorOn = vec(0.25, 0.8, 0.25),
+	toggleHoverColorOff = vec(0.6, 0.25, 0.25),
 }
 
 if not host:isHost() then
@@ -44,10 +48,6 @@ aw.pages = {
 			title = '{"text":"Freeze camera"}',
 			disabledTitle = '[{"text":"* ","font":"figura:ui"},{"text":"Freeze Camera","color":"gray","font":"default"}]',
 			isToggled = modules.camera.frozen,
-			color = vec(0, 1, 0),
-			colorOff = vec(0.7, 0, 0),
-			hoverColor = vec(0.25, 0.8, 0.25),
-			hoverColorOff = vec(0.6, 0.25, 0.25),
 			texture = { u = 39, v = 9, w = 10, h = 9, s = 2 },
 			textureOff = { u = 39, v = 0, w = 10, h = 9, s = 2 },
 			toggle = function(self, newValue, realAction)
@@ -204,10 +204,6 @@ aw.pages = {
 			isToggled = modules.armor.display,
 			item = world.newItem("minecraft:ender_pearl"),
 			toggleItem = world.newItem("minecraft:ender_eye"),
-			color = vec(0, 1, 0),
-			colorOff = vec(0.7, 0, 0),
-			hoverColor = vec(0.25, 0.8, 0.25),
-			hoverColorOff = vec(0.6, 0.25, 0.25),
 			onShow = function(self, realAction)
 				realAction:title('[{"text":"Armor visible","color":"green"},{"text":"\n  (' .. (modules.armor.display and "Yes" or "No").. ')","color":"gray"}]')
 			end,
@@ -284,8 +280,8 @@ local updateAction = function(actionTable, action)
 		local shouldBeEnabled = actionTable.enabledFunc(actionTable)
 		if shouldBeEnabled then
 			action:title(actionTable.title)
-			action:color(actionTable.color)
-			action:hoverColor(actionTable.hoverColor)
+			action:color(not actionTable.toggle and actionTable.color or (action:isToggled() and aw.toggleColorOn or aw.toggleColorOff))
+			action:hoverColor(not actionTable.toggle and actionTable.hoverColor or (action:isToggled() and aw.toggleHoverColorOn or aw.toggleHoverColorOff))
 			action.leftClick = actionTable.originalLeftClick
 			action.rightClick = actionTable.originalRightClick
 			action.toggle = actionTable.originalToggle
@@ -462,20 +458,12 @@ createAction = function(actionTable, page, i)
 			actionTable.toggle(actionTable, newValue, realAction)
 
 			-- Set colors ("color" for on, "colorOff" for off)
-			if actionTable.color and actionTable.colorOff then
-				if newValue then
-					action:color(actionTable.color)
-				else
-					action:color(actionTable.colorOff)
-				end
-			end
-			-- Set hover colors ("hoverColor" for on, "hoverColorOff" for off)
-			if actionTable.hoverColor and actionTable.hoverColorOff then
-				if newValue then
-					action:hoverColor(actionTable.hoverColor)
-				else
-					action:hoverColor(actionTable.hoverColorOff)
-				end
+			if newValue then
+				action:color(aw.toggleColorOn)
+				action:hoverColor(aw.toggleHoverColorOn)
+			else
+				action:color(aw.toggleColorOff)
+				action:hoverColor(aw.toggleHoverColorOff)
 			end
 			-- Texture
 			if actionTable.texture and actionTable.textureOff then
@@ -488,13 +476,9 @@ createAction = function(actionTable, page, i)
 		end
 		-- Started as false
 		if not actionTable.isToggled then
-			if actionTable.color and actionTable.colorOff then
-				action:color(actionTable.colorOff)
-			end
-			if actionTable.hoverColor and actionTable.hoverColorOff then
-				action:hoverColor(actionTable.hoverColorOff)
-			end
-			if actionTable.color and actionTable.textureOff then
+			action:color(aw.toggleColorOff)
+			action:hoverColor(aw.toggleHoverColorOff)
+			if actionTable.textureOff then
 				action:texture(iconTex, actionTable.textureOff.u, actionTable.textureOff.v, actionTable.textureOff.w, actionTable.textureOff.h, actionTable.textureOff.s)
 			end
 		end
