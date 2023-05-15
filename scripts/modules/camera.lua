@@ -2,7 +2,8 @@
 
 local camera = {
 	frozen = false,
-	yOffset = 0
+	yOffset = 0,
+	headYOffset = -1 / 16
 }
 
 function camera.render(delta, context)
@@ -22,20 +23,17 @@ end
 modules.events.RENDER:register(camera.render)
 
 function camera.renderOffsetPivot(delta, context)
-	if camera.yOffset == 0 and (renderer:getCameraOffsetPivot() == nil or renderer:getCameraOffsetPivot().y == 0) then
-		return
-	end
-
 	-- Handle camera offset
 	local camOffset = renderer:getCameraOffsetPivot()
 	if not camOffset then
-		camOffset = 0
+		camOffset = vec(0, math.playerScale * camera.headYOffset, 0)
 	else
-		camOffset = camOffset.y
+		camOffset = camOffset
 	end
-	renderer:offsetCameraPivot(0, math.lerp(camOffset, camera.yOffset, 5 / client:getFPS()), 0)
-	if math.abs(renderer:getCameraOffsetPivot().y) < 0.01 then
-		renderer:offsetCameraPivot()
+	local target = vec(0, camera.headYOffset + camera.yOffset, 0) * math.playerScale
+	renderer:offsetCameraPivot(math.lerp(camOffset, target, 5 / math.max(client:getFPS(), 5)))
+	if math.abs((renderer:getCameraOffsetPivot() - target).y) < 0.01 then
+		renderer:offsetCameraPivot(target)
 	end
 end
 modules.events.POST_RENDER:register(camera.renderOffsetPivot)
