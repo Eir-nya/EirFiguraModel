@@ -277,19 +277,21 @@ end
 -- Host only events
 
 -- XP event
+events.xp = events:new()
 function pings.setXP(newXP)
 	previous.xp = newXP
+	events.xp:run()
 end
 
 if host:isHost() then
-	events.xp = events:new(events.TICK)
-	events.xp.condition = function()
+	events.TICK:register(function()
 		local lastXP = previous.xp
 		local xp = player:getExperienceLevel() + player:getExperienceProgress()
 		previous.xp = xp
-		return xp ~= lastXP
-	end
-	events.xp:register(function() pings.setXP(previous.xp) end)
+		if xp ~= lastXP then
+			pings.setXP(previous.xp)
+		end
+	end)
 end
 
 -- Effects event
