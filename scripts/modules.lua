@@ -20,7 +20,9 @@ modules = {
 	"rope",
 	"hair",
 
+	"modelOffset",
 	"vanilla_transforms",
+	"thighs",
 
 	host:isHost() and "camera" or nil,
 	host:isHost() and "action_wheel" or nil,
