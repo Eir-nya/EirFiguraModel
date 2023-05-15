@@ -412,11 +412,14 @@ createAction = function(actionTable, page, i)
 	action:title(actionTable.title)
 	action:color(actionTable.color)
 	action:hoverColor(actionTable.hoverColor)
+	local t
 	if actionTable.texture then
-		action:texture(iconTex, actionTable.texture.u, actionTable.texture.v, actionTable.texture.w, actionTable.texture.h, actionTable.texture.s)
+		t = actionTable.texture
+		action:texture(iconTex, t.u, t.v, t.w, t.h, t.s)
 	end
 	if actionTable.toggleTexture then
-		action:toggleTexture(iconTex, actionTable.toggleTexture.u, actionTable.toggleTexture.v, actionTable.toggleTexture.w, actionTable.toggleTexture.h, actionTable.toggleTexture.s)
+		t = actionTable.toggleTexture
+		action:toggleTexture(iconTex, t.u, t.v, t.w, t.h, t.s)
 	end
 	if actionTable.item then
 		action:item(actionTable.item)
@@ -436,7 +439,7 @@ createAction = function(actionTable, page, i)
 			aw.playToggleSound(actionTable, newValue)
 			actionTable.toggle(actionTable, newValue, realAction)
 
-			-- Set colors ("color" for on, "colorOff" for off)
+			-- Set colors
 			if newValue then
 				action:color(aw.toggleColorOn)
 				action:hoverColor(aw.toggleHoverColorOn)
@@ -447,9 +450,11 @@ createAction = function(actionTable, page, i)
 			-- Texture
 			if actionTable.texture and actionTable.textureOff then
 				if newValue then
-					action:texture(iconTex, actionTable.texture.u, actionTable.texture.v, actionTable.texture.w, actionTable.texture.h, actionTable.texture.s)
+					t = actionTable.texture
+					action:texture(iconTex, t.u, t.v, t.w, t.h, t.s)
 				else
-					action:texture(iconTex, actionTable.textureOff.u, actionTable.textureOff.v, actionTable.textureOff.w, actionTable.textureOff.h, actionTable.textureOff.s)
+					t = actionTable.textureOff
+					action:texture(iconTex, t.u, t.v, t.w, t.h, t.s)
 				end
 			end
 		end
@@ -458,7 +463,8 @@ createAction = function(actionTable, page, i)
 			action:color(aw.toggleColorOff)
 			action:hoverColor(aw.toggleHoverColorOff)
 			if actionTable.textureOff then
-				action:texture(iconTex, actionTable.textureOff.u, actionTable.textureOff.v, actionTable.textureOff.w, actionTable.textureOff.h, actionTable.textureOff.s)
+				t = actionTable.textureOff
+				action:texture(iconTex, t.u, t.v, t.w, t.h, t.s)
 			end
 		end
 	end
