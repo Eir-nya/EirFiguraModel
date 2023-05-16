@@ -13,5 +13,3 @@ TODO:
 - fix blinking frame getting stuck when doing infinite emotes (crying) (can't reproduce)
 - compress on unnecessary settings (eyes toggle)
 - eyes are stuck on red for the others? (5 levels)
-- when avatar is reloaded with shaders applied, hips will be stuck in head while sitting
-- fix ear armor rotation when turning armor visibility back on

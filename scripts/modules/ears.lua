@@ -37,6 +37,7 @@ function ears.helmetEvent()
 end
 modules.events.helmet:register(ears.helmetEvent)
 modules.events.sleep:register(ears.helmetEvent)
+modules.events.armorVisible:register(ears.helmetEvent)
 
 function ears.positionEvent()
 	if not ears.canMove() then
