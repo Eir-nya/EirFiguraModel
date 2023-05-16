@@ -81,13 +81,12 @@ local parts = {
 	},
 	bottom = {
 		["Body.3DShorts"] = "Purple shortsFluffy shorts",
-		["Body.3DBikiniBottom"] = "Bikini (bottom)",
 		["Body.FluffyLeggings"] = "Fluffy shorts",
 		["LeftThigh.3DShorts"] = "Purple shorts",
-		["LeftLeg.3DBikiniBottom"] = "Bikini (bottom)",
+		["LeftThigh.3DBikiniBottom"] = "Bikini (bottom)",
 		["LeftLeg.FluffyLeggings"] = "Fluffy shorts",
 		["RightThigh.3DShorts"] = "Purple shorts",
-		["RightLeg.3DBikiniBottom"] = "Bikini (bottom)",
+		["RightThigh.3DBikiniBottom"] = "Bikini (bottom)",
 		["RightLeg.FluffyLeggings"] = "Fluffy shorts",
 	},
 	feet = {
