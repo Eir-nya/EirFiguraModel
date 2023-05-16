@@ -460,6 +460,9 @@ function armor.getPartsToEdit(item, mode)
 end
 
 function armor.setVisible(visible)
+	if armor.display == visible then
+		return
+	end
 	armor.display = visible
 	modules.events.armorVisible:run(visible)
 end

@@ -12,11 +12,6 @@ local init = function()
 	else
 		settings.armor.vanitySlots = client.isModLoaded("vanityslots")
 	end
-
-	-- Sync settings table on ENTITY_INIT so new players receive settings data
-	if not host:isHost() then
-		pings.requestSettings()
-	end
 end
 events.ENTITY_INIT:register(init)
 

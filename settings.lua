@@ -105,40 +105,6 @@ settings = {
 }
 
 
--- Settings sync (host -> other players)
-function pings.settingSync(path, newValue)
-	local tableToSetIn = _G
-	local dotFound, lastDot = path:find(".*%.")
-	if dotFound then
-		tableToSetIn = modules.util.getByPath(path:sub(0, lastDot - 1))
-		tableToSetIn[path:sub(lastDot + 1)] = newValue
-	else
-		_G[path] = newValue
-	end
-end
-
-function pings.requestSettings()
-	if host:isHost() then
-		-- Sync settings table
-		syncSettingsToAll()
-		-- Sync other data
-		pings.setArmorVisible(modules.armor.display)
-		for slot, clothes in pairs(modules.clothes) do
-			if type(clothes) == "table" then
-				pings.setClothes(slot, modules.clothes.getClothes(slot))
-			end
-		end
-		pings.setEffects(previous.effects)
-		pings.setFlying(previous.flying)
-		pings.setAir(previous.air)
-		modules.eyes.checkNightVision()
-		modules.eyes.checkScaredEffects()
-		if modules.sit.isSitting then
-			pings.startSitting(modules.sit.anim.anim:getName())
-		end
-	end
-end
-
 -- Load settings
 if host:isHost() then
 	function saveSettings()
@@ -156,35 +122,8 @@ if host:isHost() then
 	else
 		local newSettings = config:load("settings")
 		if type(newSettings) == "table" then
-			-- Ping instruction is delayed by a tick on avatar load. Running this now will sync settings for others.
 			settings = newSettings
 		end
-	end
-
-	-- Creates a list of all key-value pairs in the settings table
-	local pathsToSet = {}
-	local recurse
-	function recurse(tableToSearch, path)
-		for k, v in pairs(tableToSearch) do
-			if type(v) == "table" then
-				recurse(v, path .. "." .. k)
-			else
-				table.insert(pathsToSet, 1, { k = path .. "." .. k, v = v })
-			end
-		end
-	end
-	recurse(settings, "settings")
-
-	-- Sends settings data to all other clients using pings
-	function syncSettingsToAll()
-		events.TICK:register(function()
-			local nextPair = table.remove(pathsToSet)
-			if nextPair then
-				pings.settingSync(nextPair.k, nextPair.v)
-			else
-				events.TICK:remove("settings sync")
-			end
-		end, "settings sync")
 	end
 end
 

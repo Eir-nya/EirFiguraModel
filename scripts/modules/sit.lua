@@ -57,6 +57,9 @@ if host:isHost() then
 end
 
 function sit.startSitting(anim)
+	if sit.isSitting then
+		return
+	end
 	sit.isSitting = true
 
 	-- Cancel hug animation if applicable

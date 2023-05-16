@@ -4,6 +4,7 @@ modules = {
 	"util",
 	"init",
 	"events",
+	"sync",
 	"vertexes",
 
 	"nameplate",

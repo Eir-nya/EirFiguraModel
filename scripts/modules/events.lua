@@ -268,27 +268,20 @@ if host:isHost() then
 end
 
 -- As of figura rc14, player:getAir has been moved to host:getAir
-events.air = events:new(events.TICK)
-if host.getAir then
-	-- Air event
-	function pings.setAir(newAir)
-		previous.airPercent = newAir
-	end
-	if host:isHost() then
-		events.air.condition = function()
-			local lastAirPercent = previous.airPercent
-			local airPercent = host:getAir() / player:getMaxAir()
-			previous.airPercent = airPercent
-			return airPercent ~= lastAirPercent
-		end
-		events.air:register(function() pings.setAir(previous.airPercent) end)
-	end
-else
+events.air = events:new()
+-- Air event
+function pings.setAir(newAir)
+	previous.airPercent = newAir
+	events.air:run()
+end
+if host:isHost() then
 	events.air.condition = function()
 		local lastAirPercent = previous.airPercent
-		local airPercent = player:getAir() / player:getMaxAir()
+		local airPercent = host:getAir() / player:getMaxAir()
 		previous.airPercent = airPercent
-		return airPercent ~= lastAirPercent
+		if airPercent ~= lastAirPercent then
+			pings.setAir(previous.airPercent)
+		end
 	end
 end
 
