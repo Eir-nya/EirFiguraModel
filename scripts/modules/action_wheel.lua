@@ -134,22 +134,26 @@ aw.pages = {
 			leftClick = function(self) aw.emoteMethod(self, "hug") end,
 			enabledFunc = function() return avatar:canEditVanillaModel() and aw.enableEmoteMethod("hug") and modules.emotes.canHug() and not modules.sit.isSitting end,
 		},
-		{
-			title = '{"text":"Sit","color":"#7f65b6"}',
-			disabledTitle = '[' .. aw.disabled .. '{"text":"Sit","color":"gray","font":"default"}]',
-			color = vec(87 / 255, 61 / 255, 142 / 255),
-			hoverColor = vec(127 / 255, 101 / 255, 182 / 255),
-			texture = { u = 11, v = 15, w = 16, h = 15, s = 1.5 },
-			leftClick = function(self)
-				if modules.sit.isSitting then
-					pings.stopSitting(false)
-				elseif self.enabledFunc() then
-					pings.startSitting(modules.sit.pickSitAnim())
-				end
-				aw.emoteMethod(self, "sit")
-			end,
-			enabledFunc = function() return avatar:canEditVanillaModel() and not previous.invisible and modules.sit.canSit() and not (modules.emotes.isEmoting() and modules.emotes.emote == "hug") end,
-		},
+		aw.scrollableListAction({
+				disabledTitle = '[' .. aw.disabled .. '{"text":"Sit","color":"gray","font":"default"}]',
+				color = vec(87 / 255, 61 / 255, 142 / 255),
+				hoverColor = vec(127 / 255, 101 / 255, 182 / 255),
+				texture = { u = 11, v = 15, w = 16, h = 15, s = 1.5 },
+				leftClick = function(self)
+					if modules.sit.isSitting then
+						pings.stopSitting(false)
+					elseif self.enabledFunc() then
+						pings.startSitting(modules.sit.pickSitAnim())
+					end
+					aw.emoteMethod(self, "sit")
+				end,
+				enabledFunc = function() return avatar:canEditVanillaModel() and not previous.invisible and modules.sit.canSit() and not (modules.emotes.isEmoting() and modules.emotes.emote == "hug") end,
+			},
+			'{"text":"Sit","color":"#7f65b6"}',
+			function() return modules.sit.anims, modules.sit.anims.current end,
+			function(index) modules.sit.anims.current = modules.sit.anims[index] end,
+			function() end
+		),
 	},
 	wardrobe = {
 		title = '{"text":"Wardrobe","color":"gold"}',

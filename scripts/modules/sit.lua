@@ -5,6 +5,15 @@ local sit = {
 	isSitting = false,
 	facingDir = nil,
 	anim = modules.animations.sit1,
+	anims = {
+		current = 1,
+		"sit",
+		sit = 1,
+		sit1 = 1,
+		sit2 = 1,
+		"layPose",
+		layPose = 2,
+	}
 }
 
 -- Subscribable events
@@ -39,8 +48,14 @@ end
 
 if host:isHost() then
 	function sit.pickSitAnim()
-		-- "Raycast" a bit in front of the player to decide which animation to play
 		local bodyYaw = player:getBodyYaw()
+		pings.sitSetFacingDir(bodyYaw)
+
+		if sit.anims.current ~= 1 then
+			return sit.anims[sit.anims.current]
+		end
+
+		-- "Raycast" a bit in front of the player to decide which animation to play
 		local direction = vec(-math.sin(math.rad(bodyYaw)), 0, math.cos(math.rad(bodyYaw))):normalized()
 		local checkPos1 = player:getPos() + (direction * 0.4) + vec(0, -0.01, 0)
 		local checkPos2 = player:getPos() + (direction * 1.5) + vec(0, -0.24, 0)
@@ -49,8 +64,6 @@ if host:isHost() then
 		if raycastClean then
 			raycastClean = not modules.util.collisionAt(checkPos2)
 		end
-
-		pings.sitSetFacingDir(bodyYaw)
 
 		return raycastClean and "sit2" or "sit1"
 	end

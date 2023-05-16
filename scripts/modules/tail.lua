@@ -67,13 +67,13 @@ function tail.setIntendedRot()
 			vec(-12.5, 0, 0), vec(-10, 0, 0), vec(-10, 0, 0),
 			vec(7.5, 0, 0), vec(7.5, 0, 0), vec(7.5, 0, 0)
 		}
-	elseif modules.sit.isSitting then
+	elseif modules.sit.isSitting and modules.sit.anim.anim:getName() ~= "layPose" then
 		tail.intendedRotations = {
 			vec(2.5 - 30, 0, 0), vec(-12.5, 0, 0), vec(-12.5, 0, 0),
 			vec(-12.5, 0, 0), vec(-10, 0, 0), vec(-10, 0, 0),
 			vec(7.5, 0, 0), vec(7.5, 0, 0), vec(7.5, 0, 0)
 		}
-	elseif previous.elytra then
+	elseif previous.elytra or (modules.sit.isSitting and modules.sit.anim.anim:getName() == "layPose") then
 		tail.intendedRotations = {
 			vec(-5, 0, 0), vec(12.5, 0, 0), vec(12.5, 0, 0),
 			vec(12.5, 0, 0), vec(7.5, 0, 0), vec(7.5, 0, 0),

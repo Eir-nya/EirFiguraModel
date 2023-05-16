@@ -61,8 +61,9 @@ local punchBlend = {
 }
 local hideSwipe = function() models.cat.RightArm.swipe:setVisible(false) end
 local stopSit = function(self)
-	modules.sit.isSitting = false
-	-- modules.sit.stopSitting(true)
+	if not modules.sit.anims[modules.animations[1].anim:getName()] then
+		modules.sit.stopSitting(true)
+	end
 end
 
 local anims = {
@@ -110,6 +111,13 @@ local anims = {
 			LeftArm = overrideModes.OVERRIDE,
 			RightLeg = overrideModes.OVERRIDE,
 			LeftLeg = overrideModes.OVERRIDE,
+		},
+		onInterrupt = stopSit,
+	},
+	layPose = {
+		overrideVanillaModes = {
+			RightArm = overrideModes.OVERRIDE,
+			LeftArm = overrideModes.OVERRIDE,
 		},
 		onInterrupt = stopSit,
 	},
