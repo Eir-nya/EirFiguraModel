@@ -31,8 +31,8 @@ modules.events.RENDER:register(function(delta, ctx)
 	models.cat.LeftThigh:setPos(vanillaLeftPos)
 
 	if player:isCrouching() then
-		models.cat.RightThigh:setPos(models.cat.RightThigh:getPos() + vec(0, 0, 1.5))
-		models.cat.LeftThigh:setPos(models.cat.LeftThigh:getPos() + vec(0, 0, 1.5))
+		models.cat.RightThigh:setPos(models.cat.RightThigh:getPos() + vec(0, 0, 0.5))
+		models.cat.LeftThigh:setPos(models.cat.LeftThigh:getPos() + vec(0, 0, 0.5))
 		models.cat.RightThigh:setRot(vanilla_model.BODY:getOriginRot() / 1.5)
 		models.cat.LeftThigh:setRot(vanilla_model.BODY:getOriginRot() / 1.5)
 	else

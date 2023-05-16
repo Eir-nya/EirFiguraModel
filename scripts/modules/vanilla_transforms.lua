@@ -106,6 +106,7 @@ function vt.applyToVanillaPart(modelPart, ...)
 		vanillaPart:setPos(modelPart:getTruePos())
 		vanillaPart:setRot(vanillaPart:getOriginRot() + modelPart:getTrueRot())
 	end
+	modelPart:setPos(0, 0, 0)
 	modelPart:setPos(-modelPart:getTruePos())
 	modelPart:setRot(0, 0, 0)
 	modelPart:setRot(-modelPart:getTrueRot())
