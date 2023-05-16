@@ -14,21 +14,24 @@ end
 modules.events.ENTITY_INIT:register(bfp.init)
 
 function bfp.updateArms(delta, ctx)
-	if ctx ~= "FIRST_PERSON" then
+	if not previous.firstPerson then
 		return
 	end
 
-	-- models.cat:setRot()
+	models.cat.LeftArm.Forearm:setPos(-models.cat.LeftArm.Forearm:getAnimPos())
+	models.cat.LeftArm.Forearm:setRot(-models.cat.LeftArm.Forearm:getAnimRot())
+	models.cat.RightArm.Forearm:setPos(-models.cat.RightArm.Forearm:getAnimPos())
+	models.cat.RightArm.Forearm:setRot(-models.cat.RightArm.Forearm:getAnimRot())
 
 	bfp.lastLeftArmRot = models.cat.LeftArm:getRot()
 	bfp.lastLeftArmPos = models.cat.LeftArm:getPos()
 	bfp.lastRightArmRot = models.cat.RightArm:getRot()
 	bfp.lastRightArmPos = models.cat.RightArm:getPos()
 
-	models.cat.LeftArm:setRot(-models.cat.LeftArm:getAnimRot() / 1.375)
-	models.cat.RightArm:setRot(-models.cat.RightArm:getAnimRot() / 1.375)
 	models.cat.LeftArm:setPos(-models.cat.LeftArm:getAnimPos() / 1.25)
+	models.cat.LeftArm:setRot(-models.cat.LeftArm:getAnimRot() / 1.375)
 	models.cat.RightArm:setPos(-models.cat.RightArm:getAnimPos() / 1.25)
+	models.cat.RightArm:setRot(-models.cat.RightArm:getAnimRot() / 1.375)
 end
 modules.events.RENDER:register(bfp.updateArms)
 
@@ -112,7 +115,7 @@ end
 modules.events.POST_RENDER:register(bfp.crosshairRender)
 
 function bfp.render(delta, context)
-	if context == "FIRST_PERSON" and previous.pose ~= "SLEEPING" then
+	if previous.firstPerson and previous.pose ~= "SLEEPING" then
 		local rot = player:getRot(delta)
 
 		-- Camera rot
@@ -135,7 +138,7 @@ function bfp.render(delta, context)
 		-- vectors.rotateAroundAxis(-rot.x, add, vec(0, 0, 1))
 		-- vectors.rotateAroundAxis(-rot.y, add, vec(0, 1, 0))
 		-- renderer:setCameraPos(add * math.playerScale)
-	elseif context == "RENDER" then
+	elseif modules.util.renderedInWorld(context) then
 		renderer:offsetCameraRot()
 		-- renderer:setCameraPos()
 	end
