@@ -106,7 +106,6 @@
 			"to": [3.9, 13.75, 2],
 			"autouv": 0,
 			"color": 4,
-			"visibility": false,
 			"rotation": [7.5, 0, 5],
 			"origin": [2, 12, -2],
 			"uv_offset": [0, 16],
@@ -6249,7 +6248,6 @@
 			"to": [3.9, 13.75, -2],
 			"autouv": 0,
 			"color": 4,
-			"visibility": false,
 			"origin": [2, 12, -2],
 			"uv_offset": [0, 16],
 			"faces": {
@@ -6290,7 +6288,6 @@
 			"to": [2.9, 11, -2],
 			"autouv": 0,
 			"color": 4,
-			"visibility": false,
 			"origin": [2, 12, -2],
 			"uv_offset": [0, 16],
 			"faces": {
@@ -6331,7 +6328,6 @@
 			"to": [-0.1, 13.75, 2],
 			"autouv": 0,
 			"color": 4,
-			"visibility": false,
 			"origin": [2, 12, -2],
 			"uv_offset": [0, 16],
 			"faces": {
@@ -6373,7 +6369,6 @@
 			"to": [-0.1, 11, 1],
 			"autouv": 0,
 			"color": 4,
-			"visibility": false,
 			"origin": [2, 12, -2],
 			"uv_offset": [0, 16],
 			"faces": {
@@ -6414,7 +6409,6 @@
 			"to": [3.9, 13.75, 2.25],
 			"autouv": 0,
 			"color": 4,
-			"visibility": false,
 			"origin": [2, 12, -2],
 			"uv_offset": [0, 16],
 			"faces": {
@@ -6455,7 +6449,6 @@
 			"to": [2.9, 11, 2.25],
 			"autouv": 0,
 			"color": 4,
-			"visibility": false,
 			"origin": [2, 12, -2],
 			"uv_offset": [0, 16],
 			"faces": {
@@ -6496,7 +6489,6 @@
 			"to": [4.15, 13.75, 2],
 			"autouv": 0,
 			"color": 4,
-			"visibility": false,
 			"origin": [2, 12, -2],
 			"uv_offset": [0, 16],
 			"faces": {
@@ -9807,7 +9799,6 @@
 			"to": [3.9, 13.85, 2],
 			"autouv": 0,
 			"color": 4,
-			"visibility": false,
 			"origin": [2, 12, -2],
 			"uv_offset": [0, 16],
 			"faces": {
@@ -12840,7 +12831,6 @@
 			"to": [0.1, 13.75, 2],
 			"autouv": 0,
 			"color": 4,
-			"visibility": false,
 			"rotation": [7.5, 0, -5],
 			"origin": [-2, 12, -2],
 			"uv_offset": [0, 16],
@@ -12882,7 +12872,6 @@
 			"to": [0.1, 13.75, -2],
 			"autouv": 0,
 			"color": 4,
-			"visibility": false,
 			"origin": [-2, 12, -2],
 			"uv_offset": [0, 16],
 			"faces": {
@@ -12923,7 +12912,6 @@
 			"to": [0.1, 11, -2],
 			"autouv": 0,
 			"color": 4,
-			"visibility": false,
 			"origin": [-2, 12, -2],
 			"uv_offset": [0, 16],
 			"faces": {
@@ -12964,7 +12952,6 @@
 			"to": [-3.9, 13.75, 2],
 			"autouv": 0,
 			"color": 4,
-			"visibility": false,
 			"origin": [-2, 12, -2],
 			"uv_offset": [0, 16],
 			"faces": {
@@ -13007,7 +12994,6 @@
 			"to": [0.1, 13.75, 2.25],
 			"autouv": 0,
 			"color": 4,
-			"visibility": false,
 			"origin": [-2, 12, -2],
 			"uv_offset": [0, 16],
 			"faces": {
@@ -13048,7 +13034,6 @@
 			"to": [-0.9, 11, 2.25],
 			"autouv": 0,
 			"color": 4,
-			"visibility": false,
 			"origin": [-2, 12, -2],
 			"uv_offset": [0, 16],
 			"faces": {
@@ -13089,7 +13074,6 @@
 			"to": [0.6, 13.75, 2],
 			"autouv": 0,
 			"color": 4,
-			"visibility": false,
 			"origin": [-2, 12, -2],
 			"uv_offset": [0, 16],
 			"faces": {
@@ -13132,7 +13116,6 @@
 			"to": [0.6, 11, 0],
 			"autouv": 0,
 			"color": 4,
-			"visibility": false,
 			"origin": [-2, 12, -2],
 			"uv_offset": [0, 16],
 			"faces": {
@@ -13175,7 +13158,6 @@
 			"to": [0.1, 14, 2],
 			"autouv": 0,
 			"color": 4,
-			"visibility": false,
 			"origin": [-2, 12, -2],
 			"uv_offset": [0, 16],
 			"faces": {
@@ -15102,7 +15084,7 @@
 			"uuid": "c539aea0-1e8c-943b-905d-0112a19a8709",
 			"export": true,
 			"mirror_uv": false,
-			"isOpen": true,
+			"isOpen": false,
 			"locked": false,
 			"visibility": true,
 			"autouv": 0,
@@ -15182,7 +15164,7 @@
 			"uuid": "4a95a4cc-ee27-cc54-a9a7-88bc77d46a2e",
 			"export": true,
 			"mirror_uv": false,
-			"isOpen": true,
+			"isOpen": false,
 			"locked": false,
 			"visibility": true,
 			"autouv": 0,
@@ -15251,7 +15233,7 @@
 			"mirror_uv": false,
 			"isOpen": false,
 			"locked": false,
-			"visibility": false,
+			"visibility": true,
 			"autouv": 0,
 			"children": [
 				"da6a743a-c1a4-36eb-1daf-551035301a0e",
@@ -15265,7 +15247,7 @@
 					"mirror_uv": false,
 					"isOpen": false,
 					"locked": false,
-					"visibility": false,
+					"visibility": true,
 					"autouv": 0,
 					"children": [
 						"b6a5442b-9606-f72a-739a-139b985848ef",
@@ -15412,7 +15394,7 @@
 			"mirror_uv": false,
 			"isOpen": false,
 			"locked": false,
-			"visibility": false,
+			"visibility": true,
 			"autouv": 0,
 			"children": [
 				"458da48e-b725-2e1c-f7bb-45970c0cd0bc",
@@ -15426,7 +15408,7 @@
 					"mirror_uv": false,
 					"isOpen": false,
 					"locked": false,
-					"visibility": false,
+					"visibility": true,
 					"autouv": 0,
 					"children": [
 						"a321badc-a896-0f79-42e6-e11f8a401a2b",
@@ -19527,7 +19509,7 @@
 					]
 				},
 				"405ca4ce-8bc3-f163-bf66-63e13a5aa37b": {
-					"name": "ForearmR",
+					"name": "Forearm",
 					"type": "bone",
 					"keyframes": [
 						{
@@ -19735,6 +19717,94 @@
 								}
 							],
 							"uuid": "05bbef6d-b5d0-ad30-aa63-758a4f8629c0",
+							"time": 0,
+							"color": -1,
+							"interpolation": "linear",
+							"bezier_linked": true,
+							"bezier_left_time": [-0.1, -0.1, -0.1],
+							"bezier_left_value": [0, 0, 0],
+							"bezier_right_time": [0.1, 0.1, 0.1],
+							"bezier_right_value": [0, 0, 0]
+						}
+					]
+				},
+				"38fcda95-2705-cd26-9e41-81501ed4ecd7": {
+					"name": "RightThigh",
+					"type": "bone",
+					"keyframes": [
+						{
+							"channel": "rotation",
+							"data_points": [
+								{
+									"x": 45,
+									"y": "0",
+									"z": "0"
+								}
+							],
+							"uuid": "628db69d-26b3-a8f3-b934-66c13d035204",
+							"time": 0,
+							"color": -1,
+							"interpolation": "linear",
+							"bezier_linked": true,
+							"bezier_left_time": [-0.1, -0.1, -0.1],
+							"bezier_left_value": [0, 0, 0],
+							"bezier_right_time": [0.1, 0.1, 0.1],
+							"bezier_right_value": [0, 0, 0]
+						},
+						{
+							"channel": "position",
+							"data_points": [
+								{
+									"x": "0",
+									"y": 1,
+									"z": "0"
+								}
+							],
+							"uuid": "cfc9295e-72e8-5eb2-d57e-24884fb7bab1",
+							"time": 0,
+							"color": -1,
+							"interpolation": "linear",
+							"bezier_linked": true,
+							"bezier_left_time": [-0.1, -0.1, -0.1],
+							"bezier_left_value": [0, 0, 0],
+							"bezier_right_time": [0.1, 0.1, 0.1],
+							"bezier_right_value": [0, 0, 0]
+						}
+					]
+				},
+				"69d1e9b3-a41c-782b-ec71-a1008b4d2ff3": {
+					"name": "LeftThigh",
+					"type": "bone",
+					"keyframes": [
+						{
+							"channel": "rotation",
+							"data_points": [
+								{
+									"x": 45,
+									"y": "0",
+									"z": "0"
+								}
+							],
+							"uuid": "7972c6f0-e9b8-a569-e40f-6dfddb7529b3",
+							"time": 0,
+							"color": -1,
+							"interpolation": "linear",
+							"bezier_linked": true,
+							"bezier_left_time": [-0.1, -0.1, -0.1],
+							"bezier_left_value": [0, 0, 0],
+							"bezier_right_time": [0.1, 0.1, 0.1],
+							"bezier_right_value": [0, 0, 0]
+						},
+						{
+							"channel": "position",
+							"data_points": [
+								{
+									"x": "0",
+									"y": 1,
+									"z": "0"
+								}
+							],
+							"uuid": "50b3565c-11e7-81ef-f50d-b03ae879ac67",
 							"time": 0,
 							"color": -1,
 							"interpolation": "linear",
