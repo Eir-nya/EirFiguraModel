@@ -3,6 +3,7 @@
 local sit = {
 	-- Is sitting?
 	isSitting = false,
+	bedBoost = false,
 	facingDir = nil,
 	anim = modules.animations.sit1,
 	anims = {
@@ -40,6 +41,16 @@ function sit.update()
 end
 modules.events.TICK:register(sit.update)
 
+function sit.renderAboveBed(delta, ctx)
+	if not (sit.bedBoost and sit.isSitting) then
+		models.cat:setPos(vec(0, 0, 0))
+		return
+	end
+
+	models.cat:setPos(vec(0, 6, 0))
+end
+modules.events.RENDER:register(sit.renderAboveBed)
+
 
 
 function pings.sitSetFacingDir(dir)
@@ -74,6 +85,16 @@ function sit.startSitting(anim)
 		return
 	end
 	sit.isSitting = true
+
+	-- Check if sitting on bed and bed is occupied
+	sit.bedBoost = false
+	local block = world.getBlockState(player:getPos())
+	local blockname = block.id
+	if modules.util.startsWith(blockname, "minecraft:") and modules.util.endsWith(blockname, "_bed") then
+		if block.properties.occupied == "true" then
+			sit.bedBoost = true
+		end
+	end
 
 	-- Cancel hug animation if applicable
 	if modules.emotes.isEmoting() and modules.emotes.emote == "hug" then
