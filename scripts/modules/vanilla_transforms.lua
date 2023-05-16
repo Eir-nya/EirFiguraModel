@@ -1,11 +1,8 @@
 local vt = {
 	originalPos = {},
 	originalRot = {},
+	lastShaders = false
 }
-
-if not settings.model.vanillaMatch then
-	return
-end
 
 function vt.init()
 	vanilla_model.HELMET:pos(vec(0, -1, 0))
@@ -18,8 +15,34 @@ function vt.init()
 end
 modules.events.ENTITY_INIT:register(vt.init)
 
+if settings.model.vanillaMatchOriginal then
+	function vt.checkShaders()
+		if client:hasIrisShader() ~= vt.lastShaders then
+			vt.lastShaders = client:hasIrisShader()
+			settings.model.vanillaMatch = not vt.lastShaders
+			modules.armor.helmetEvent()
+			modules.armor.chestplateEvent()
+			modules.armor.leggingsEvent()
+			modules.armor.bootsEvent()
+
+			vt.restoreVanillaParts(vanilla_model.HEAD, vanilla_model.HAT)
+			vt.restoreVanillaParts(vanilla_model.BODY, vanilla_model.JACKET)
+			vt.restoreVanillaParts(vanilla_model.LEFT_ARM, vanilla_model.LEFT_SLEEVE)
+			vt.restoreVanillaParts(vanilla_model.RIGHT_ARM, vanilla_model.RIGHT_SLEEVE)
+			vt.restoreVanillaParts(vanilla_model.LEFT_LEG, vanilla_model.LEFT_PANTS)
+			vt.restoreVanillaParts(vanilla_model.RIGHT_LEG, vanilla_model.RIGHT_PANTS)
+
+			if previous.elytra then
+				vt.restoreVanillaParts(vanilla_model.LEFT_ELYTRA)
+				vt.restoreVanillaParts(vanilla_model.RIGHT_ELYTRA)
+			end
+		end
+	end
+	modules.events.RENDER:register(vt.checkShaders)
+end
+
 function vt.render(delta, ctx)
-	if ctx ~= "RENDER" then
+	if ctx ~= "RENDER" or not settings.model.vanillaMatch then
 		return
 	end
 
@@ -40,6 +63,10 @@ end
 modules.events.RENDER:register(vt.render)
 
 function vt.postRender(delta, ctx)
+	if not settings.model.vanillaMatch then
+		return
+	end
+
 	if modules.util.renderedInWorld(ctx) then
 		vt.restorePart(models.cat.Head, vanilla_model.HEAD, vanilla_model.HAT)
 		vt.restorePart(models.cat.Body, vanilla_model.BODY, vanilla_model.JACKET)

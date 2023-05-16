@@ -145,6 +145,7 @@ if not settings.eyes.glow.enabled then
 	settings.eyes.glow.xpGlint = false
 end
 
+settings.model.vanillaMatchOriginal = settings.model.vanillaMatch
 if client.compareVersions(client:getFiguraVersion():sub(0, client:getFiguraVersion():find("+") - 1), "0.1.0-rc.13") < 1
   or client.hasIrisShader() then
 	settings.model.vanillaMatch = false

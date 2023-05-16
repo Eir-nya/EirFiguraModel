@@ -91,26 +91,24 @@ if host:isHost() then
 	end)
 end
 
---TODO: Restore once a vanilla model-compatible method for this exists
-if not settings.model.vanillaMatch then
-	function sit.faceSameDirection(delta, ctx)
-		if not modules.util.renderedInWorld(ctx) then
-			return
-		end
-
-		if sit.anim.anim:isPlaying() or sit.anim:isFading() then
-			local animFade = 1
-			if sit.anim:isFading() then
-				animFade = sit.anim:getFadeBlend(delta)
-			end
-
-			local shortAngle = math.shortAngle(player:getBodyYaw(delta), sit.facingDir)
-			local diff = sit.facingDir - (player:getBodyYaw(delta) % 360)
-			models.cat:setRot(vec(0, -shortAngle * animFade, 0))
-		end
+function sit.faceSameDirection(delta, ctx)
+	--TODO: Restore once a vanilla model-compatible method for this exists
+	if not modules.util.renderedInWorld(ctx) or settings.model.vanillaMatch then
+		return
 	end
-	modules.events.RENDER:register(sit.faceSameDirection)
+
+	if sit.anim.anim:isPlaying() or sit.anim:isFading() then
+		local animFade = 1
+		if sit.anim:isFading() then
+			animFade = sit.anim:getFadeBlend(delta)
+		end
+
+		local shortAngle = math.shortAngle(player:getBodyYaw(delta), sit.facingDir)
+		local diff = sit.facingDir - (player:getBodyYaw(delta) % 360)
+		models.cat:setRot(vec(0, -shortAngle * animFade, 0))
+	end
 end
+modules.events.RENDER:register(sit.faceSameDirection)
 
 function sit.canSit()
 	return not previous.invisible and previous.velMagXZ < 0.05 and player:isOnGround() and previous.pose == "STANDING"
