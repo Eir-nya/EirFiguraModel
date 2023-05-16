@@ -14,4 +14,3 @@ TODO:
 - compress on unnecessary settings (eyes toggle)
 - eyes are stuck on red for the others? (5 levels)
 - update fluffy shorts, enby socks
-- update leggings armor, boots armor

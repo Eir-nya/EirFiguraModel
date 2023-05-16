@@ -54,12 +54,20 @@
 			"moveTo": "models.cat.LeftArm.Forearm",
 			"visible": false
 		},
+		"models.armor.RightThigh.ArmorLeggings": {
+			"moveTo": "models.cat.RightThigh",
+			"visible": false
+		},
 		"models.armor.RightLeg.ArmorLeggings": {
 			"moveTo": "models.cat.RightLeg",
 			"visible": false
 		},
 		"models.armor.RightLeg.ArmorBoots": {
 			"moveTo": "models.cat.RightLeg",
+			"visible": false
+		},
+		"models.armor.LeftThigh.ArmorLeggings": {
+			"moveTo": "models.cat.LeftThigh",
 			"visible": false
 		},
 		"models.armor.LeftLeg.ArmorLeggings": {
