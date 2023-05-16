@@ -225,28 +225,7 @@ function armor.defaultEquip(item)
 			modelPart:setUVPixels(uv)
 		end
 	elseif slot == "leggings" then
-		models.cat.Body.ArmorBottom:setVisible(true)
-		models.cat.Body.ArmorBottom:setPrimaryTexture("PRIMARY")
-		models.cat.Body.ArmorBottom:getUVMatrix():reset()
-		models.cat.LeftThigh.ArmorLeggings:setVisible(true)
-		models.cat.LeftThigh.ArmorLeggings:setPrimaryTexture("PRIMARY")
-		models.cat.LeftThigh.ArmorLeggings:getUVMatrix():reset()
-		models.cat.RightThigh.ArmorLeggings:setVisible(true)
-		models.cat.RightThigh.ArmorLeggings:setPrimaryTexture("PRIMARY")
-		models.cat.RightThigh.ArmorLeggings:getUVMatrix():reset()
-		models.cat.LeftLeg.ArmorLeggings:setVisible(true)
-		models.cat.LeftLeg.ArmorLeggings:setPrimaryTexture("PRIMARY")
-		models.cat.LeftLeg.ArmorLeggings:getUVMatrix():reset()
-		models.cat.RightLeg.ArmorLeggings:setVisible(true)
-		models.cat.RightLeg.ArmorLeggings:setPrimaryTexture("PRIMARY")
-		models.cat.RightLeg.ArmorLeggings:getUVMatrix():reset()
-
-		local uv = armor.getUVOffset(item, "leggings")
-		models.cat.Body.ArmorBottom:setUVPixels(armor.getUVOffset(item, "chestplateBottom"))
-		models.cat.LeftThigh.ArmorLeggings:setUVPixels(uv)
-		models.cat.RightThigh.ArmorLeggings:setUVPixels(uv)
-		models.cat.LeftLeg.ArmorLeggings:setUVPixels(uv)
-		models.cat.RightLeg.ArmorLeggings:setUVPixels(uv)
+		armor.useDefaultTexture(item, slot)
 	elseif slot == "boots" then
 		armor.useDefaultTexture(item, slot)
 	end
@@ -271,7 +250,7 @@ function armor.useDefaultTexture(item, slot)
 	end
 	local resourcePath = "textures/models/armor/" .. imageName
 	if type(armor.texturePaths[prefix]) ~= "table" or armor.texturePaths[prefix].appendLayer then
-		resourcePath = resourcePath.. (slot == "leggings" and "_layer_2" or "_layer_1")
+		resourcePath = resourcePath .. (slot == "leggings" and "_layer_2" or "_layer_1")
 	end
 	resourcePath = resourcePath .. ".png"
 	if type(armor.texturePaths[prefix]) == "table" and armor.texturePaths[prefix].namespace then
@@ -310,16 +289,10 @@ function armor.useDefaultTexture(item, slot)
 		models.cat.RightArm.Armor:setUVPixels(40, -16 + 16)
 		models.cat.LeftArm.Forearm.Armor:setUVPixels(40, -16 + 16)
 		models.cat.RightArm.Forearm.Armor:setUVPixels(40, -16 + 16)
-	elseif slot == "leggings" then
-		models.cat.Body.ArmorBottom:setUVPixels(16, -32 + 16)
-		models.cat.LeftThigh.ArmorLeggings:setUVPixels(0, -48 + 16)
-		models.cat.RightThigh.ArmorLeggings:setUVPixels(0, -48 + 16)
-		models.cat.LeftLeg.ArmorLeggings:setUVPixels(0, -48 + 16)
-		models.cat.RightLeg.ArmorLeggings:setUVPixels(0, -48 + 16)
 	end
 
 	-- Apply UV scale
-	if slot ~= "helmet" and slot ~= "boots" then
+	if slot == "chestplate" then
 		for _, part in pairs(partsToShow) do
 			part:getUVMatrix():scale(texScale)
 		end
