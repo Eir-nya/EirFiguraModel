@@ -90,7 +90,7 @@ function sit.startSitting(anim)
 	sit.bedBoost = false
 	local block = world.getBlockState(player:getPos())
 	local blockname = block.id
-	if modules.util.startsWith(blockname, "minecraft:") and modules.util.endsWith(blockname, "_bed") then
+	if modules.util.endsWith(blockname, "_bed") then
 		if block.properties.occupied == "true" then
 			sit.bedBoost = true
 		end
