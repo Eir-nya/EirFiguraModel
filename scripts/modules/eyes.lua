@@ -112,7 +112,7 @@ function eyes.trackMobs()
 		local priority = eyes.getEntityPriority(target:getType())
 		eyes.nearbyEntities[priority] = target
 
-		if eyes.nearest ~= target:getUUID() then
+		if eyes.nearest ~= target:getUUID() and world.getEntity(target:getUUID()) then
 			pings.setNearest(target:getUUID())
 		end
 		eyes.highestPriority = math.max(priority, eyes.highestPriority)
@@ -142,7 +142,7 @@ function eyes.trackMobs()
 				goto continue
 			end
 
-			if eyes.nearest ~= entity:getUUID() then
+			if eyes.nearest ~= entity:getUUID() and world.getEntity(entity:getUUID()) then
 				pings.setNearest(entity:getUUID())
 			end
 			nearestSet = true
