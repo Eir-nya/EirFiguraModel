@@ -74,11 +74,11 @@ function armor.init()
 	models.cat.Head:newItem("headItem")
 		:scale(1.1, 1.1, 1.1)
 		:pos(-0.05, 7.95, -0.05)
-		:enabled(false)
+		:setVisible(false)
 	models.cat.Head:newBlock("headBlock")
 		:scale(0.5625, 0.5625, 0.5625)
 		:pos(-4.5, -0.5, -4.5)
-		:enabled(false)
+		:setVisible(false)
 end
 modules.events.ENTITY_INIT:register(armor.init)
 
@@ -189,8 +189,8 @@ function armor.defaultEquip(item)
 			models.cat.Head.RightEar.Armor:setUVPixels(uv)
 		end
 
-		models.cat.Head:getTask("headItem"):enabled(false)
-		models.cat.Head:getTask("headBlock"):enabled(false)
+		models.cat.Head:getTask("headItem"):setVisible(false)
+		models.cat.Head:getTask("headBlock"):setVisible(false)
 
 		armor.useDefaultTexture(item, slot)
 	elseif slot == "chestplate" then
@@ -315,8 +315,8 @@ function armor.equipHelmetItem(item)
 		end
 	end
 
-	models.cat.Head:getTask("headItem"):enabled(not isBlock)
-	models.cat.Head:getTask("headBlock"):enabled(isBlock)
+	models.cat.Head:getTask("headItem"):setVisible(not isBlock)
+	models.cat.Head:getTask("headBlock"):setVisible(isBlock)
 	if isBlock then
 		models.cat.Head:getTask("headBlock"):block(item.id)
 	else
@@ -340,8 +340,8 @@ function armor.unequipHelmet()
 
 	models.cat.Head.Armor:setVisible(false)
 
-	models.cat.Head:getTask("headItem"):enabled(false)
-	models.cat.Head:getTask("headBlock"):enabled(false)
+	models.cat.Head:getTask("headItem"):setVisible(false)
+	models.cat.Head:getTask("headBlock"):setVisible(false)
 
 	models.cat.Head.Snoot:setVisible(true)
 end
