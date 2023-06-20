@@ -471,6 +471,10 @@ function armor.getUVOffset(item, armorPiece)
 end
 
 function armor.getItemSlot(item)
+	if item:getEquipmentSlot() then
+		return ({HEAD = "helmet", CHEST = "chestplate", LEGS = "leggings", FEET = "boots"})[item:getEquipmentSlot()]
+	end
+
 	local underscoreFind, lastPos = item.id:find(".*_")
 	if underscoreFind then
 		return item.id:sub(lastPos + 1, -1)
