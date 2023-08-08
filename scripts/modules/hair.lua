@@ -98,6 +98,7 @@ modules.events.ENTITY_INIT:register(hair.init)
 
 -- Runs on helmet equip/unequip. Decides which pieces of hair should be visible.
 function hair.helmetEvent()
+	models.cat.Body["3DHairBoobs"]:setVisible(true)
 	-- Only visible items count
 	if modules.armor.checkItemVisible(previous.helmet) and modules.armor.display then
 		hair.ropes.Top:setVisible(false) -- Always hidden
@@ -117,6 +118,7 @@ function hair.helmetEvent()
 
 			models.cat.Head.Frilly:setVisible(false)
 			modules.util.setChildrenVisible(models.cat.Head["3DHair"], false)
+			models.cat.Body["3DHairBoobs"]:setVisible(false)
 		end
 	-- Restore all
 	else
@@ -126,6 +128,7 @@ end
 if settings.hair.physics then
 	modules.events.helmet:register(hair.helmetEvent)
 end
+modules.events.chestplate:register(hair.helmetEvent) -- Ensures 3DHairBoobs gets hidden properly
 modules.events.armorVisible:register(hair.helmetEvent)
 
 function hair.clothesEvent(slot, clothing)
@@ -147,6 +150,8 @@ function hair.clothesEvent(slot, clothing)
 		models.cat.Head["3DHair"].north:setVisible(true)
 		-- Frilly: Hide
 		models.cat.Head.Frilly:setVisible(false)
+		-- 3DHairBoobs: Hide
+		models.cat.Body["3DHairBoobs"]:setVisible(false)
 
 		-- TODO: set limits on Left and Right wavey hair?
 	else
