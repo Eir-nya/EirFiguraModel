@@ -5,12 +5,13 @@ TODO:
 - fix hair while sleeping
 - wave emote?
 - point emote?
-- additional sit animations (laying on tummy, sitting on knees, curl up like a cat)
+- additional sit animations (sitting on knees, curl up like a cat)
 - additional clothes
 - yawn idle animation
 - kneel crouch animation
 - fix vanillaMatch making animations not show at all with shaders on
 - fix blinking frame getting stuck when doing infinite emotes (crying) (can't reproduce)
 - compress on unnecessary settings (eyes toggle)
-- eyes are stuck on red for the others? (5 levels)
 - update fluffy shorts, enby socks
+
+- better boobs
