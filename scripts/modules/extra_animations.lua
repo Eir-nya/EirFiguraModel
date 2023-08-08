@@ -292,25 +292,24 @@ if host:isHost() then
 				return
 			end
 		end
+		local wasAlive = e and e:isAlive() or nil
 		local g = player:isOnGround()
 		local s = player:isSprinting()
 		local sw = player:isSwingingArm()
 		exAnims.oneTickDelayFunc = function()
-			exAnims.attackAnimCheck(e, g, s, sw)
+			exAnims.attackAnimCheck(e, wasAlive, g, s, sw)
 		end
 	end
 
 	-- Check is delayed by one tick
-	function exAnims.attackAnimCheck(e, onGround, sprinting, swingingArm)
+	function exAnims.attackAnimCheck(e, wasAlive, onGround, sprinting, swingingArm)
 		-- Get targeted entity and check health
-		if e ~= nil and e:isLoaded() then
+		if e ~= nil and (e:isLoaded() or wasAlive) then
 			exAnims.showSwipe = false
-			if type(e) == "LivingEntityAPI" then
-				if e:getHealth() == 0 then
-					exAnims.showSwipe = exAnims.itemAnims[previous.mainItem.id] ~= nil
-					pings.attackAnim("swipeD", e:getDeathTime() == 0)
-					return
-				end
+			if (type(e) == "LivingEntityAPI" and e:getHealth() == 0) or (wasAlive and not e:isAlive()) then
+				exAnims.showSwipe = exAnims.itemAnims[previous.mainItem.id] ~= nil
+				pings.attackAnim("swipeD", e:getDeathTime() == 0)
+				return
 			end
 
 			local entityHurting = false
