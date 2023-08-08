@@ -231,9 +231,9 @@ if host:isHost() then
 		local lastXP = previous.xp
 		local xp = player:getExperienceLevel() + player:getExperienceProgress()
 		previous.xp = xp
-		if xp ~= lastXP then
-			pings.setXP(previous.xp)
-		end
+		-- if xp ~= lastXP then
+		-- 	pings.setXP(previous.xp)
+		-- end
 	end)
 end
 
