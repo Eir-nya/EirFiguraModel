@@ -118,6 +118,10 @@ modules.events.boots:register(armor.bootsEvent)
 function armor.equipEvent(item, slot)
 	-- Is item visible?
 	if armor.checkItemVisible(item) then
+		if slot == "chestplate" and previous.elytra then
+			return
+		end
+
 		local material = armor.getItemMaterial(item)
 
 		armor.genericEquip(item)
@@ -467,7 +471,10 @@ modules.events.armorVisible:register(armor.armorVisibleEvent)
 -- Utility functions
 
 function armor.getUVOffset(item, armorPiece)
-	return armor.uvMults[armor.getItemMaterial(item)] * armor.uvWidths[armorPiece]
+	if armor.uvMults[armor.getItemMaterial(item)] then
+		return armor.uvMults[armor.getItemMaterial(item)] * armor.uvWidths[armorPiece]
+	end
+	return 0
 end
 
 function armor.getItemSlot(item)
