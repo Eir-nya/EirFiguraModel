@@ -42,7 +42,7 @@ if settings.model.vanillaMatchOriginal then
 end
 
 function vt.render(delta, ctx)
-	if ctx ~= "RENDER" or not settings.model.vanillaMatch then
+	if ctx ~= "PAPERDOLL" or not settings.model.vanillaMatch then
 		return
 	end
 

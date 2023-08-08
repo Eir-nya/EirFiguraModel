@@ -1,5 +1,5 @@
 modules.events.RENDER:register(function(delta, ctx)
-	if previous.firstPerson then
+	if ctx == "FIRST_PERSON" then
 		return
 	end
 
