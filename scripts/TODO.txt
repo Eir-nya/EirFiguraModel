@@ -13,6 +13,3 @@ TODO:
 - fix blinking frame getting stuck when doing infinite emotes (crying) (can't reproduce)
 - compress on unnecessary settings (eyes toggle)
 - update fluffy shorts, enby socks
-
-- dick
-- better boobs

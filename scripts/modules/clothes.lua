@@ -1,4 +1,6 @@
 local clothes = {
+	nsfw = false,
+
 	head = {
 		current = 1,
 		"None",
@@ -65,6 +67,7 @@ local parts = {
 		["Head.Mask"] = "Cat mask"
 	},
 	top = {
+		["Body.Boobs.Boob"] = "*~None|🔞*",
 		["Body.Boobs.Shirt"] = "ShirtFluffy jacket",
 		["Body.Boobs.BikiniTop"] = "Bikini (top)",
 		["Body.Boobs.FluffyJacket"] = "Fluffy jacket",
@@ -80,6 +83,7 @@ local parts = {
 		["RightArm.Forearm.FluffyJacket"] = "Fluffy jacket",
 	},
 	bottom = {
+		["Body.FatCock"] = "🔞None",
 		["Body.3DShorts"] = "Purple shortsFluffy shorts",
 		["Body.FluffyLeggings"] = "Fluffy shorts",
 		["LeftThigh.3DShorts"] = "Purple shorts",
@@ -99,9 +103,25 @@ local parts = {
 	}
 }
 
+local parse
+parse = function(s, clothing)
+	-- OR behavior
+	if s:find("|") then
+		return parse(s:sub(0, s:find("|") - 1), clothing) or parse(s:sub(s:find("|") + 1), clothing)
+	end
+
+	local condition = (s:find(clothing, nil, true) ~= nil or s:find("*") ~= nil) and s:find("~" .. clothing, nil, true) == nil
+
+	if modules.util.startsWith(s, "🔞") then
+		condition = condition and clothes.nsfw
+	end
+
+	return condition
+end
+
 function clothes.showClothes(slot, clothing)
 	for path, s in pairs(parts[slot]) do
-		modules.util.getByPath("models.cat." .. path):setVisible((s:find(clothing, nil, true) ~= nil or s:find("*") ~= nil) and s:find("~" .. clothing, nil, true) == nil)
+		modules.util.getByPath("models.cat." .. path):setVisible(parse(s, clothing))
 	end
 end
 
@@ -170,6 +190,12 @@ modules.events.ENTITY_INIT:register(function()
 		end
 	end
 	modules.events.helmet:register(clothes.maskFunction)
+
+	-- NSFW
+	local cock = modules.rope:new({
+		parentType = modules.rope.parents.Body,
+		limits = {{ zMin = 0, zMax = 0 }}
+	}, models.cat.Body.FatCock.Shaft)
 end)
 
 function clothes.setVisible(slot, visible)
@@ -182,6 +208,10 @@ end
 
 function clothes.getClothes(slot)
 	return clothes[slot][clothes.get(slot)]
+end
+
+function pings.setNSFW(bool)
+	clothes.nsfw = bool
 end
 
 return clothes

@@ -232,6 +232,19 @@ aw.pages = {
 			function(new) modules.clothes.equip("mask", new) end,
 			function(new) pings.setClothes("mask", new) end
 		),
+		{
+			isToggled = modules.clothes.nsfw,
+			texture = { u = 27, v = 16, w = 6, h = 4, s = 2.5 },
+			onShow = function(self, realAction)
+				realAction:title('[{"text":"Armor visible","color":"green"},{"text":"\n  (' .. (modules.armor.display and "Yes" or "No").. ')","color":"gray"}]')
+				realAction:title(modules.clothes.nsfw and ":smirk:" or ":face_with_raised_eyebrow:")
+			end,
+			toggle = function(self, newValue, realAction)
+				modules.clothes.nsfw = newValue
+				self:onShow(realAction)
+				pings.setNSFW(newValue)
+			end,
+		}
 	},
 	settings = {
 		title = "Settings",
@@ -557,5 +570,4 @@ function aw.listDisplay(list, selected)
 end
 
 
--- TODO: third person sleep animation whatever
 return aw

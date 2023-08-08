@@ -132,6 +132,11 @@ modules.events.chestplate:register(hair.helmetEvent) -- Ensures 3DHairBoobs gets
 modules.events.armorVisible:register(hair.helmetEvent)
 
 function hair.clothesEvent(slot, clothing)
+	-- 3DHairBoobs: Hide
+	if clothing == "Fluffy hood" or (slot == "top" and clothing == "None" and not modules.clothes.nsfw) then
+		models.cat.Body["3DHairBoobs"]:setVisible(false)
+	end
+
 	if slot ~= "head" then
 		return
 	end
@@ -150,8 +155,6 @@ function hair.clothesEvent(slot, clothing)
 		models.cat.Head["3DHair"].north:setVisible(true)
 		-- Frilly: Hide
 		models.cat.Head.Frilly:setVisible(false)
-		-- 3DHairBoobs: Hide
-		models.cat.Body["3DHairBoobs"]:setVisible(false)
 
 		-- TODO: set limits on Left and Right wavey hair?
 	else
