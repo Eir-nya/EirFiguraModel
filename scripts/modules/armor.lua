@@ -170,6 +170,7 @@ function armor.genericEquip(item)
 		modules.clothes.setVisible("top", false)
 	elseif slot == "leggings" then
 		modules.clothes.setVisible("bottom", false)
+		models.cat.Body.FatCock:setVisible(false)
 	elseif slot == "boots" then
 		modules.clothes.setVisible("feet", false)
 	end

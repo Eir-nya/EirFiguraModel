@@ -7,9 +7,9 @@ TODO:
 - point emote?
 - additional sit animations (sitting on knees, curl up like a cat)
 - additional clothes
-- yawn idle animation
 - kneel crouch animation
 - fix vanillaMatch making animations not show at all with shaders on
 - fix blinking frame getting stuck when doing infinite emotes (crying) (can't reproduce)
 - compress on unnecessary settings (eyes toggle)
 - update fluffy shorts, enby socks
+- don't play swim anim when on a mount

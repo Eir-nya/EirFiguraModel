@@ -3,11 +3,13 @@ local clothes = {
 
 	head = {
 		current = 1,
+		armor = "helmet",
 		"None",
 		"Fluffy hood"
 	},
 	bow = {
 		current = 2,
+		armor = "helmet",
 		"None",
 		"Bow",
 		"Flower crown"
@@ -19,6 +21,7 @@ local clothes = {
 	},
 	top = {
 		current = 2,
+		armor = "chestplate",
 		"None",
 		"Shirt",
 		"Fluffy jacket",
@@ -26,6 +29,7 @@ local clothes = {
 	},
 	bottom = {
 		current = 2,
+		armor = "leggings",
 		"None",
 		"Purple shorts",
 		"Fluffy shorts",
@@ -33,6 +37,7 @@ local clothes = {
 	},
 	feet = {
 		current = 3,
+		armor = "boots",
 		"None",
 		"Enby socks",
 		"Cat socks",
@@ -67,7 +72,6 @@ local parts = {
 		["Head.Mask"] = "Cat mask"
 	},
 	top = {
-		["Body.Boobs.Boob"] = "*~None|🔞*",
 		["Body.Boobs.Shirt"] = "ShirtFluffy jacket",
 		["Body.Boobs.BikiniTop"] = "Bikini (top)",
 		["Body.Boobs.FluffyJacket"] = "Fluffy jacket",
@@ -128,13 +132,6 @@ end
 function clothes.equip(slot, clothing)
 	local shouldChangeClothes = not modules.armor.display
 	if not shouldChangeClothes then
-		local itemToCheck = ({
-			head = previous.helmet,
-			bow = previous.helmet,
-			top = previous.chestplate,
-			bottom = previous.leggings,
-			feet = previous.boots
-		})[slot]
 		if slot == "top" and previous.elytra then
 			shouldChangeClothes = true
 		elseif slot == "bow" then
@@ -142,7 +139,9 @@ function clothes.equip(slot, clothing)
 		elseif slot == "mask" then
 			shouldChangeClothes = models.cat.Head.Snoot:getVisible()
 		else
-			shouldChangeClothes = not modules.armor.checkItemVisible(itemToCheck)
+			if clothes[slot].armor then
+				shouldChangeClothes = not modules.armor.checkItemVisible(previous[clothes[slot].armor])
+			end
 		end
 	end
 	if shouldChangeClothes then
@@ -212,6 +211,11 @@ end
 
 function pings.setNSFW(bool)
 	clothes.nsfw = bool
+	models.cat.Body.Boobs.Boob:setUVPixels(vec(0, not bool and 4 or 0))
+	if clothes.getClothes("bottom") == "None" and not (modules.armor.display and modules.armor.checkItemVisible(previous.leggings)) then
+		models.cat.Body.FatCock:setVisible(clothes.nsfw)
+	end
 end
+pings.setNSFW(clothes.nsfw)
 
 return clothes
