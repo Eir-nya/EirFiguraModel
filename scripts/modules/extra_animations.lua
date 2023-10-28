@@ -13,6 +13,10 @@ local exAnims = {
 	lastFlying = false,
 	lastBlocking = false,
 
+	-- Idle animation timer
+	idleTimer = 0,
+	idleTime = 20 * 20,
+
 	-- One tick delay for attack anim check thing
 	oneTickDelayFunc = nil,
 	oneTickDelay = 1,
@@ -234,6 +238,25 @@ modules.events.underwater:register(exAnims.underwaterEvent)
 modules.events.fall:register(exAnims.underwaterEvent)
 modules.events.pose:register(exAnims.underwaterEvent)
 
+-- Idle animation
+function exAnims.idleController()
+	local isIdle = avatar:canEditVanillaModel() and not previous.invisible and modules.sit.canSit() and not modules.sit.isSitting and not (modules.emotes.isEmoting() and modules.emotes.emote == "hug") and not player:isUsingItem()
+
+	if isIdle then
+		exAnims.idleTimer = exAnims.idleTimer + 1
+		if exAnims.idleTimer >= exAnims.idleTime and modules.animations.idle1.anim:getPlayState() ~= "PLAYING" then
+			exAnims.idleTimer = 0
+			modules.animations.idle1:play()
+		end
+	else
+		exAnims.idleTimer = 0
+		if modules.animations.idle1.anim:getPlayState() == "PLAYING" and not modules.animations.idle1:isFading() then
+			modules.animations.idle1:fade(modules.animations.fadeModes.FADE_OUT_SMOOTH, 0.55)
+		end
+	end
+end
+modules.events.TICK:register(exAnims.idleController)
+
 function exAnims.render(tickProgress, context)
 	local velY = math.lerp(exAnims.lastVelY, exAnims.newVelY, tickProgress)
 
@@ -308,7 +331,7 @@ if host:isHost() then
 			exAnims.showSwipe = false
 			if (type(e) == "LivingEntityAPI" and e:getHealth() == 0) or (wasAlive and not e:isAlive()) then
 				exAnims.showSwipe = exAnims.itemAnims[previous.mainItem.id] ~= nil
-				pings.attackAnim("swipeD", e:getDeathTime() == 0)
+				pings.attackAnim("swipeD", e.getDeathTime and e:getDeathTime() == 0 or (wasAlive and not e:isAlive()))
 				return
 			end
 
