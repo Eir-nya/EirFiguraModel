@@ -105,28 +105,6 @@ settings = {
 }
 
 
--- Load settings
-if host:isHost() then
-	function saveSettings()
-		config:save("settings", settings)
-	end
-
-	function resetSettings()
-		config:save("reset", true)
-		print("Please reload!")
-	end
-
-	if config:load("reset") then
-		saveSettings()
-		config:save("reset", nil)
-	else
-		local newSettings = config:load("settings")
-		if type(newSettings) == "table" then
-			settings = newSettings
-		end
-	end
-end
-
 -- Settings verification
 
 if not avatar:canEditVanillaModel() then

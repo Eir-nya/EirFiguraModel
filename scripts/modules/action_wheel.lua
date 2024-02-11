@@ -75,13 +75,7 @@ aw.pages = {
 				modules.camera.setFreeze(not modules.camera.frozen)
 			end,
 			enabledFunc = function() return not renderer:isFirstPerson() end,
-		},
-		{
-			title = '{"text":"Settings..."}',
-			color = vec(0.3, 0.3, 0.3),
-			texture = { u = 29, v = 20, w = 10, h = 10, s = 2 },
-			leftClick = function() aw.setPage("settings") end,
-		},
+		}
 	},
 	emotes = {
 		title = '{"text":"Emotes","color":"yellow"}',
@@ -245,26 +239,7 @@ aw.pages = {
 				pings.setNSFW(newValue)
 			end,
 		}
-	},
-	settings = {
-		title = "Settings",
-		{
-			title = '{"text":"Save settings"}',
-			color = vec(0.2, 0.8, 0.2),
-			hoverColor = vec(0.4, 0.8, 0.4),
-			item = world.newItem("minecraft:writable_book"),
-			clickSound = "minecraft:ui.cartography_table.take_result",
-			leftClick = function(self) saveSettings() end,
-		},
-		{
-			title = '{"text":"Reset settings"}',
-			color = vec(0.8, 0.2, 0.2),
-			hoverColor = vec(0.8, 0.4, 0.4),
-			item = world.newItem("minecraft:barrier"),
-			clickSound = "minecraft:ui.loom.take_result",
-			leftClick = function(self) resetSettings() end,
-		},
-	},
+	}
 }
 
 local actionsPage = action_wheel:newPage("main")
@@ -368,10 +343,6 @@ if not iconTex then
 end
 
 
-
--- Automatically generate "Settings" page and content
-local settingsGenerator = require("scripts/settings_serializer")
-settingsGenerator(aw)
 
 -- Create pages and actions
 local createPage, createAction, isAction
