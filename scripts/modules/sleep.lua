@@ -38,7 +38,7 @@ function sleep.startSleeping()
 	end
 
 	modules.animations.sleepPose:play()
-	animations["models.cat"].breatheIdle:speed(0.5)
+	animations["cat"].breatheIdle:speed(0.5)
 
 	-- Fixes a minecraft issue where the client-side specifically renders the model slightly lower than other players see it
 	if host:isHost() then
@@ -74,7 +74,7 @@ function sleep.stopSleeping()
 	end
 
 	modules.animations.sleepPose:stop()
-	animations["models.cat"].breatheIdle:speed(1)
+	animations["cat"].breatheIdle:speed(1)
 
 	if host:isHost() then
 		if settings.sleep.clientHeightFix then

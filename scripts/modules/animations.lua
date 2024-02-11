@@ -339,7 +339,7 @@ end
 
 -- Entity init event
 function anims.entityInit()
-	for name, anim in pairs(animations["models.cat"]) do
+	for name, anim in pairs(animations["cat"]) do
 		local t = anims[name] and anims[name] or {}
 		t.anim = anim
 		animClass:new(t)

@@ -243,7 +243,9 @@ function exAnims.idleController()
 	local isIdle = avatar:canEditVanillaModel() and not previous.invisible and modules.sit.canSit() and not modules.sit.isSitting and not (modules.emotes.isEmoting() and modules.emotes.emote == "hug") and not player:isUsingItem()
 
 	if isIdle then
-		exAnims.idleTimer = exAnims.idleTimer + 1
+		if host:isHost() and not client:isPaused() then
+			exAnims.idleTimer = exAnims.idleTimer + 1
+		end
 		if exAnims.idleTimer >= exAnims.idleTime and modules.animations.idle1.anim:getPlayState() ~= "PLAYING" then
 			exAnims.idleTimer = 0
 			modules.animations.idle1:play()

@@ -6,6 +6,11 @@ local camera = {
 	headYOffset = -1 / 16
 }
 
+function camera.init()
+	renderer:setEyeOffset(vec(0, camera.headYOffset, 0))
+end
+modules.events.ENTITY_INIT:register(camera.init)
+
 function camera.render(delta, context)
 	if context ~= "RENDER" then
 		if context == "FIRST_PERSON" then

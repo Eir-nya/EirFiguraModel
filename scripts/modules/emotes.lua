@@ -181,14 +181,14 @@ function emotes.setEmote(animation, infinite)
 		if modules.sit.isSitting then
 			pings.stopSitting(false)
 		end
-		animations["models.cat"].hug:play()
+		animations["cat"].hug:play()
 	end
 end
 pings.setEmote = emotes.setEmote
 
 function emotes.stopEmote(resetExpression)
 	if emotes.emote == "hug" then
-		animations["models.cat"].hug:stop()
+		animations["cat"].hug:stop()
 	end
 
 	emotes.emote = nil

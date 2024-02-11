@@ -95,9 +95,9 @@ settings = {
 	-- Misc settings
 	misc = {
 		useCustomName = true,		-- Changes nameplates to a custom name (set below)
-		customNameEntity = '[{"text":":zzz::cat::sparkles::trans:"}'
+		customNameEntity = '[{"text":":zzz::cat3::sparkles::trans:"}'
 			.. ',{"text":"\nEir","color":"#8ecbea","bold":"false"}]',
-		customNameChat = '[{"text":":cat_face:Eir","color":"#8ecbea"}]',
+		customNameChat = '[{"text":":cat:Eir","color":"#8ecbea"}]',
 
 		disableGetNbt = false,		-- Disables uses of entity:getNbt() for compatibility with Requiem/Locki mod. Disables vanity aror.
 		customCrosshair = true,		-- Use custom crosshair

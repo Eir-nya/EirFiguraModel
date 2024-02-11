@@ -2,8 +2,6 @@
 
 local util = {}
 
-models = models.models
-
 function util.startsWith(s1, s2)
 	return s1:sub(0, #s2) == s2
 end
