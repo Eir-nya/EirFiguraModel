@@ -17,8 +17,8 @@ modules.events.ENTITY_INIT:register(vt.init)
 
 if settings.model.vanillaMatchOriginal then
 	function vt.checkShaders()
-		if client:hasIrisShader() ~= vt.lastShaders then
-			vt.lastShaders = client:hasIrisShader()
+		if client.hasShaderPack() ~= vt.lastShaders then
+			vt.lastShaders = client.hasShaderPack()
 			settings.model.vanillaMatch = not vt.lastShaders
 			modules.armor.helmetEvent()
 			modules.armor.chestplateEvent()
