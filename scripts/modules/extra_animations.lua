@@ -15,7 +15,7 @@ local exAnims = {
 
 	-- Idle animation timer
 	idleTimer = 0,
-	idleTime = 20 * 20,
+	idleTime = 75 * 20,
 
 	-- One tick delay for attack anim check thing
 	oneTickDelayFunc = nil,
