@@ -26,6 +26,10 @@
 			"moveTo": "cat.Head",
 			"visible": false
 		},
+		"armor.Head.Armor2": {
+			"moveTo": "cat.Head",
+			"visible": false
+		},
 		"armor.Body.Boobs.Armor": {
 			"moveTo": "cat.Body.Boobs",
 			"visible": false

@@ -354,6 +354,7 @@ function armor.unequipHelmet()
 	armor.canRotateEars = false
 
 	models.cat.Head.Armor:setVisible(false)
+	models.cat.Head.Armor2:setVisible(false)
 
 	models.cat.Head:getTask("headItem"):setVisible(false)
 	models.cat.Head:getTask("headBlock"):setVisible(false)
@@ -440,6 +441,7 @@ function armor.getPartsToEdit(item, mode)
 			table.insert(parts, models.cat.Head.RightEar.Armor)
 		end
 		table.insert(parts, models.cat.Head.Armor)
+		table.insert(parts, models.cat.Head.Armor2)
 	elseif slot == "chestplate" then
 		table.insert(parts, models.cat.Body.Boobs.Armor)
 		table.insert(parts, models.cat.Body.Armor)
