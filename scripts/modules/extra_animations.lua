@@ -86,7 +86,7 @@ modules.events.fall = modules.events:new()
 modules.events.block = modules.events:new(events.TICK)
 modules.events.block.condition = function()
 	local lastBlocking = exAnims.lastBlocking
-	local blocking = player:isUsingItem() and player:getActiveItem().id == "minecraft:shield" and not previous.vehicle and player:isAlive()
+	local blocking = player:isUsingItem() and player:getActiveItem():getUseAction() == "BLOCK" and not previous.vehicle and player:isAlive()
 	exAnims.lastBlocking = blocking
 	return blocking ~= lastBlocking
 end
