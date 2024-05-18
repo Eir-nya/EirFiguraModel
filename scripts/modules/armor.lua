@@ -51,6 +51,19 @@ local armor = {
 		olvite = "paradise_lost_olvite",
 		phoenix = "paradise_lost_phoenix",
 	},
+	-- Armor trims
+	trimMaterials = {
+		["amethyst"] = vectors.intToRGB(0x9a5cc6),
+		["copper"] = vectors.intToRGB(0xb4684d),
+		["diamond"] = vectors.intToRGB(0x6eecd2),
+		["emerald"] = vectors.intToRGB(0x0ec754),
+		["gold"] = vectors.intToRGB(0xecd93f),
+		["iron"] = vectors.intToRGB(0xbfc9c8),
+		["lapis"] = vectors.intToRGB(0x1c4d9c),
+		["netherite"] = vectors.intToRGB(0x443a3b),
+		["quartz"] = vectors.intToRGB(0xf6eadf),
+		["redstone"] = vectors.intToRGB(0xbd2008),
+	},
 
 	-- Multiply uv functions by these amounts to display the desired armor type
 	uvMults = {
@@ -169,6 +182,10 @@ function armor.equipEvent(item, slot)
 
 		-- Colorize if leather armor
 		armor.colorizeLeather(item, material == "leather")
+		-- Apply trim if possible
+		if item.tag and item.tag.Trim then
+			armor.ApplyTrim(slot, item)
+		end
 		armor.setGlint(item)
 	end
 end
@@ -325,6 +342,29 @@ function armor.useDefaultTexture(item, slot)
 	return true
 end
 
+function armor.ApplyTrim(slot, item)
+	-- Get data
+	local trimPattern = item.tag.Trim.pattern
+	local trimMaterial = item.tag.Trim.material
+
+	-- Trim strings (heh)
+	trimPattern = trimPattern:sub(trimPattern:find(":") + 1)
+	trimMaterial = trimMaterial:sub(trimMaterial:find(":") + 1)
+
+	-- Only apply vanilla trims
+	if not armor.trimMaterials[trimMaterial] then
+		return
+	end
+
+	local trimParts = armor.GetTrimParts(slot)
+	for _, part in pairs(trimParts) do
+		part:setVisible(true)
+		part:setPrimaryTexture("RESOURCE", "textures/trims/models/armor/" .. trimPattern .. (slot == "leggings" and "_leggings" or "") .. ".png")
+		part:setColor(armor.trimMaterials[trimMaterial])
+		part:setSecondaryRenderType(item:hasGlint() and "Glint" or nil)
+	end
+end
+
 function armor.equipHelmetItem(item)
 	local isBlock = modules.util.asItemStack(item, 2):isBlockItem() and not armor.checkSkull(item)
 
@@ -364,6 +404,8 @@ function armor.unequipHelmet()
 
 	models.cat.Head.Armor:setVisible(false)
 	models.cat.Head.Armor2:setVisible(false)
+	models.cat.Head.ArmorTrim:setVisible(false)
+	models.cat.Head.Armor2Trim:setVisible(false)
 
 	models.cat.Head:getTask("headItem"):setVisible(false)
 	models.cat.Head:getTask("headBlock"):setVisible(false)
@@ -389,6 +431,12 @@ function armor.unequipChestplate()
 	models.cat.LeftArm.Forearm.Armor:setVisible(false)
 	models.cat.RightArm.Armor:setVisible(false)
 	models.cat.RightArm.Forearm.Armor:setVisible(false)
+	models.cat.Body.Boobs.ArmorTrim:setVisible(false)
+	models.cat.Body.ArmorTrim:setVisible(false)
+	models.cat.LeftArm.ArmorTrim:setVisible(false)
+	models.cat.LeftArm.Forearm.ArmorTrim:setVisible(false)
+	models.cat.RightArm.ArmorTrim:setVisible(false)
+	models.cat.RightArm.Forearm.ArmorTrim:setVisible(false)
 end
 
 function armor.unequipLeggings()
@@ -397,11 +445,15 @@ function armor.unequipLeggings()
 	vanilla_model.LEGGINGS:setVisible(false)
 
 	models.cat.Body.ArmorBottom:setVisible(false)
-	models.cat.Body.ArmorBottom:setVisible(false)
 	models.cat.LeftThigh.ArmorLeggings:setVisible(false)
 	models.cat.RightThigh.ArmorLeggings:setVisible(false)
 	modules.util.setChildrenVisible(models.cat.LeftLeg.ArmorLeggings, false)
 	modules.util.setChildrenVisible(models.cat.RightLeg.ArmorLeggings, false)
+	models.cat.Body.ArmorBottomTrim:setVisible(false)
+	models.cat.LeftThigh.ArmorLeggingsTrim:setVisible(false)
+	models.cat.RightThigh.ArmorLeggingsTrim:setVisible(false)
+	modules.util.setChildrenVisible(models.cat.LeftLeg.ArmorLeggingsTrim, false)
+	modules.util.setChildrenVisible(models.cat.RightLeg.ArmorLeggingsTrim, false)
 end
 
 function armor.unequipBoots()
@@ -411,6 +463,8 @@ function armor.unequipBoots()
 
 	modules.util.setChildrenVisible(models.cat.LeftLeg.ArmorBoots, false)
 	modules.util.setChildrenVisible(models.cat.RightLeg.ArmorBoots, false)
+	modules.util.setChildrenVisible(models.cat.LeftLeg.ArmorBootsTrim, false)
+	modules.util.setChildrenVisible(models.cat.RightLeg.ArmorBootsTrim, false)
 end
 
 function armor.colorizeLeather(item, shouldColorize)
@@ -438,7 +492,7 @@ function armor.setGlint(item)
 	end
 end
 
--- mode: COLOR or GLINT
+-- mode: COLOR, GLINT, EXCLUDE_EARS
 function armor.getPartsToEdit(item, mode)
 	local parts = {}
 
@@ -467,6 +521,33 @@ function armor.getPartsToEdit(item, mode)
 	elseif slot == "boots" then
 		table.insert(parts, models.cat.LeftLeg.ArmorBoots)
 		table.insert(parts, models.cat.RightLeg.ArmorBoots)
+	end
+
+	return parts
+end
+
+function armor.getTrimParts(slot, visible)
+	local parts = {}
+
+	if slot == "helmet" then
+		table.insert(parts, models.cat.Head.ArmorTrim)
+		table.insert(parts, models.cat.Head.Armor2Trim)
+	elseif slot == "chestplate" then
+		table.insert(parts, models.cat.Body.Boobs.ArmorTrim)
+		table.insert(parts, models.cat.Body.ArmorTrim)
+		table.insert(parts, models.cat.LeftArm.ArmorTrim)
+		table.insert(parts, models.cat.LeftArm.Forearm.ArmorTrim)
+		table.insert(parts, models.cat.RightArm.ArmorTrim)
+		table.insert(parts, models.cat.RightArm.Forearm.ArmorTrim)
+	elseif slot == "leggings" then
+		table.insert(parts, models.cat.Body.ArmorBottomTrim)
+		table.insert(parts, models.cat.LeftThigh.ArmorLeggingsTrim)
+		table.insert(parts, models.cat.RightThigh.ArmorLeggingsTrim)
+		table.insert(parts, models.cat.LeftLeg.ArmorLeggingsTrim)
+		table.insert(parts, models.cat.RightLeg.ArmorLeggingsTrim)
+	elseif slot == "boots" then
+		table.insert(parts, models.cat.LeftLeg.ArmorBootsTrim)
+		table.insert(parts, models.cat.RightLeg.ArmorBootsTrim)
 	end
 
 	return parts

@@ -30,7 +30,19 @@
 			"moveTo": "cat.Head",
 			"visible": false
 		},
+		"armor.Head.ArmorTrim": {
+			"moveTo": "cat.Head",
+			"visible": false
+		},
+		"armor.Head.Armor2Trim": {
+			"moveTo": "cat.Head",
+			"visible": false
+		},
 		"armor.Body.Boobs.Armor": {
+			"moveTo": "cat.Body.Boobs",
+			"visible": false
+		},
+		"armor.Body.Boobs.ArmorTrim": {
 			"moveTo": "cat.Body.Boobs",
 			"visible": false
 		},
@@ -42,11 +54,27 @@
 			"moveTo": "cat.Body",
 			"visible": false
 		},
+		"armor.Body.ArmorTrim": {
+			"moveTo": "cat.Body",
+			"visible": false
+		},
+		"armor.Body.ArmorBottomTrim": {
+			"moveTo": "cat.Body",
+			"visible": false
+		},
 		"armor.RightArm.Armor": {
 			"moveTo": "cat.RightArm",
 			"visible": false
 		},
 		"armor.RightArm.Forearm.Armor": {
+			"moveTo": "cat.RightArm.Forearm",
+			"visible": false
+		},
+		"armor.RightArm.ArmorTrim": {
+			"moveTo": "cat.RightArm",
+			"visible": false
+		},
+		"armor.RightArm.Forearm.ArmorTrim": {
 			"moveTo": "cat.RightArm.Forearm",
 			"visible": false
 		},
@@ -58,7 +86,19 @@
 			"moveTo": "cat.LeftArm.Forearm",
 			"visible": false
 		},
+		"armor.LeftArm.ArmorTrim": {
+			"moveTo": "cat.LeftArm",
+			"visible": false
+		},
+		"armor.LeftArm.Forearm.ArmorTrim": {
+			"moveTo": "cat.LeftArm.Forearm",
+			"visible": false
+		},
 		"armor.RightThigh.ArmorLeggings": {
+			"moveTo": "cat.RightThigh",
+			"visible": false
+		},
+		"armor.RightThigh.ArmorLeggingsTrim": {
 			"moveTo": "cat.RightThigh",
 			"visible": false
 		},
@@ -70,7 +110,19 @@
 			"moveTo": "cat.RightLeg",
 			"visible": false
 		},
+		"armor.RightLeg.ArmorLeggingsTrim": {
+			"moveTo": "cat.RightLeg",
+			"visible": false
+		},
+		"armor.RightLeg.ArmorBootsTrim": {
+			"moveTo": "cat.RightLeg",
+			"visible": false
+		},
 		"armor.LeftThigh.ArmorLeggings": {
+			"moveTo": "cat.LeftThigh",
+			"visible": false
+		},
+		"armor.LeftThigh.ArmorLeggingsTrim": {
 			"moveTo": "cat.LeftThigh",
 			"visible": false
 		},
@@ -79,6 +131,14 @@
 			"visible": false
 		},
 		"armor.LeftLeg.ArmorBoots": {
+			"moveTo": "cat.LeftLeg",
+			"visible": false
+		},
+		"armor.LeftLeg.ArmorLeggingsTrim": {
+			"moveTo": "cat.LeftLeg",
+			"visible": false
+		},
+		"armor.LeftLeg.ArmorBootsTrim": {
 			"moveTo": "cat.LeftLeg",
 			"visible": false
 		},
