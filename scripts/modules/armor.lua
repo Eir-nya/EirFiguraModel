@@ -44,6 +44,14 @@ local armor = {
 		travelers = { prefix = "travelers", appendLayer = true, namespace = "tconstruct", hideSnout = false },
 		plate = { prefix = "plate", appendLayer = true, namespace = "tconstruct", hideSnout = false },
 		piggyback = { prefix = "piggyback", appendLayer = true, namespace = "tconstruct", hideSnout = false },
+		--[[
+		slime = { prefix = "slime", appendLayer = true, namespace = "tconstruct", hideSnout = true, paths = {
+			helmet = "textures/models/armor/slime/layer_1",
+			chestplate = "textures/models/armor/slime/layer_1",
+			leggings = "textures/models/armor/slime/layer_2",
+			boots = "textures/models/armor/slime/layer_1"
+		}},
+		]]--
 		ferocious = "gemstone",
 		sylph = "gemstone",
 		oread = "gemstone",
@@ -186,6 +194,10 @@ function armor.equipEvent(item, slot)
 		if item.tag and item.tag.Trim then
 			armor.ApplyTrim(slot, item)
 		end
+		-- Tinkers embellishments
+		if modules.util.startsWith(item.id, "tconstruct:") then
+			armor.tinkersEmbellishment(item, slot, material)
+		end
 		armor.setGlint(item)
 	end
 end
@@ -293,12 +305,18 @@ function armor.useDefaultTexture(item, slot)
 	if type(armor.texturePaths[prefix]) ~= "table" or armor.texturePaths[prefix].appendLayer then
 		resourcePath = resourcePath .. (slot == "leggings" and "_layer_2" or "_layer_1")
 	end
+	if type(armor.texturePaths[prefix]) == "table" and type(armor.texturePaths[prefix].paths) == "table" then
+		resourcePath = armor.texturePaths[prefix].paths[slot]
+	end
 	resourcePath = resourcePath .. ".png"
 	if type(armor.texturePaths[prefix]) == "table" and armor.texturePaths[prefix].namespace then
 		resourcePath = armor.texturePaths[prefix].namespace .. ":" .. resourcePath
 	end
 	if not client.hasResource(resourcePath) then
 		resourcePath = "textures/models/armor/" .. imageName .. ".png"
+		if type(armor.texturePaths[prefix]) == "table" and armor.texturePaths[prefix].namespace then
+			resourcePath = armor.texturePaths[prefix].namespace .. ":" .. resourcePath
+		end
 		if not client.hasResource(resourcePath) then
 			return false
 		end
@@ -480,6 +498,32 @@ function armor.colorizeLeather(item, shouldColorize)
 	local parts = armor.getPartsToEdit(item, "COLOR")
 	for _, part in pairs(parts) do
 		part:setColor(color)
+	end
+end
+
+function armor.tinkersEmbellishment(item, slot, material)
+	-- Ensure has embellishment
+	if not item.tag then
+		return
+	end
+	if not item.tag.tic_persistent_data then
+		return
+	end
+	if not item.tag.tic_persistent_data["tconstruct:embellishment"] then
+		return
+	end
+
+	local embellishment = item.tag.tic_persistent_data["tconstruct:embellishment"]
+	local layer = slot == "leggings" and "layer_2" or "layer_1"
+	local textureName = layer .. "_" .. embellishment:gsub(":", "_")
+	local texturePath = "tconstruct:textures/models/armor/" .. material .. "/" .. textureName .. ".png"
+
+	local trimParts = armor.getTrimParts(slot)
+	for _, part in pairs(trimParts) do
+		part:setVisible(true)
+		part:setPrimaryTexture("RESOURCE", texturePath)
+		part:setColor()
+		part:setSecondaryRenderType(item:hasGlint() and "Glint" or nil)
 	end
 end
 
