@@ -374,7 +374,7 @@ function armor.ApplyTrim(slot, item)
 		return
 	end
 
-	local trimParts = armor.GetTrimParts(slot)
+	local trimParts = armor.getTrimParts(slot)
 	for _, part in pairs(trimParts) do
 		part:setVisible(true)
 		part:setPrimaryTexture("RESOURCE", "textures/trims/models/armor/" .. trimPattern .. (slot == "leggings" and "_leggings" or "") .. ".png")
