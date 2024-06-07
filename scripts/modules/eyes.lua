@@ -223,6 +223,7 @@ end
 -- Toggle eyes
 function eyes.init()
 	models.cat.Head.EyesGlint:setVisible(settings.eyes.glow.enabled)
+	eyes.decorateEyes()
 end
 modules.events.ENTITY_INIT:register(eyes.init)
 
